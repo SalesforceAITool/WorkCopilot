@@ -1,0 +1,45 @@
+const { contextBridge, ipcRenderer } = require('electron');
+
+contextBridge.exposeInMainWorld('copilot', {
+  getState: () => ipcRenderer.invoke('get-state'),
+  getPresets: () => ipcRenderer.invoke('get-presets'),
+  addFolder: () => ipcRenderer.invoke('add-folder'),
+  removeFolder: (f) => ipcRenderer.invoke('remove-folder', f),
+  reindex: () => ipcRenderer.invoke('reindex'),
+  setOption: (k, v) => ipcRenderer.invoke('set-option', k, v),
+  setMeeting: (m) => ipcRenderer.invoke('set-meeting', m),
+  warm: () => ipcRenderer.invoke('warm'),
+  ask: (payload) => ipcRenderer.invoke('ask', payload),
+  cancel: () => ipcRenderer.invoke('cancel'),
+  hide: () => ipcRenderer.invoke('hide'),
+  minimize: () => ipcRenderer.invoke('win:minimize'),
+  toggleMaximize: () => ipcRenderer.invoke('win:toggle-max'),
+  toggleCompact: () => ipcRenderer.invoke('win:toggle-compact'),
+  expand: () => ipcRenderer.invoke('win:expand'),
+  getBounds: () => ipcRenderer.invoke('win:bounds'),
+  resizeTo: (start, width, height) => ipcRenderer.send('win:resize', { start, width, height }),
+  quit: () => ipcRenderer.invoke('quit'),
+  sttInstall: () => ipcRenderer.invoke('stt:install'),
+  sttStart: () => ipcRenderer.invoke('stt:start'),
+  sttAudio: (samples, sampleRate) => ipcRenderer.send('stt:audio', { samples, sampleRate }),
+  sttStop: () => ipcRenderer.invoke('stt:stop'),
+  selfTest: () => ipcRenderer.invoke('selftest:run'),
+  addDocs: (kind) => ipcRenderer.invoke('docs:add', kind),
+  practiceInfo: () => ipcRenderer.invoke('practice:info'),
+  practiceStart: (opts) => ipcRenderer.invoke('practice:start', opts),
+  practiceGenerate: (opts) => ipcRenderer.invoke('practice:generate', opts),
+  practiceFeedback: (req) => ipcRenderer.invoke('practice:feedback', req),
+  practiceMark: (req) => ipcRenderer.invoke('practice:mark', req),
+  practiceFinish: (s) => ipcRenderer.invoke('practice:finish', s),
+  removeDoc: (kind, name) => ipcRenderer.invoke('docs:remove', kind, name),
+  buildDocQA: (kind) => ipcRenderer.invoke('docs:build-qa', kind),
+  deepgramUrl: () => ipcRenderer.invoke('deepgram:url'),
+  setDeepgramKey: (key) => ipcRenderer.invoke('deepgram:set-key', key),
+  bankSearch: (q) => ipcRenderer.invoke('bank:search', q),
+  bankReload: () => ipcRenderer.invoke('bank:reload'),
+  buildProjectQA: (folder) => ipcRenderer.invoke('project:build-qa', folder),
+  on: (channel, fn) => {
+    const allowed = ['hotkey', 'notice', 'answer:meta', 'answer:delta', 'answer:done', 'answer:error', 'answer:cancelled', 'win:state', 'stt:progress', 'stt:text', 'stt:speaking', 'stt:error', 'answer:bank', 'bank:status', 'project:progress', 'selftest:step', 'selftest:open'];
+    if (allowed.includes(channel)) ipcRenderer.on(channel, (_e, data) => fn(data));
+  }
+});

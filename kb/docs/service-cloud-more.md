@@ -1,0 +1,861 @@
+# Service Cloud: case lifecycle, features and scenarios
+
+61 questions. Levels: Fresher (0–2 yrs) 21 · Mid (3–6 yrs) 25 · Senior (7–10 yrs) 15
+
+## Service Cloud Lifecycle
+
+### Walk me through the case lifecycle in Service Cloud from start to finish.
+*Mid (3–6 yrs) · concept* · `svcx-001`
+
+I'd describe it as six stages, and I design each one deliberately. A case gets created, routed, worked under an SLA, solved with knowledge, closed, and then we ask for feedback. Take a laptop seller. A customer emails support about a dead battery, so Email-to-Case creates a case with Origin Email, links it to the contact by the sender address, and an auto-response rule sends a 'we got it' email with the case number. Assignment rules or Omni-Channel put it in the Hardware queue and push it to an available agent. Because the account has a Gold entitlement, the case gets a First Response milestone, and milestone warnings or escalation rules alert the manager if it sits too long. The agent finds a Knowledge article, replies from the case feed using a macro, and closes the case with a resolution. A flow then sends a CSAT survey. If the customer replies later, email threading attaches the reply to the same case.
+
+- Create: Email, Web, phone, chat or messaging, portal
+- Route: assignment rules, queues, Omni-Channel
+- SLA: entitlements, milestones, escalation rules
+- Solve: Knowledge, macros, quick text
+- Close and measure: closed status, resolution, survey
+
+<sub>Also asked as: Explain the end to end case lifecycle · what happens to a case from creation to closure · case management process in service cloud step by step · How does a support ticket flow through Salesforce?</sub>
+
+### What are the different ways a case can be created in Service Cloud?
+*Fresher (0–2 yrs) · concept* · `svcx-002`
+
+Cases can come in from almost every channel, and my rule is that each one sets the Case Origin so you can report on it. Email-to-Case turns emails sent to a support address into cases. Web-to-Case is a simple HTML form on the website. For phone, the agent creates the case from the softphone in the console through Open CTI or Service Cloud Voice. Chat and messaging, like Enhanced Chat, WhatsApp or SMS, create Messaging Sessions that the agent or a flow links to a case. On an Experience Cloud help portal, logged-in customers create cases themselves. Cases can also come from an Agentforce service agent action or from another system through the API. Example: a clinic takes appointment issues by phone, billing questions by email and requests from patients on the portal, and all of them land in the same Case object, so one queue and one report can cover them.
+
+- Email-to-Case and Web-to-Case
+- Phone via Open CTI or Service Cloud Voice
+- Enhanced Chat and messaging apps
+- Experience Cloud portal, AI agent, API
+- Case Origin field tracks the channel
+
+<sub>Also asked as: What are the case origin channels? · how do cases come into salesforce · Case creation channels in Service Cloud · From where can customers raise a case?</sub>
+
+### Once a case is created, how does it reach the right agent?
+*Fresher (0–2 yrs) · concept* · `svcx-003`
+
+It reaches the agent either by pull or by push, and for most teams I'd recommend push. With pull, case assignment rules set the owner to a queue or a user based on criteria, and agents pick work from the queue list view. With push, Omni-Channel takes cases from a queue, or uses skills, and sends each one to an available agent who has free capacity, so nobody picks and chooses. Example: an electronics retailer gets a case with Type Refund. The assignment rule sends it to the Billing queue. That queue is linked to an Omni-Channel routing configuration, so the case is pushed to the billing agent who is online and has the least work. If it needs a Spanish speaker, skills-based routing adds a Spanish skill. Two things I make sure the team knows: only one case assignment rule can be active, its entries are checked in order and the first match wins, and that Omni-Channel is what balances the load.
+
+- Assignment rules set owner to user or queue
+- Only one active assignment rule; first matching entry wins
+- Omni-Channel pushes work based on availability and capacity
+- Skills-based routing for language or product
+
+<sub>Also asked as: How are cases assigned to agents? · case routing in service cloud explained · pull vs push model for cases · Who decides which agent gets a new case?</sub>
+
+### How does the right entitlement get onto a case, and what happens to milestones as the case moves along?
+*Mid (3–6 yrs) · concept* · `svcx-004`
+
+The entitlement is what starts the SLA clock, so it has to be on the case early, ideally right at creation. Agents can pick it in the Entitlement lookup, but on my projects I set it with a before-save flow, because agents forget: find the active entitlement for the case's account, or for the asset if SLAs are per product, and fill EntitlementId. Once that's set, the entitlement process checks the case and creates Case Milestone records, like First Response and Resolution, each with a target date worked out from business hours. As the case moves, a milestone is completed when its completion date is set, it shows as violated if the target passes first, and the process ends when the case meets its exit criteria, usually closed. Example: a manufacturer's Platinum customer logs a case, the flow sets the Platinum entitlement, and a one-hour First Response milestone appears in the milestone tracker on the case.
+
+- Entitlement must be on the case for milestones to start
+- Before-save flow looks up active entitlement by account or asset
+- Case Milestone records hold target and completion dates
+- Milestones can be completed, violated or stopped
+
+<sub>Also asked as: How do you auto populate entitlement on a case? · when does the SLA clock start on a case · entitlement process flow during case lifecycle · How are case milestones created and completed?</sub>
+
+### Where does Knowledge fit into the case lifecycle?
+*Fresher (0–2 yrs) · concept* · `svcx-005`
+
+Knowledge shows up at three points: before a case exists, while the agent works it, and after it's solved. Before, customers search articles on the help portal, or an Agentforce service agent answers from them, which stops simple cases from being created at all. During, the Knowledge component on the case suggests articles based on the subject, and the agent can attach one or insert it into the email reply. After, if the agent solved something new, they create or flag an article from the case so the next person doesn't start from zero, which is the idea behind KCS. Example: a router company gets a case saying Wi-Fi drops every hour. The agent sees the article 'Update firmware to fix Wi-Fi drops', attaches it, sends the steps and closes the case. Because the article is attached, you can later report on which articles solve the most cases. On a team I'd make flagging new articles part of how agents close cases, not an extra task.
+
+- Before: self-service and AI agent deflection
+- During: suggested articles, attach or insert into reply
+- After: create articles from solved cases (KCS)
+- Attached articles give reporting on usefulness
+
+<sub>Also asked as: How do agents use knowledge articles on cases? · knowledge and case deflection · attach article to case salesforce · What is KCS in Service Cloud?</sub>
+
+### What should happen when a case is closed?
+*Fresher (0–2 yrs) · concept* · `svcx-006`
+
+Closing should capture how the case was solved and kick off the follow-up, not just flip the status. I set up a few closed status values, like Closed - Resolved, Closed - Duplicate and Closed - No Response, which all set IsClosed to true so reports and SLAs treat them as done. The close action or path asks for fields like Resolution and Root Cause, usually backed by a validation rule. Milestones on the case complete or the entitlement process exits, and a flow sends the CSAT survey and maybe a closing email. Example: an appliance company closes a case about a faulty fridge door. The agent picks Closed - Resolved, writes 'Replaced hinge under warranty', and the survey goes to the customer. One thing I get the business to decide up front is reopening: does a reply to a closed case reopen it, or create a new case linked to the old one?
+
+- Use multiple closed status values with IsClosed true
+- Require Resolution and Root Cause on close
+- Close milestones and trigger the survey
+- Decide the reopen policy early
+
+<sub>Also asked as: How do you design case closure? · case close process best practices · what happens at case closure in salesforce · Closed statuses and resolution fields</sub>
+
+### How would you collect customer satisfaction feedback after a case is closed?
+*Fresher (0–2 yrs) · scenario* · `svcx-007`
+
+I'd use Salesforce Surveys with a record-triggered flow on Case. First I enable Surveys, build a short CSAT survey with one rating question and an optional comment, and activate it. Then a record-triggered flow runs when Status changes to Closed and uses the Send Surveys action, with the case as the survey subject, the case contact as the recipient, a unique link so each response maps back, and an expiry of about a week. For external customers the survey is served through an Experience Cloud site, so the guest user needs access to surveys, invitations and responses. Example: a telecom closes a lot of cases every day, so I'd add entry conditions to skip Closed - Duplicate and spam cases, and not survey the same contact more than once a week. Responses link back to the case, so I can report CSAT by agent, queue and case reason. I'd agree those rules with the support manager first, because survey fatigue hurts response rates.
+
+- Salesforce Surveys plus record-triggered flow on close
+- Send Surveys action with case as subject
+- Experience Cloud site and guest access for external recipients
+- Filter out duplicates and over-surveying
+
+<sub>Also asked as: How do you send a CSAT survey on case close? · salesforce surveys after case closure · automate survey invitation when case closes · How do you measure CSAT in Service Cloud?</sub>
+
+### Walk me through the lifecycle of a customer chat in Enhanced Chat.
+*Mid (3–6 yrs) · concept* · `svcx-008`
+
+A chat starts on the website, gets routed, is often handled by AI first, then a human if needed, and ends linked to a case. Say a shoe store has Enhanced Chat (formerly Messaging for In-App and Web) on its site. The customer opens the chat and fills the pre-chat form with name and order number. That creates a Messaging Session, and an Omni-Channel flow decides where it goes, usually an Agentforce service agent first. The AI agent answers 'where is my order' using a flow action. When the customer asks about a refund it can't handle, it transfers to the Returns queue with context, and Omni-Channel pushes the conversation to an agent with capacity. The agent sees the full transcript, creates or links a case for the refund, and ends the conversation. Because it's asynchronous, the customer can leave and come back to the same thread later. Reporting uses Messaging Session and AgentWork. When I plan a rollout like this, I agree the AI-to-human handoff rules with the support manager before anything goes live.
+
+- Pre-chat form, then Messaging Session is created
+- Omni-Channel flow routes to AI agent, queue or rep
+- Handoff to a human with context
+- Asynchronous: customer can return to the same conversation
+- Link or create a case for follow-up
+
+<sub>Also asked as: How does a web chat flow from start to end in Salesforce? · enhanced chat conversation lifecycle · What happens when a customer starts a chat on the website? · chat to case flow with agentforce and omni channel</sub>
+
+### What happens to a phone call in Service Cloud Voice, from the first ring to wrap-up?
+*Mid (3–6 yrs) · concept* · `svcx-009`
+
+In Service Cloud Voice, a call is a work item in the console and it creates a Voice Call record. Example for a bank: a customer calls, the telephony side, like Amazon Connect, plays the IVR and collects the account number. The call is routed to an available agent in the right queue, and the softphone in the console rings. When the agent answers, the console opens the matching contact, the Voice Call record shows, and real-time transcription appears as they talk. The agent creates or updates a case linked to the call, uses Knowledge or AI suggestions, and can transfer or bring in a supervisor. After hanging up, the agent finishes wrap-up, like notes and disposition. The recording and transcript stay with the Voice Call, so AI can summarize it and supervisors can review it later. When I explain it to stakeholders, the big win over a basic CTI softphone is that voice sits in the same routing and reporting as other channels.
+
+- Call creates a VoiceCall record
+- IVR on telephony side, routing to an agent
+- Screen pop of contact and live transcript
+- Case linked to the call, then wrap-up
+- Transcript enables AI summaries
+
+<sub>Also asked as: Explain the call flow in Service Cloud Voice · voice call lifecycle in salesforce · how does an inbound call work with amazon connect and salesforce · What does the agent see when a call comes in?</sub>
+
+### How does a case raised on the Experience Cloud help portal move through its lifecycle?
+*Fresher (0–2 yrs) · concept* · `svcx-010`
+
+A portal case follows the same lifecycle as any other case; the difference is the customer creates and follows it themselves. Example: a software company's customer logs in to the help center and clicks Contact Support. As they type the subject, the site suggests Knowledge articles, which deflects some cases. If they still submit, a case is created with the contact and account taken from their user, and the assignment rule puts it in a queue. The customer sees it under My Cases, can add comments or files, and gets an email when the agent replies. The agent answers from the case feed and chooses whether each post is visible to the customer. When the case closes, the customer sees the new status and gets the survey. The setup pieces I review most carefully are sharing, so customers only see their own or their account's cases, and which fields and feed items are visible externally.
+
+- Article suggestions before submit
+- Contact and account set from the portal user
+- My Cases list, comments and files
+- External visibility on feed posts
+- Sharing sets or sharing rules control access
+
+<sub>Also asked as: What happens when a customer logs a case in the community? · portal case lifecycle salesforce · customer creates case on experience site, then what · How do customers track their cases in a portal?</sub>
+
+### What case statuses would you set up for a support team, and why?
+*Fresher (0–2 yrs) · design* · `svcx-011`
+
+I keep statuses few and meaningful, so each one tells you who has the ball. A typical set is New, In Progress, Waiting on Customer, Waiting on Third Party, Escalated, and a few closed values like Closed - Resolved, Closed - Duplicate and Closed - No Response. Example: a printer company's agent asks the customer for a serial number and moves the case to Waiting on Customer. That status can stop the SLA milestone clock, start a seven-day auto-close timer, and keep the case out of the agent's backlog count. When the customer replies, a flow moves it back to In Progress. Different teams can have different status lists through support processes and record types. I avoid lots of near-duplicate statuses, because every status needs reports, automation and training around it, and agents start picking them randomly. So I review any new status request against that before agreeing to it.
+
+- Each status says who owns the next step
+- Waiting statuses can pause SLAs and start auto-close
+- Support processes give teams different status lists
+- Fewer statuses means cleaner reports
+
+<sub>Also asked as: How do you design case status values? · what are good case statuses in service cloud · case status best practices · Why have a Waiting on Customer status?</sub>
+
+## Service Cloud
+
+### What are the main features of Service Cloud?
+*Fresher (0–2 yrs) · concept* · `svcx-012`
+
+Service Cloud is Salesforce's customer support product built around the Case object, and I group its features into four buckets. Channels: Email-to-Case, Web-to-Case, the Experience Cloud help portal, Enhanced Chat, messaging apps like WhatsApp and SMS, and phone through Service Cloud Voice or Open CTI. Routing and SLAs: assignment rules, queues, Omni-Channel, escalation rules, entitlements, milestones and service contracts. Agent productivity: the Service Console, macros, quick text, Knowledge, case teams and swarming in Slack. AI and insight: Agentforce service agents that talk to customers, assistive features like Case Classification, Service Replies and Work Summaries, and Omni Supervisor and dashboards for managers. Example: a travel company takes booking issues over WhatsApp, routes them through Omni-Channel by language, tracks a two-hour response SLA with milestones, and lets an AI agent answer baggage questions. Field Service is a separate product for on-site work that usually starts from a case. With a stakeholder, I'd pick the bucket that matches their biggest pain and start there.
+
+- Channels: email, web, portal, chat, messaging, voice
+- Routing and SLAs: Omni-Channel, entitlements, milestones
+- Productivity: console, macros, quick text, Knowledge
+- AI: Agentforce service agent and assistive features
+
+<sub>Also asked as: Tell me the key features of Salesforce Service Cloud · what all comes in service cloud · service cloud capabilities overview · What can you do with Service Cloud?</sub>
+
+### What is the difference between tab-based and status-based capacity in Omni-Channel?
+*Mid (3–6 yrs) · comparison* · `svcx-013`
+
+For long-running cases I'd usually pick status-based. Both decide when an agent's capacity is used and freed; the difference is what frees it. Tab-based is the default: a routed case uses capacity from the moment the agent accepts it until they close the console tab. Status-based ties capacity to a picklist field on the record, usually Case Status. In the service channel you map each value to In Progress, Completed or Paused, and only In Progress uses capacity. Example: an insurance claims team keeps cases open for days. With tab-based, an agent with five open tabs looks full even if they're waiting on documents. With status-based, moving a case to Waiting on Customer, mapped to Paused, frees capacity, so Omni-Channel sends them a new case. Status-based is meant for records like cases and leads, not for chat, messaging or voice. The risk I plan for: if agents forget to update the status, capacity stays locked, so I pair it with a report on cases sitting In Progress too long.
+
+- Tab-based (default): capacity freed when tab closes
+- Status-based: picklist values mapped to In Progress, Completed, Paused
+- Only In Progress consumes capacity
+- Status-based is for records like cases, not chat or voice
+
+<sub>Also asked as: Explain status based capacity model · tab based vs status based capacity omni channel · When is agent capacity released in Omni-Channel? · capacity model for cases that stay open for days</sub>
+
+### What is an Omni-Channel flow, and when would you use it instead of a plain routing configuration?
+*Mid (3–6 yrs) · concept* · `svcx-014`
+
+An Omni-Channel flow is a special flow type that decides how a work item is routed, using the Route Work action, instead of relying only on a queue's routing configuration. A queue plus routing configuration is fine when everything in that queue goes to one group. I use an Omni-Channel flow when routing depends on data: look up the account tier, add skills like language and product, check whether agents are online with the Check Availability for Routing action, and then route to a queue, a specific agent, a set of skills, or an Agentforce agent. Example: for a telecom's chat, the flow reads the pre-chat Topic field, sees it's a business account, adds Business and Spanish skills, and if no agent with those skills is online, sends the chat to the AI agent first. Enhanced Chat and messaging channels are routed with these flows, so it's becoming the standard way to route. So for new work I'd default the team to flows and keep plain routing configurations for the simple queues.
+
+- Flow type that routes work with the Route Work action
+- Route to queue, agent, skills or AI agent
+- Check Availability for Routing before deciding
+- Standard for Enhanced Chat and messaging
+
+<sub>Also asked as: Explain Omni-Channel Flow and the Route Work action · omni channel flow vs queue based routing configuration · How do you route messaging with a flow? · what is route work action in salesforce</sub>
+
+### What is Digital Engagement in Service Cloud?
+*Fresher (0–2 yrs) · concept* · `svcx-015`
+
+Digital Engagement is the Service Cloud add-on that gives you messaging channels beyond email and phone, handled from the same console. It covers Enhanced Chat on your website or app and messaging apps like SMS, WhatsApp, Facebook Messenger and Apple Messages for Business, all routed through Omni-Channel. Each conversation is a Messaging Session linked to a messaging end user, so agents can see the history across channels. Example: a food delivery company lets customers text a number about late orders. The SMS lands in Salesforce, Omni-Channel routes it to an agent, the agent replies from the console, and links it to a case if it needs follow-up. A practical tip: if an admin creates a new messaging channel and doesn't see the Enhanced Chat option, it usually means the org doesn't have the Digital Engagement license yet. I'd confirm licensing with the client before promising any channel in a plan.
+
+- Add-on for chat and messaging channels
+- Enhanced Chat, SMS, WhatsApp, Messenger, Apple Messages
+- Conversations are Messaging Sessions routed by Omni-Channel
+- Missing Enhanced Chat option often means no license
+
+<sub>Also asked as: What does the Digital Engagement add-on include? · digital engagement license salesforce · How do customers message support on WhatsApp in Salesforce? · messaging channels add-on for service cloud</sub>
+
+### What AI features does Service Cloud give to human support agents?
+*Mid (3–6 yrs) · concept* · `svcx-016`
+
+Besides the customer-facing Agentforce service agent, there's a set of assistive features for human reps. Case Classification predicts fields like Type, Reason or Priority from the subject and description, and Case Routing uses those predictions to send the case to the right queue. Article Recommendations suggests Knowledge articles on the case. Reply Recommendations suggests approved replies during chat and messaging, while Service Replies uses generative AI to draft a full reply that the rep edits before sending. Work Summaries drafts a summary, issue and resolution at the end of a conversation, and Knowledge Creation drafts an article from solved work. Agentforce Service Assistant can draft a step-by-step resolution plan on a case. Example: a phone company's agent opens a case about a cracked screen; the type is already predicted, a repair article is suggested, and after the chat the summary is filled in. The rep always reviews before anything goes out. That review step is the guardrail I'd hold the team to, especially early on.
+
+- Case Classification and Case Routing
+- Article Recommendations and Reply Recommendations
+- Service Replies and Work Summaries (generative)
+- Knowledge Creation and Service Assistant plans
+- Human reviews before sending
+
+<sub>Also asked as: Explain Einstein and Agentforce features for service reps · what is service replies and work summaries · AI features in service console · How does AI help agents in Service Cloud?</sub>
+
+### How does Einstein Case Classification work, and how would you roll it out?
+*Mid (3–6 yrs) · concept* · `svcx-017`
+
+Case Classification learns from your closed cases and predicts field values on new cases, like Case Reason, Type, Priority or Product, from the subject and description. You pick which fields to predict, it builds a model from historical cases, and then it can recommend values to the agent or fill them in automatically when it's confident. Example: an online store gets thousands of emails, and agents waste time setting the Reason. After training on past closed cases, the model learns that 'where is my parcel' means Reason equals Shipping. My rollout plan is to start with recommendations only, check accuracy per field, then switch to auto-fill for the fields that are reliable and use them in assignment rules or Omni-Channel routing. The catch is data quality: if agents picked random reasons in the past, the model learns random reasons, so I'd clean up the picklists and history first.
+
+- Predicts case fields from subject and description
+- Trained on historical closed cases
+- Recommend first, auto-fill when accurate
+- Clean picklist data before training
+
+<sub>Also asked as: Explain case classification in Salesforce · einstein predicts case fields how · auto fill case reason using AI · How do you set up Case Classification?</sub>
+
+### What is Swarming in Service Cloud?
+*Mid (3–6 yrs) · concept* · `svcx-018`
+
+Swarming lets an agent pull experts into a Slack channel tied to a case, so a hard case gets solved together instead of being passed around through escalations. From the case, the agent clicks Begin Swarming, a Slack channel is created, usually named after the case number, and they describe the help they need. They can add specific people, or use Expert Finder, which looks at skills and Omni-Channel availability to suggest and invite the right expert. Example: a solar company's agent has a commercial install case with an inverter error. They start a swarm, Expert Finder invites an available inverter specialist, they work it out in the channel, and the agent uses Send to Salesforce to post the key Slack message onto the case. Then they click Finish Swarming and close the case. It needs the Slack integration and is set up through Salesforce Go. I'd agree with support leadership which case types qualify for a swarm, so experts aren't pulled in for everything.
+
+- Slack channel per case for expert collaboration
+- Begin Swarming and Finish Swarming actions
+- Expert Finder suggests available experts by skill
+- Send to Salesforce saves key messages on the case
+
+<sub>Also asked as: How does swarming with Slack work? · case swarming salesforce slack · What is Expert Finder in swarming? · swarm vs escalation in support</sub>
+
+### How does Email-to-Case threading work now that Ref ID threading is being replaced?
+*Mid (3–6 yrs) · concept* · `svcx-019`
+
+Email-to-Case now matches replies to cases using a token plus email header data, instead of the old ref ID string in the subject or body. When an agent emails from the case, Salesforce adds a thread token and the outgoing email carries header metadata. When the customer replies, Email-to-Case checks the token first, then the headers, and only creates a new case if neither matches. It's turned on through the release update that disables Ref ID and moves to the new threading behavior. Example: a hotel chain's email templates still use the old Case.Thread_Id merge field. Before enabling the update, I'd have the team switch templates to Case.Thread_Token, replace Cases.getCaseIdFromEmailThreadId in custom Apex with Cases.getCaseIdFromEmailHeaders or EmailMessages.getRecordIdFromEmail, and test real reply chains in a sandbox. I'd treat it as a planned change with a test checklist, because a threading break shows up straight away as duplicate cases.
+
+- Token first, then email headers, else new case
+- Enabled via the Ref ID release update
+- Templates: Case.Thread_Id becomes Case.Thread_Token
+- Apex: use getCaseIdFromEmailHeaders or getRecordIdFromEmail
+
+```java
+// In a custom inbound email handler: find the record a reply belongs to
+Id recordId = EmailMessages.getRecordIdFromEmail(
+    email.subject, email.plainTextBody, email.htmlBody);
+```
+
+<sub>Also asked as: What is Lightning threading in Email-to-Case? · thread id vs thread token salesforce · how does salesforce match email replies to cases · Ref ID retirement email to case what to change</sub>
+
+### Explain milestone actions and recurrence types in an entitlement process.
+*Mid (3–6 yrs) · concept* · `svcx-020`
+
+Each milestone can have three kinds of timed actions: warning actions fire before the target, violation actions fire when it's missed, and success actions fire when it's completed in time. Actions can send an email alert, update a field or create a task, and a field update can kick off a flow for anything more complex. Recurrence decides how often a milestone happens on one case: No Recurrence means once per case, Independent means a new milestone each time the criteria become true, and Sequential means it repeats, but each new one starts only after the previous one is completed. Example: a hospital IT desk wants a two-hour response on high-priority tickets. At 90 minutes the warning emails the owner and team lead, at 120 the violation reassigns the ticket to an urgent queue, and the success action marks the SLA as met. Something like 'respond to every customer email within four hours' fits Sequential. In design reviews I check that every violation action has a clear owner, otherwise the alert just becomes noise.
+
+- Warning, violation and success actions
+- Email alert, field update, task; field update can trigger a flow
+- Recurrence: No Recurrence, Independent, Sequential
+- Business hours drive the target time
+
+```java
+Entitlement Process: Standard Support (Business Hours: Support Hours)
+Milestone: First Response   Recurrence: No Recurrence
+  Criteria:      Case: Priority EQUALS High
+  Time Trigger:  120 minutes
+  Warning  @ 90 min : Email Alert -> case owner, team lead
+  Violation@ 120 min: Field Update -> Owner = Urgent Queue; Email Alert -> manager
+  Success           : Field Update -> First_Response_SLA_Met__c = TRUE
+```
+
+<sub>Also asked as: What are success, warning and violation actions? · milestone recurrence independent vs sequential · How do milestone actions work in salesforce · Give an example of milestone criteria and actions</sub>
+
+### What are business hours and holidays used for in Service Cloud?
+*Fresher (0–2 yrs) · concept* · `svcx-021`
+
+Business hours define when your support team works, and Salesforce uses them to calculate SLA and escalation times, so the clock doesn't run on a Sunday night. You create business hours records with a time zone and weekly hours, attach Holidays to them, and mark one as the default. Escalation rules, entitlement processes and milestones use them, and each case has a Business Hours field. Example: a bank has an India team working 9 to 6 IST. A case with a four-hour response target created at 5 p.m. gets a target late the next morning, and if a festival day is set as a holiday, the clock skips that day too. For custom logic, the BusinessHours class in Apex has methods like add, diff and isWithin, so you can calculate a due date the same way the platform does. On my teams the rule is to use that class instead of hand-rolled date maths.
+
+- Business hours have time zone and weekly schedule
+- Holidays attach to business hours
+- Used by escalation rules, entitlements, milestones
+- Apex BusinessHours.add, diff, isWithin
+
+```java
+Id bhId = [SELECT Id FROM BusinessHours WHERE IsDefault = true LIMIT 1].Id;
+// Due date = now + 4 working hours
+Datetime due = BusinessHours.add(bhId, System.now(), 4 * 60 * 60 * 1000L);
+Boolean openNow = BusinessHours.isWithin(bhId, System.now());
+```
+
+<sub>Also asked as: Why do we need business hours on cases? · business hours in escalation rules and milestones · how to exclude weekends from SLA · BusinessHours class in Apex</sub>
+
+### What are the main objects in the Service Cloud data model?
+*Fresher (0–2 yrs) · concept* · `svcx-022`
+
+The center is Case, linked to Account, Contact and often Asset. Around it are EmailMessage for emails, CaseComment and feed items for the feed, CaseTeamMember for case teams, and CaseHistory for field tracking. For SLAs there's Entitlement, ServiceContract and ContractLineItem, plus CaseMilestone records created by the entitlement process. Knowledge articles live in Knowledge__kav, and CaseArticle links articles to cases. Channels add their own objects: MessagingSession and MessagingEndUser for chat and messaging, VoiceCall for Service Cloud Voice. Omni-Channel uses PendingServiceRouting while an item waits and AgentWork once it's offered to an agent. Example: for one broken washing machine you might see the case, two EmailMessages, a completed CaseMilestone, a CaseArticle and an AgentWork record that shows which agent took it and how long it took. I make sure new developers on the team know these, because it makes reports and SOQL much easier.
+
+- Case with Account, Contact, Asset
+- EmailMessage, CaseComment, CaseTeamMember
+- Entitlement, ServiceContract, CaseMilestone
+- MessagingSession, VoiceCall, AgentWork, PendingServiceRouting
+
+<sub>Also asked as: Explain the Service Cloud data model · which standard objects does service cloud use · objects related to case in salesforce · What is AgentWork, MessagingSession and VoiceCall?</sub>
+
+### What are PendingServiceRouting and AgentWork, and how would you use them in Apex?
+*Senior (7–10 yrs) · code* · `svcx-023`
+
+PendingServiceRouting is the record Omni-Channel uses while a work item is waiting to be routed, and AgentWork is created when it's offered to and taken by an agent. A common use is skills-based routing from Apex: you insert a PendingServiceRouting for each case with IsReadyForRouting false, add SkillRequirement records for, say, Spanish and Warranty, then set IsReadyForRouting to true so Omni-Channel starts looking for an agent. AgentWork is great for reporting and automation because it holds the user, the work item, and times like handle time and speed to answer. Example: a gadget company wants to alert a supervisor when a VIP case has waited ten minutes; a scheduled flow or job can query PendingServiceRouting for VIP cases older than that. My standard today is to try an Omni-Channel flow first and use Apex only when the logic is too complex for a flow, because flows are easier for the wider team to maintain.
+
+- PendingServiceRouting = waiting work; AgentWork = assigned work
+- Insert PSR not ready, add SkillRequirement, then mark ready
+- AgentWork has handle time and speed to answer
+- Prefer Omni-Channel flow when it can do the job
+
+```java
+public with sharing class SkillRouter {
+    public static void route(List<Case> cases, Id channelId, Id skillId) {
+        List<PendingServiceRouting> psrs = new List<PendingServiceRouting>();
+        for (Case c : cases) {
+            psrs.add(new PendingServiceRouting(
+                WorkItemId = c.Id, ServiceChannelId = channelId,
+                RoutingType = 'SkillsBased', RoutingModel = 'MostAvailable',
+                RoutingPriority = 1, CapacityWeight = 1,
+                IsReadyForRouting = false));
+        }
+        insert psrs;
+        List<SkillRequirement> reqs = new List<SkillRequirement>();
+        for (PendingServiceRouting p : psrs) {
+            reqs.add(new SkillRequirement(RelatedRecordId = p.Id, SkillId = skillId, SkillLevel = 1));
+        }
+        insert reqs;
+        for (PendingServiceRouting p : psrs) { p.IsReadyForRouting = true; }
+        update psrs;
+    }
+}
+```
+
+<sub>Also asked as: How do you do skills-based routing from Apex? · pending service routing skill requirement example · What is AgentWork object used for? · route a case with skills using apex code</sub>
+
+### What are bulk macros and irreversible macros?
+*Mid (3–6 yrs) · concept* · `svcx-024`
+
+A macro is a saved set of steps an agent runs with one click, and bulk and irreversible macros are two special kinds. A bulk macro can run on many records at once from a list view, but only if its steps can run without the agent filling something in on screen, so macros that need the agent to edit text in the publisher can't be used in bulk. An irreversible macro has a step that can't be undone, like submitting an email or posting to the feed, so agents should check the record before running it. Example: during a shipping delay, a retailer's supervisor selects many 'where is my order' cases in a list view and runs a bulk macro that sets Status to Waiting on Carrier and posts a standard update. One thing I check before rolling out a macro: macros act on what's on the page, so the page layout and publisher actions must include the fields and actions the macro uses.
+
+- Bulk macros run from list views on many records
+- Not every macro can run in bulk
+- Irreversible macros contain steps like sending an email
+- Macros depend on the page layout and publisher actions
+
+<sub>Also asked as: Can macros run on multiple cases at once? · irreversible macro meaning salesforce · run a macro from a list view · What are the limitations of macros?</sub>
+
+### What would you put in the Service Console utility bar, and which console features help agents most?
+*Fresher (0–2 yrs) · concept* · `svcx-025`
+
+The utility bar is the strip at the bottom of a console app for tools agents need on every tab, so I put the Omni-Channel widget there, plus the softphone, History, Macros and maybe a notes component. Beyond that, the console helps with workspace tabs and subtabs, so a case opens with its contact and account as subtabs and the agent never loses context, and split view, which shows a list on the side while they work a record. Example: an airline agent goes online in Omni-Channel from the utility bar, a lost baggage case opens as a new tab with the contact as a subtab, and the agent runs a 'Baggage claim acknowledgement' macro from the utility bar. Navigation rules, like opening contacts as subtabs of cases, and keyboard shortcuts save more clicks. I also keep the case page focused, with the feed and Knowledge components where agents actually look. I'd validate that layout by sitting with a couple of agents, not just designing it in Setup.
+
+- Utility bar: Omni-Channel, softphone, History, Macros
+- Workspace tabs and subtabs keep context
+- Split view for working through lists
+- Navigation rules and keyboard shortcuts
+
+<sub>Also asked as: What is the utility bar in a console app? · service console features split view subtabs · How do you set up a Lightning Service Console for agents? · console navigation rules and workspace tabs</sub>
+
+## Service Cloud Scenarios
+
+### High-priority cases must get a first response within 2 hours, counting only business hours. How would you build it?
+*Fresher (0–2 yrs) · scenario* · `svcx-026`
+
+I'd build it with an entitlement process and a First Response milestone, not custom date maths. Steps: create business hours for the support team and add holidays. Create an entitlement process using those hours, and add a First Response milestone with criteria Priority equals High and a 120-minute time trigger. Add a warning action at 90 minutes that emails the owner and team lead, a violation action that reassigns to an Urgent queue and alerts the manager, and a success action that ticks a 'Response SLA Met' field. Then make sure every case gets an entitlement, with a before-save flow that finds the account's active entitlement. Finally, complete the milestone automatically when the agent sends the first email, with a flow or trigger on EmailMessage. Example: at a payroll software company with 9 to 6 hours, a High case logged at 4:30 p.m. gets a target of 9:30 the next morning, not 6:30 that evening. I'd confirm the holiday calendar with the support manager before go-live.
+
+- Business hours plus entitlement process
+- Milestone criteria Priority = High, 120 minutes
+- Warning, violation and success actions
+- Auto-set entitlement and auto-complete milestone
+
+<sub>Also asked as: How do you implement a 2 hour SLA for high priority cases? · first response time SLA in salesforce · high priority case must be answered in two hours · set up response time commitment with milestones</sub>
+
+### Emails to support are creating duplicate cases. Write Apex to detect and link the duplicates.
+*Senior (7–10 yrs) · code* · `svcx-027`
+
+I'd flag duplicates at insert instead of deleting them, so no email is ever lost. A before insert trigger on Case looks only at Email-to-Case cases, builds a key from the sender address and a cleaned subject without RE: or FW:, and queries open cases from the same sender in the last two days. If one matches, the new case gets ParentId set to the original and a closed status like Closed - Duplicate, so agents work only the original while the email is still visible on the linked child. Example: a furniture store customer emails 'Sofa not delivered' and ten minutes later 'RE: Sofa not delivered' from a different thread; the second case is linked and closed. Things I'd check in code review: Closed - Duplicate must exist as a closed status, auto-response rules may still fire, and two duplicates in the same batch need extra handling. Lightning threading should already stop real replies from creating new cases.
+
+- Key = sender email + normalized subject
+- Query recent open cases in bulk, one SOQL
+- Link with ParentId and close as duplicate, never delete
+- Fix the source and use Lightning threading too
+
+```java
+trigger CaseEmailDedupe on Case (before insert) {
+    EmailCaseDedupe.flagDuplicates(Trigger.new);
+}
+
+public with sharing class EmailCaseDedupe {
+    public static void flagDuplicates(List<Case> newCases) {
+        Set<String> senders = new Set<String>();
+        for (Case c : newCases) {
+            if (c.Origin == 'Email' && c.SuppliedEmail != null) senders.add(c.SuppliedEmail.toLowerCase());
+        }
+        if (senders.isEmpty()) return;
+        Map<String, Case> originals = new Map<String, Case>();
+        for (Case old : [SELECT Id, SuppliedEmail, Subject FROM Case
+                         WHERE SuppliedEmail IN :senders AND IsClosed = false
+                         AND CreatedDate = LAST_N_DAYS:2 ORDER BY CreatedDate ASC]) {
+            String k = key(old.SuppliedEmail, old.Subject);
+            if (!originals.containsKey(k)) originals.put(k, old);
+        }
+        for (Case c : newCases) {
+            if (c.Origin != 'Email' || c.SuppliedEmail == null) continue;
+            Case original = originals.get(key(c.SuppliedEmail, c.Subject));
+            if (original != null) {
+                c.ParentId = original.Id;
+                c.Status = 'Closed - Duplicate';
+            }
+        }
+    }
+    private static String key(String email, String subject) {
+        String s = subject == null ? '' : subject.toLowerCase().replaceAll('^((re|fw|fwd):\\s*)+', '').trim();
+        return email.toLowerCase() + '|' + s;
+    }
+}
+```
+
+<sub>Also asked as: Apex trigger to prevent duplicate email to case cases · dedupe email to case with code · customer emails twice and two cases get created · How do you flag duplicate cases from email in a trigger?</sub>
+
+### Agents are getting overloaded with chats. What would you do?
+*Mid (3–6 yrs) · scenario* · `svcx-028`
+
+First I'd figure out whether it's a capacity setting problem or a real volume problem, because the fixes are very different. On the settings side, I check the presence configuration's capacity and the units of capacity each messaging item uses in the routing configuration. Example: if agents have capacity 10 and each chat uses 2, they get five chats at once, which is too many for complex warranty chats; making each chat weigh 4 limits them to two. I'd also give agents a status like 'Available - Cases Only' so they can step off chat for a while, and check whether auto-accept is on. If it's real volume, I'd put an Agentforce service agent in front to answer simple questions like order status, improve Knowledge for self-service, add overflow staffing at peak hours, and set customer expectations on wait time. Then I'd check the result in Omni Supervisor by watching concurrent chats per agent and wait times.
+
+- Check presence capacity and units of capacity per chat
+- Separate presence statuses for chat and cases
+- Deflect simple chats with an AI agent and Knowledge
+- Monitor in Omni Supervisor
+
+<sub>Also asked as: Too many concurrent chats per agent, how to fix · agents complain they get too many messaging sessions at once · How do you control how many chats an agent handles? · chat volume overwhelming support team</sub>
+
+### Cases created on the Experience Cloud portal are not visible to the customer who created them. What would you check?
+*Mid (3–6 yrs) · troubleshooting* · `svcx-029`
+
+My bet is a sharing problem or a missing contact link, so I check in this order. One: is the case's ContactId the customer's own contact? If the case is created by a flow in system context or by an integration user, the contact can end up blank, and then sharing never applies. Two: external sharing. With the external OWD on Case set to Private, customer community users need a sharing set giving access to cases where Contact matches their contact, or Account for account-wide access, while Customer Community Plus users rely on roles and sharing rules. Three: the profile or permission set needs Read on Case and access to the record type. Four: the list view or component on the site; 'My Cases' might filter by owner instead of contact. Example: a medical device company's portal form created cases owned by a queue with a blank contact, so customers saw nothing; setting ContactId from the logged-in user fixed it.
+
+- Check ContactId on the case first
+- Sharing sets for customer community users
+- Roles and sharing rules for Community Plus
+- Object, record type and list view filters
+
+<sub>Also asked as: Portal users cannot see their own cases · customer community user can not view case · cases missing from My Cases in experience site · Why can a customer not see a case in the portal?</sub>
+
+### After moving from legacy Chat to Enhanced Chat, the support manager's chat reports are empty. What do you do?
+*Senior (7–10 yrs) · troubleshooting* · `svcx-030`
+
+The reports are empty because Enhanced Chat uses a different data model, so old Live Chat Transcript reports won't get new data. Legacy Chat was retired in February 2026, so these need to be rebuilt, not patched. Steps: list every legacy report and dashboard and the metric each one shows. Then map them: conversation volume and status come from Messaging Session, response times and message counts come from the Messaging Session Metrics object, and handle time and speed to answer come from AgentWork. Create custom report types where needed, like Messaging Sessions with Cases, rebuild the dashboards, and keep the old transcript reports as a historical view. Example: a cosmetics retailer's dashboard showed chats per agent per day; now that's an AgentWork report filtered to the messaging channel and grouped by user and date. I'd also move any flows or triggers that ran on LiveChatTranscript over to MessagingSession. I'd walk the support manager through the new metrics, because some numbers will be defined differently from the old reports.
+
+- Enhanced Chat does not write LiveChatTranscript
+- Messaging Session, Messaging Session Metrics, AgentWork
+- Custom report types and rebuilt dashboards
+- Move automation to MessagingSession
+
+<sub>Also asked as: Live chat transcript reports not working after migration · how to report on enhanced chat · legacy chat reports to messaging session reports · Chat dashboards broke after Enhanced Chat migration</sub>
+
+### The business wants to capture an order number before a chat starts and route the chat based on it. How would you do it?
+*Mid (3–6 yrs) · scenario* · `svcx-031`
+
+I'd use Enhanced Chat pre-chat fields with an Omni-Channel flow. Steps: in the messaging channel, add custom parameters like OrderNumber and IssueType, and expose them on the pre-chat form in the embedded service deployment, visible fields for the customer and hidden fields the website fills, like whether they're logged in. Map the parameters to flow variables in the channel's parameter mappings. In the Omni-Channel flow, look up the order by number, find the account and its tier, and then set skills or pick a queue. Example: a mobile accessories store sends chats with issue type 'Damaged item' on high-value orders to the Returns team with a Priority skill, and everything else to an Agentforce service agent first. I'd also save the order number on the Messaging Session or the case, so the agent doesn't have to ask the customer again. I'd also agree with the web team who owns the hidden fields, since a website change can quietly break routing.
+
+- Custom parameters as visible or hidden pre-chat fields
+- Parameter mappings into the Omni-Channel flow
+- Look up order and account, then set skills or queue
+- Store the value so the agent sees it
+
+<sub>Also asked as: How do you set up pre-chat fields in Enhanced Chat? · pass pre chat data to omni channel flow · route chat based on pre-chat form values · hidden pre-chat fields messaging for web</sub>
+
+### How would you automatically classify and route thousands of emailed cases every day?
+*Senior (7–10 yrs) · design* · `svcx-032`
+
+I'd combine better intake, AI classification and data-driven routing. First, separate routing addresses where it makes sense, like billing@ and returns@, so the Origin and a category are set at the source. Second, turn on Einstein Case Classification trained on clean historical cases to predict Reason, Product and Priority, and auto-fill only the fields that prove accurate. Third, route with an Omni-Channel flow: read the predicted fields, add skills like product and language, raise routing priority for premium entitlements, and use fallback queues. Fourth, deflect: for simple requests like order status, an auto-response with relevant articles or an automated reply flow can resolve them without an agent. Example: an electronics marketplace getting several thousand emails a day can drop most of its manual triage team's work this way. I'd track misroutes with a reassignment count on the case and review rules and the model regularly. I'd also set expectations with the support director that accuracy improves over time, so we start with the safe fields.
+
+- Separate routing addresses for early categorization
+- Case Classification for Reason, Product, Priority
+- Omni-Channel flow with skills and priorities
+- Deflect simple requests; track misroutes
+
+<sub>Also asked as: Design email triage at high volume · auto categorize and route email cases · we get thousands of support emails, how to sort them · How would you reduce manual triage of cases?</sub>
+
+### A high-priority customer's SLA is about to breach and the assigned agent is unavailable. How would you prevent the breach?
+*Senior (7–10 yrs) · scenario* · `svcx-033`
+
+I'd make the system notice early and move the work, rather than hope the agent comes back. Setup: the case has an entitlement with a milestone. A warning action at, say, 75 percent of the target updates an 'SLA at risk' field, and a record-triggered flow on that field checks whether the owner is online, using the UserServicePresence object, or marked out of office. If not, the flow sends the case back into a priority queue with high routing priority, or re-routes it by skills through Omni-Channel, and notifies the team lead by email or Slack. The violation action escalates to the manager. Example: a cloud hosting company's platinum customer has a server-down case with a one-hour target; at 45 minutes the owner is in a meeting, so the flow moves it to the on-call queue and the next available senior engineer gets it. Afterwards, a report on at-risk cases shows where staffing is thin. I'd agree the at-risk threshold with the support manager, so alerts come early enough to act on.
+
+- Warning action sets an at-risk flag early
+- Flow checks owner presence via UserServicePresence
+- Re-route with high priority and notify the lead
+- Violation escalates to management
+
+<sub>Also asked as: How do you avoid SLA violation when owner is out · case about to miss milestone and agent is offline · reassign case automatically before SLA breach · Design SLA protection for VIP customers</sub>
+
+### An agent is out sick and their assigned cases are stuck. How would you handle it now and prevent it later?
+*Fresher (0–2 yrs) · scenario* · `svcx-034`
+
+Right now I'd put the cases back into circulation. A supervisor opens a list view of open cases owned by that agent, sorts by priority, and changes the owner to the team queue, highest priority first; Omni-Channel then pushes them to whoever is available. Example: at a utility company an agent calls in sick with twelve open cases, three of them high priority; the team lead filters 'My Team's Open Cases' by owner and moves them all to the Billing queue in a couple of minutes. To prevent it, I'd keep fewer cases sitting with individuals by using Waiting statuses and status-based capacity, add milestone warnings that alert the lead when a case is idle too long, and give supervisors a simple screen flow like 'Return this agent's cases to queue'. Some teams also add an out-of-office flag on the user that routing checks before assigning. I'd write that up as a short runbook so any team lead can do it.
+
+- Reassign to the queue, highest priority first
+- Omni-Channel redistributes automatically
+- Milestone warnings catch idle cases
+- Supervisor flow and out-of-office flag
+
+<sub>Also asked as: Cases stuck with an absent agent · agent on leave, how to reassign their cases · how to move cases back to queue in salesforce · What if the case owner is not available?</sub>
+
+### Unresolved cases should be escalated to the support manager after 8 business hours. How would you do it?
+*Fresher (0–2 yrs) · scenario* · `svcx-035`
+
+I'd use an escalation rule; this is a classic job for one. Steps: make sure business hours exist for the team. In the escalation rule, add an entry with criteria like Status not equal to Closed, plus any priority or type filter, choose to use business hours, and decide how age is counted: from creation, from creation but stop after the case is first modified, or from the last modification. Add an escalation action with Age Over 8 hours that reassigns the case to the manager or an Escalations queue and sends a notification email. When it fires, the case's Escalated flag is set, so you can report on it. Example: a printer manufacturer with 9 to 6 hours gets a case at 2 p.m. Monday; if it's still open, it escalates at 1 p.m. Tuesday. The risk I'd flag to the manager: with 'based on last modified', agents who keep touching the case without solving it reset the clock. If entitlements are in use, a milestone violation action can do the same job.
+
+- Escalation rule entry with criteria and business hours
+- Choose how age is calculated
+- Action: Age Over 8 hours, reassign and notify
+- IsEscalated flag for reporting
+
+<sub>Also asked as: How do you set up an escalation rule? · escalate case if not resolved in 8 hours · auto escalate old cases to manager · escalation rule with business hours example</sub>
+
+### A case should not be closed while it has open child cases or open tasks. How would you enforce it?
+*Mid (3–6 yrs) · code* · `svcx-036`
+
+A validation rule can't look at child records, so I'd use a before update trigger, or a record-triggered flow with a Custom Error element if the team prefers flows. The trigger collects cases moving into a closed status, runs one query for open child cases and one for open tasks, and adds an error to any case that still has open work. Example: an equipment rental company opens child cases for delivery, installation and billing under one parent; the agent tries to close the parent while billing is still open and gets 'Close all child cases and tasks first'. I check closed status values through the CaseStatus object rather than hard-coding names, so new closed statuses work automatically. Both queries are bulk-safe, so a data load closing thousands of cases still works. In review I'd also check the error message tells the agent what's still open.
+
+- Validation rules cannot see child records
+- Before update trigger with addError
+- Use CaseStatus to find closed values
+- Two bulk queries: child cases and tasks
+
+```java
+trigger CaseCloseGuard on Case (before update) {
+    Set<String> closedValues = new Set<String>();
+    for (CaseStatus s : [SELECT ApiName FROM CaseStatus WHERE IsClosed = true]) closedValues.add(s.ApiName);
+    Set<Id> closing = new Set<Id>();
+    for (Case c : Trigger.new) {
+        Case old = Trigger.oldMap.get(c.Id);
+        if (closedValues.contains(c.Status) && !closedValues.contains(old.Status)) closing.add(c.Id);
+    }
+    if (closing.isEmpty()) return;
+    Set<Id> blocked = new Set<Id>();
+    for (Case child : [SELECT ParentId FROM Case WHERE ParentId IN :closing AND IsClosed = false]) blocked.add(child.ParentId);
+    for (Task t : [SELECT WhatId FROM Task WHERE WhatId IN :closing AND IsClosed = false]) blocked.add(t.WhatId);
+    for (Case c : Trigger.new) {
+        if (blocked.contains(c.Id)) c.addError('Close all child cases and open tasks first.');
+    }
+}
+```
+
+<sub>Also asked as: Prevent closing parent case with open child cases · validation to block case close if open tasks exist · trigger to stop case closure · How do you stop agents closing a case with pending work?</sub>
+
+### A customer has three products with different support levels. How would you model their SLAs?
+*Senior (7–10 yrs) · design* · `svcx-037`
+
+I'd use a service contract for the agreement, a contract line item per product, and entitlements at the line item or asset level, so the SLA follows what the customer actually bought. Example: a hospital buys Platinum support for its MRI machine, Gold for ultrasound, and Standard for software. One service contract holds the deal, three contract line items point to the products or assets, and each gets an entitlement tied to a different entitlement process with its own milestones and business hours, like 24x7 for the MRI. When a case is logged against the MRI asset, a before-save flow finds the active entitlement on that asset or line item and sets it on the case, so the four-hour Platinum milestones start. Decisions I'd get agreed with the business: what happens when no entitlement matches, use start and end dates so expired entitlements are ignored, and use entitlement process versions when terms change.
+
+- Service contract + contract line items per product
+- Entitlements on line items or assets
+- Different entitlement processes and business hours
+- Flow picks the entitlement from the case asset
+
+<sub>Also asked as: Different SLA per product for the same account · service contracts and contract line items design · entitlement per asset or product · How do you handle multiple support plans for one customer?</sub>
+
+### Agents keep typing the same answers again and again. How would you speed them up?
+*Fresher (0–2 yrs) · scenario* · `svcx-038`
+
+I'd look at what they repeat and give them the right tool for each. For short phrases and greetings, Quick Text with merge fields, like 'Hi {!Contact.FirstName}, thanks for contacting us about {!Case.Subject}'. For repeated multi-step work, a macro, for example 'Request proof of purchase' that opens the email action, inserts a template, sets Status to Waiting on Customer and sends. For repeated technical answers, Knowledge articles that agents insert into replies, so the content is kept accurate in one place. On messaging channels, Reply Recommendations or Service Replies can suggest answers. Example: a camera shop's agents answer 'how do I reset my camera' many times a week; one article plus a macro turns that into two clicks. I'd measure handle time before and after so the team sees the difference. I'd also give one person ownership of the macro and template library, so it doesn't sprawl.
+
+- Quick Text for short reusable phrases
+- Macros for multi-step actions
+- Knowledge for technical answers
+- AI reply suggestions on messaging
+
+<sub>Also asked as: Reduce repetitive typing for support agents · quick text vs macro vs knowledge for repeated replies · agents write same email many times · How can agents reply faster in the console?</sub>
+
+### Web-to-Case is creating lots of spam cases. How would you stop it?
+*Mid (3–6 yrs) · troubleshooting* · `svcx-039`
+
+I'd block the bots at the form first, then catch whatever gets through. Step one: turn on reCAPTCHA in the Web-to-Case settings and regenerate the form HTML on the website, because the old form code won't include it. Step two: if spam continues, move the form to an Experience Cloud page or a screen flow, which gives better validation and control. Step three: inside Salesforce, add a before-save flow that marks obvious spam, like known junk domains or links in the description, and an assignment rule entry at the top that sends those cases to a Spam queue so agents never see them. Example: a furniture store's contact form gets hundreds of junk cases overnight with crypto links; reCAPTCHA stops most, and the rule parks the rest. The risk I'd point out to the business: Web-to-Case has a daily limit, so heavy spam can actually block real customers once it's hit.
+
+- Enable reCAPTCHA and regenerate the form
+- Consider an Experience Cloud or flow-based form
+- Flag spam and route to a Spam queue
+- Daily Web-to-Case limit can be eaten by spam
+
+<sub>Also asked as: Spam cases from website form · how to add captcha to web to case · bots submitting web to case form · junk cases coming from the contact us page</sub>
+
+### Auto-response emails should be different for each brand and language. How would you set it up?
+*Fresher (0–2 yrs) · scenario* · `svcx-040`
+
+I'd do it with auto-response rule entries, because only one case auto-response rule can be active, but it can have many entries checked in order. Steps: create email templates per brand and language, like 'Brand A - English' and 'Brand A - Spanish'. In the auto-response rule, add entries with criteria on a Brand field and a Language field, set from the web form, the routing address or the contact, and pick the matching template plus the sender name and email address. The first matching entry wins, so I order them from specific to general and put a default entry at the end. Example: a cosmetics group with two brands gets a case for Brand B from a French-speaking contact; the entry 'Brand = B and Language = French' sends the French Brand B template from the Brand B support address. When testing in a sandbox, check that email deliverability is set to All email. I'd keep that entry order documented, because whoever adds the next brand needs to know where it goes.
+
+- One active auto-response rule, many ordered entries
+- First match wins; default entry last
+- Templates per brand and language
+- Set sender name and address per entry
+
+<sub>Also asked as: Multiple auto response templates by language · auto response rule entries for different brands · send acknowledgement email in customer language · How do auto-response rule entries work?</sub>
+
+### A complex enterprise case needs the account manager, a sales engineer and a support engineer working on it together. How would you set it up?
+*Fresher (0–2 yrs) · scenario* · `svcx-041`
+
+I'd use Case Teams, so the right people get access and are visible on the case without changing the owner. Steps: create Case Team Roles like Account Manager with Read Only access and Sales Engineer and Support Engineer with Read/Write. Optionally create a predefined case team, say 'Enterprise Escalation', with the usual members. Add the Case Team related list to the case page, and use a flow to add the predefined team automatically when a case on a strategic account gets escalated. Example: a networking company's biggest customer reports a data center outage; the support engineer stays the owner, and the account manager and sales engineer are added as team members, so they can see updates and follow the feed. For real-time discussion on top of that, I'd start a swarm in Slack. Case team membership also lets you build reports like 'cases I'm on' for people who aren't the owner. I'd agree the team roles with support leadership up front, so access is consistent across escalations.
+
+- Case Team Roles define access level
+- Predefined case teams for common groups
+- Flow can add the team automatically
+- Combine with Slack swarming for live discussion
+
+<sub>Also asked as: How do you give multiple people access to one case? · case team roles example · predefined case teams use case · collaborate on a case without changing owner</sub>
+
+### A case needs an on-site technician. How would you hand it off to Field Service?
+*Mid (3–6 yrs) · scenario* · `svcx-042`
+
+My design rule here is that the case stays the customer's main record, and the field work hangs off it through a Work Order. Steps: the agent troubleshoots first; if a visit is needed, they use a 'Create Work Order' quick action on the case that copies the account, contact, asset, address and the right Work Type, like 'Boiler Repair - 2 hours'. The work type can create the Service Appointment automatically with duration and required skills. The dispatcher or the scheduling optimizer books a technician, who works the job in the Field Service mobile app. When the job is done, a flow updates the case, say to Pending Confirmation, and adds the technician's notes, so the agent can confirm with the customer and close. Example: a heating company's customer has no hot water, the phone fix fails, the agent creates a work order, and when the customer calls back, the case shows the visit time. If SLAs apply on site, carry the entitlement onto the work order too.
+
+- Quick action creates Work Order from Case
+- Work Type can auto-create the Service Appointment
+- Technician completes in the mobile app
+- Flow updates the case when the job finishes
+
+<sub>Also asked as: Case to work order handoff · how does service cloud connect to field service · create work order from case for technician visit · Field Service integration with cases</sub>
+
+### Tier 2 engineers don't work in Salesforce; they live in Slack. How would you get their help on cases?
+*Mid (3–6 yrs) · scenario* · `svcx-043`
+
+I'd bring the case to them in Slack with Swarming instead of forcing them into the console. Steps: set up the Slack integration and swarming through Salesforce Go, make Begin Swarming available on the case, and set up skills so Expert Finder can suggest the right engineers. Example: a SaaS company's agent has a case where data exports fail for one customer. They click Begin Swarming, a channel named after the case number is created, they describe the problem, and two backend engineers join. The engineers discuss in Slack, one finds the bug, and the agent uses Send to Salesforce to put the answer on the case, then clicks Finish Swarming and closes it. The case keeps the knowledge and the engineers stay in the tool they already use. I'd agree on ground rules like keeping customer data in private swarm channels and using Slack Connect only with admin approval for external people. Those ground rules are what I'd get signed off by security before rollout.
+
+- Swarming set up through Salesforce Go
+- Channel per case, experts via Expert Finder
+- Send to Salesforce keeps the answer on the case
+- Rules for private channels and external users
+
+<sub>Also asked as: Engineers use Slack not Salesforce, how to collaborate on cases · bring slack experts into a case · use slack for case escalation · How would you set up swarming for a support team?</sub>
+
+### Spanish-speaking customers should reach Spanish-speaking agents. How would you set it up?
+*Fresher (0–2 yrs) · scenario* · `svcx-044`
+
+I'd use Omni-Channel skills-based routing with a language skill. Steps: create skills like Spanish and English and give them to agents as service resource skills. Capture the customer's language at intake: a pre-chat field in Enhanced Chat, a separate routing address for email like soporte@, or the language on the contact. Then an Omni-Channel flow or skills-based routing rule adds the matching skill requirement. Set a fallback: mark the language as an additional skill that can be dropped after a timeout, or send the item to a general queue, so customers don't wait forever. Example: a travel agency in Miami gets a WhatsApp message in Spanish; the flow adds Spanish and Booking skills, and it goes only to bilingual booking agents who are online. I'd watch wait time by language in Omni Supervisor to see if more Spanish-speaking agents are needed. The fallback timeout is a business decision, so I'd agree it with the support manager rather than guess.
+
+- Language skills on service resources
+- Capture language from pre-chat, address or contact
+- Omni-Channel flow adds skill requirements
+- Fallback by dropping skills after a timeout
+
+<sub>Also asked as: Language based routing in Omni-Channel · route chats by customer language · skills based routing for language example · How do you match customers with agents who speak their language?</sub>
+
+### Omni-Channel pushes work, but agents ignore or decline it and items keep bouncing around. What would you check?
+*Mid (3–6 yrs) · troubleshooting* · `svcx-045`
+
+I'd look at the push settings, the routing rules and the reasons agents give. In the routing configuration, check the push timeout: if it's short, items that agents miss bounce to the next agent and back. In the presence configuration, check whether agents are allowed to decline and whether they must pick a decline reason, then report on declined work to see why. Consider auto-accept, which stops agents from skipping items they don't like. In the routing configuration and skills, check whether the item needs a skill only one or two agents have, because then it keeps cycling between them. Example: at a pharmacy chain, agents declined refill-delay cases because those needed calls to suppliers; the fix was a separate skill and queue for those cases plus some coaching. Omni Supervisor helps here too, since it shows which agents have work waiting and how long items sit in the queue. I'd also talk to the agents, because declines usually point to a routing design problem, not just behaviour.
+
+- Push timeout too short causes bouncing
+- Decline settings and decline reasons
+- Auto-accept to stop cherry-picking
+- Rare skills make items cycle
+
+<sub>Also asked as: Work items bounce between agents in Omni-Channel · agents declining omni channel requests · push timeout omni channel problem · Cases keep getting re-routed to different agents</sub>
+
+### The support director wants to measure average handle time, speed to answer and first contact resolution. How would you do it?
+*Senior (7–10 yrs) · scenario* · `svcx-046`
+
+I'd use AgentWork for time metrics and the case itself for resolution metrics. AgentWork, created by Omni-Channel, stores when work was assigned, accepted and closed, plus handle time and speed to answer, so a report on AgentWork grouped by agent and channel gives average handle time and speed to answer. For first contact resolution there's no standard field, so I'd add a checkbox on Case set by a flow when a case closes with only one inbound contact and no reopen, or let agents tick it on close for phone. A reopen count, increased by a flow whenever a closed case reopens, helps too. Example: a broadband provider builds a dashboard with handle time per queue, speed to answer by hour of day, and FCR per team, and uses it to plan shifts. For messaging, the Messaging Session Metrics object adds response times and message counts. Before building, I'd agree the FCR definition with the director, because every team defines it a bit differently.
+
+- AgentWork: handle time and speed to answer
+- FCR needs a custom field set by flow
+- Reopen count as a quality signal
+- Messaging Session Metrics for chat
+
+<sub>Also asked as: How do you report on handle time in Service Cloud? · support KPIs in salesforce reports · measure first contact resolution · AgentWork reporting for speed to answer</sub>
+
+### Agents need to see the customer's orders from the ERP on the case without leaving the console. How would you build it?
+*Senior (7–10 yrs) · design* · `svcx-047`
+
+I'd decide between showing the data live and copying it in, based on how fresh it must be and whether it's needed in reports. For live, read-only data, Salesforce Connect with external objects, or an LWC that calls the ERP through Apex and a named credential, shows the orders as a related list or component on the case. If agents need to report on orders or use them in automation, I'd sync a slim order object on a schedule or through events instead. Example: a spare parts distributor's agent opens a case and sees the last five orders with shipping status, pulled live from the ERP, with a button to open the full order. Points to discuss: callout timeouts and friendly error messages in the component, caching for speed, and field-level access so agents only see what they should. The same Apex action can later be reused by an Agentforce agent for 'where is my order'. I'd put that live-versus-copy decision in front of the business with the trade-offs, since it drives cost and maintenance.
+
+- Live: Salesforce Connect or LWC with named credential
+- Copy: scheduled or event-based sync for reporting
+- Handle timeouts and errors in the UI
+- Reuse the action for an AI agent
+
+<sub>Also asked as: Show external system data on a case · display SAP orders in service console · salesforce connect vs lwc callout for agents · How do you give agents a 360 view of the customer?</sub>
+
+### Holiday shutdowns and time spent waiting on the customer should not count against the SLA. How would you handle it?
+*Mid (3–6 yrs) · scenario* · `svcx-048`
+
+I'd use two separate tools: business hours with holidays for shutdowns, and stopping milestones for waiting time. For holidays, add Holiday records to the support business hours and make sure the entitlement process and cases use those hours, so target dates skip those days automatically. For waiting time, the case has a Stopped checkbox; while it's true, milestones pause, and their targets move out by the stopped time when it's cleared. I'd set it with a flow: when Status changes to Waiting on Customer, set Stopped to true, and when the customer replies and the case goes back to In Progress, set it to false. Example: an accounting software vendor closes for a year-end week and often asks customers for log files; without this, many cases would show violations that weren't the team's fault. I'd add a report on stopped time so the pause isn't misused.
+
+- Holidays on business hours skip shutdown days
+- Case Stopped checkbox pauses milestones
+- Flow sets and clears Stopped by status
+- Report on stopped time
+
+<sub>Also asked as: Pause SLA clock while waiting on customer · stop milestone timer salesforce · exclude holidays from SLA calculation · How do you pause entitlements on a case?</sub>
+
+### A customer starts a chat while they already have an open case about the same issue. How do you keep it together?
+*Mid (3–6 yrs) · scenario* · `svcx-049`
+
+I'd link the conversation to the existing case instead of creating a new one. In the Omni-Channel flow, or a small flow on the Messaging Session, look up open cases for the messaging end user's contact. If there's exactly one recent open case, set the Messaging Session's case lookup to it and try to route to that case owner if they're online. If there are several, let the agent pick from the contact's open cases in the console. Example: a phone repair shop's customer emailed yesterday about a delayed repair and now opens a chat; the flow finds the open case, attaches the chat to it, and the same agent gets the conversation. When the chat ends, the transcript stays on the Messaging Session related to the case, so the case history is complete. I'd agree with the business on when a new issue deserves its own case. That rule is what I'd document for the team, so agents handle it the same way.
+
+- Find open cases for the messaging end user contact
+- Set the case lookup on the Messaging Session
+- Route to the case owner with a fallback
+- Agent chooses when there are several
+
+<sub>Also asked as: Link messaging session to existing case · avoid new case when customer chats about open issue · connect chat with existing case salesforce · How do you route a chat to the agent who owns the open case?</sub>
+
+### Customers want to reach the same agent who helped them last time. How would you set it up?
+*Senior (7–10 yrs) · scenario* · `svcx-050`
+
+I'd route to a preferred agent with a fallback, using an Omni-Channel flow. Steps: in the flow, find the agent for this customer, for example the owner of the contact's most recent closed case, the last AgentWork user, or a Preferred Agent lookup on the account, which is easier for the business to control. Use the Route Work action to target that agent, and if they're offline or busy, fall back to the normal queue or skills routing. Example: a wealth management firm wants clients to reach their usual service rep; a client's chat goes to their rep first, and if the rep is in a meeting it goes to the team queue. The trade-off is continuity versus wait time, so I'd keep the fallback quick for urgent issues and report on how often the preferred agent actually handles the work. I'd agree the fallback time with the business up front, because it's a service decision, not a technical one.
+
+- Find preferred agent from history or account lookup
+- Route Work to the agent with fallback
+- Keep fallback short for urgent work
+- Report on preferred-agent hit rate
+
+<sub>Also asked as: Preferred agent routing in Omni-Channel · route to last agent who handled the customer · agent affinity routing salesforce · How do you route to a specific agent with fallback?</sub>
+
+### How would you set up Service Cloud for a company with three brands, each with its own support email and look?
+*Senior (7–10 yrs) · design* · `svcx-051`
+
+I'd keep one Case process where possible and split only the customer-facing parts by brand. Steps: add a Brand field on Case, set from the web form or site, or by a flow that reads the To address on the first incoming email. Each brand gets its own Email-to-Case routing address, org-wide email address, email templates with its own letterhead, and auto-response entries. Routing uses brand as a skill, or separate queues if the teams are different. Knowledge uses data categories for brand, and each brand gets its own Experience Cloud site with its own branding. Example: a hotel group with luxury, business and budget brands shares one agent pool, but replies to budget guests always come from the budget brand's support address with its logo. Reports and dashboards filter by brand. I'd avoid three record types unless the processes really differ, because that triples maintenance. That's the trade-off I'd explain to stakeholders: shared process, separate branding.
+
+- Brand field set at intake
+- Per-brand routing address, org-wide address, templates
+- Brand as a skill or separate queues
+- Data categories and a site per brand
+
+<sub>Also asked as: Multi-brand service cloud design · one org many brands email to case · different branding for support emails per brand · How do you handle multiple brands in a support org?</sub>
+
+### Support has teams in India and the US and wants follow-the-sun coverage. How would you design routing and SLAs?
+*Senior (7–10 yrs) · design* · `svcx-052`
+
+I'd model each team's hours explicitly and let routing move work to whoever is working. Steps: create business hours for India and for the US, plus a 24x7 set if premium customers get round-the-clock SLAs. Each region has its own queue and presence configuration, and the Omni-Channel flow sends new work to the region that's open, using a small Apex action with BusinessHours.isWithin, or simply routes on a global skill so any online agent with it gets the item. For cases that need continuity, agents set a handover status with notes at shift end, and the next region picks them up. Entitlement processes use the 24x7 hours for premium customers and regional hours for standard ones. Example: a SaaS vendor's urgent case logged at 7 p.m. IST goes to the US morning team instead of waiting overnight. I'd watch gaps in Omni Supervisor and a report of cases with no activity across a shift change. I'd agree the handover standard with both team leads, because follow-the-sun fails at the handover, not in the config.
+
+- Business hours per region plus 24x7 for premium
+- Route to the open region or by global skill
+- Handover status and notes at shift end
+- Monitor gaps across shift changes
+
+<sub>Also asked as: Follow the sun support model in Salesforce · 24x7 support with teams in different time zones · route cases to the region that is working · business hours for multiple support regions</sub>
+
+### Agents in one region must not see cases from other regions. How would you design case security?
+*Senior (7–10 yrs) · design* · `svcx-053`
+
+I'd set the Case org-wide default to Private and open access back up by region with roles and sharing rules, instead of giving people View All. Steps: a role hierarchy by region, like Support EMEA and Support APAC with managers above them; queues per region, since queue members can see cases the queue owns; and criteria-based sharing rules, for example cases where Region equals EMEA are shared with the EMEA support role. For cross-region escalations, case teams give temporary, explicit access. Make sure Omni-Channel only routes a region's work to that region's agents through queues or skills, because the agent who accepts a case becomes its owner and gets access. Example: a bank's German team must not see Indian customers' cases for data residency reasons. I'd apply the same thinking to reports and Knowledge, and test with a user from each region before go-live. I'd also get the data residency requirement in writing from compliance, so the design is checked against the actual rule.
+
+- Private OWD on Case
+- Regional roles, queues and criteria-based sharing
+- Case teams for cross-region escalation
+- Routing must respect the regional split
+
+<sub>Also asked as: Restrict case visibility by region · case sharing model design for support teams · data residency for cases in salesforce · How do you secure cases between support teams?</sub>
+
+### A service outage makes hundreds of customers contact support at once. How would you handle it in Service Cloud?
+*Senior (7–10 yrs) · scenario* · `svcx-054`
+
+I'd treat it as one problem with many affected customers, not hundreds of separate investigations, and I'd have this playbook ready before the outage happens. Steps: create a master record, either a parent case or an Incident record if Incident Management is set up, and link every related case to it, using a macro or a flow that matches keywords like 'login error' during the outage window. Post the known issue on the help portal and give the Agentforce service agent an answer for it so chat volume drops. Agents use a macro that links the case, sends a standard 'we're aware and working on it' reply and sets the status to Waiting on Fix. When the fix lands, a flow updates and closes all linked cases with a resolution email. Example: a payments app goes down for an hour, hundreds of cases arrive, and support handles them in a few bulk updates instead of one by one. Afterwards, the incident's linked cases feed the post-mortem.
+
+- One parent case or Incident record
+- Link cases by macro or keyword flow
+- Proactive portal banner and AI agent answer
+- Bulk close children when fixed
+
+<sub>Also asked as: Mass incident handling in service cloud · hundreds of cases about the same outage · parent case for outage and close all children · How do you manage a major incident in support?</sub>
+
+### Cases created by Apex or an integration are not following assignment rules. Why, and how do you fix it?
+*Mid (3–6 yrs) · code* · `svcx-055`
+
+The cause is almost always the same: assignment rules don't run automatically when you insert cases from Apex, so the case stays with the running user or integration user. The fix is to set DML options with the assignment rule header before inserting, which tells Salesforce to apply the active rule, and you can request the auto-response email the same way. The standard REST API is different: it applies the active rule by default, and the Sforce-Auto-Assign header turns that off or names a rule. Example: a smart-home company's device platform creates cases through a custom Apex REST service when a thermostat reports a fault; they were all owned by the integration user until we added DML options, and now they land in the Devices queue. If you need a specific rule instead of the active one, set assignmentRuleId instead of useDefaultRule. Also check that no trigger or flow overwrites the owner afterwards. On my teams that DML options check is part of code review for any Apex that inserts cases.
+
+- Apex inserts skip assignment rules by default
+- Database.DMLOptions with assignmentRuleHeader
+- emailHeader for auto-response
+- REST applies the active rule by default; Sforce-Auto-Assign controls it
+
+```java
+Database.DMLOptions dmo = new Database.DMLOptions();
+dmo.assignmentRuleHeader.useDefaultRule = true;
+dmo.emailHeader.triggerAutoResponseEmail = true;
+
+List<Case> cases = new List<Case>();
+for (DeviceFault__c f : faults) {
+    Case c = new Case(Subject = f.Summary__c, Origin = 'Web', AssetId = f.Asset__c);
+    c.setOptions(dmo);
+    cases.add(c);
+}
+insert cases;
+```
+
+<sub>Also asked as: Assignment rules not firing for cases inserted via apex · DMLOptions assignmentRuleHeader example · integration user owns all cases · How do you run case assignment rules from code?</sub>
+
+### Email-to-Case suddenly stopped creating cases. How would you troubleshoot it?
+*Mid (3–6 yrs) · troubleshooting* · `svcx-056`
+
+I'd follow the email's path from the customer's mailbox into Salesforce. One: is forwarding still working? Check that the company mailbox, like support@, still forwards to the Salesforce Email Services address; a mail server change or a removed forwarding rule is the most common cause. Two: is the routing address still set up and verified in the Email-to-Case settings? Three: is mail bouncing? Look for bounce or error messages in the support mailbox. Four: are cases failing on save, for example because of a new validation rule, a required field, or an error in a trigger or flow on Case or EmailMessage? These usually show up as error emails or in debug logs for the automated process. Five: check recent changes, like a deactivated user set as the case owner on the routing address. Example: at a logistics company, IT moved support@ to a new mail system and dropped the forwarding rule, so nothing reached Salesforce. Afterwards I'd ask IT to tell us before mail changes and add a simple alert if no cases arrive for a few hours.
+
+- Check mailbox forwarding first
+- Routing address set up and verified
+- Look for bounces and error emails
+- Validation rules or automation failing on save
+
+<sub>Also asked as: Emails not converting to cases · email to case not working anymore · support emails are not reaching salesforce · Why are no cases being created from email?</sub>
+
+### The business wants agents to follow a guided troubleshooting script for certain case types. How would you do it?
+*Mid (3–6 yrs) · scenario* · `svcx-057`
+
+I'd build the script as a screen flow and show it on the case only for the right case types. Steps: design the flow with screens that ask questions, branch on the answers, and update the case at the end, like setting Root Cause and the next status. Put it on the case page in the Actions & Recommendations component or as a quick action, with component visibility so it only shows for Type equals Connectivity. Embed Knowledge where a step needs details. Example: an internet provider's script asks 'Are the router lights on?' and 'Have you restarted it?', then runs a line test through an Apex action; if everything fails, it creates a work order for a technician. New agents follow the same steps as experts, and you get data on where cases usually get stuck. For a lighter option, Agentforce Service Assistant can draft a resolution plan from the case details. I'd have senior agents review the script before launch, since they know where the real cases go off track.
+
+- Screen flow with branching questions
+- Show by case type with component visibility
+- Apex actions for tests and lookups
+- Flow data shows where cases get stuck
+
+<sub>Also asked as: Guided scripts for support agents · screen flow on case record page for troubleshooting · step by step agent guidance in console · How do you make new agents follow the same process?</sub>
+
+### Replies to customers should come from the support address, not the agent's personal email. How would you set it up?
+*Fresher (0–2 yrs) · scenario* · `svcx-058`
+
+I'd set up an org-wide email address and make it the default From on the case email action. Steps: create and verify an org-wide address like support@ and allow the support profiles to use it. On the case Email quick action, set a predefined value for the From address so agents don't pick their own. With Email-to-Case, the routing address itself can be used as the From too. Add a Lightning email template or letterhead with the support signature. Example: a furniture retailer's agents replied from their own user email addresses, so customer replies went to personal inboxes and never reached the case. After switching the From to support@, every reply comes back through Email-to-Case and threads onto the right case. I'd also check deliverability and email authentication like SPF and DKIM, so emails sent from Salesforce for support@ don't land in spam. That's a setup I'd put on every support go-live checklist.
+
+- Org-wide email address, verified and allowed for profiles
+- Predefined From on the Email action
+- Templates or letterhead with team signature
+- Set up SPF and DKIM for deliverability
+
+<sub>Also asked as: Send case emails from support address · org wide email address for case replies · customer replies going to agent personal inbox · How do you set the From address on the case email action?</sub>
+
+### You are migrating historical cases with their emails from another help desk tool into Service Cloud. How would you plan it?
+*Senior (7–10 yrs) · design* · `svcx-059`
+
+I'd load in dependency order and keep automation from firing on old data. Order: accounts, contacts, then cases, then EmailMessages and comments, then files as ContentVersion linked to cases. Store the old ticket ID in an external ID field on Case, so reruns can upsert instead of creating duplicates. Turn on the permission to set audit fields on record creation, so created dates keep their original values, and load closed cases with their real closed status. Before loading, switch off or bypass assignment rules, auto-response rules, escalation rules, entitlement processes, flows and triggers, using a bypass custom permission or setting, so thousands of old cases don't email customers. Example: a fitness equipment company moving three years of tickets runs it first in a full sandbox, checks a sample of cases with their email threads, then loads production over a weekend. Set the EmailMessage incoming flag correctly so the feed reads in the right direction. I'd get the business to sign off on the sample check before the production load.
+
+- Load order: accounts, contacts, cases, emails, files
+- External ID on Case for upserts
+- Set Audit Fields to keep original dates
+- Bypass rules, flows and triggers during load
+
+<sub>Also asked as: Case data migration plan · migrate tickets and emails into salesforce · load old cases without triggering automation · How do you keep original created dates when migrating cases?</sub>
+
+### How would you design an end-to-end Service Cloud implementation for an electronics retailer?
+*Senior (7–10 yrs) · design* · `svcx-060`
+
+I'd design it around the customer journey: intake, routing, SLA, resolution and feedback, and keep it simple to run. Intake: Email-to-Case with Lightning threading, an Experience Cloud help center with Knowledge search, and Enhanced Chat with an Agentforce service agent for order status and returns. Routing: Omni-Channel flows with product and language skills, higher priority for VIPs, status-based capacity for cases and capacity weights for chat. SLA: entitlement processes for standard and extended-warranty customers, with milestones and warning actions. Resolution: a Service Console with macros, quick text, Knowledge, Case Classification and Service Replies, swarming for hard cases, and a work order handoff for in-home repairs. Feedback: a CSAT survey on close and dashboards on handle time, SLA compliance and deflection. Example: a customer chats about a TV that won't turn on; the AI agent checks the warranty and hands off to a TV specialist, who books a repair. I'd launch email and chat first, then voice. Phasing it that way keeps the risk manageable and lets the team learn from the first launch.
+
+- Intake: email, help center, Enhanced Chat with AI agent
+- Routing: Omni-Channel flows, skills, capacity
+- SLA: entitlements and milestones
+- Resolution tools, Field Service handoff, CSAT
+
+<sub>Also asked as: Design a complete service cloud solution · service cloud implementation approach from scratch · how would you architect support in salesforce for a retailer · Walk me through a Service Cloud solution design</sub>
+
+### Agents cherry-pick easy cases from the queue and leave the hard ones. How would you stop it?
+*Fresher (0–2 yrs) · scenario* · `svcx-061`
+
+I'd move from pull to push with Omni-Channel, so the system decides who gets the next case. Steps: connect the queues to a routing configuration with sensible routing priority, so urgent queues go first and, within the same priority, older items go before newer ones. Give agents a presence configuration with the right capacity, and optionally turn on auto-accept so they can't skip work. Then remove or limit the queue list views agents used for picking, and leave the full view to supervisors. Example: an insurance helpdesk saw simple address-change cases closed within an hour while claim disputes sat for days; once Omni-Channel pushed cases in order, the old disputes started moving. I'd use Omni Supervisor to watch backlog by queue and explain the change to the team first, because some agents feel push routing takes away control. Being upfront about why we're doing it usually takes care of most of the pushback.
+
+- Push routing with Omni-Channel
+- Routing priority, then oldest first
+- Auto-accept and limited queue list views
+- Monitor backlog in Omni Supervisor
+
+<sub>Also asked as: Agents picking easy cases from queue · stop cherry picking in support queue · move from queue list views to push routing · Why use Omni-Channel instead of queue list views?</sub>

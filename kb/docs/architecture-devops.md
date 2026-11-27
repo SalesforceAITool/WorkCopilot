@@ -1,0 +1,1272 @@
+# Architecture and DevOps
+
+75 questions. Levels: Fresher (0–2 yrs) 9 · Mid (3–6 yrs) 30 · Senior (7–10 yrs) 36
+
+## Architecture and Design
+
+### Which Apex design patterns have you used and why do they matter?
+*Fresher (0–2 yrs) · concept* · `arch-001`
+
+The ones I use most are the trigger handler pattern, singleton, factory and strategy, plus the layered patterns from Apex Enterprise Patterns: service, domain, selector and unit of work. Why they matter: Salesforce code runs under governor limits, and the same code gets touched by many developers over years. Patterns give us one place for queries, one place for business logic, and predictable trigger behaviour. So the code is easier to test, reuse and change. Say three developers add rules to the Opportunity trigger over two years. With a handler and a service class, each of them knows exactly where their logic goes, and nobody drops a stray query into the trigger body. That said, I don't force a pattern everywhere. For a small org, a clean trigger handler plus a service class is often enough. I bring in the full layering when the codebase and the team grow.
+
+- Trigger handler, singleton, factory, strategy
+- Enterprise patterns: service, domain, selector, unit of work
+- Goal: testability, reuse, limit-safe code
+- Pick patterns to fit org size, don't over-engineer
+
+<sub>Also asked as: What design patterns do you know in Salesforce? · Name some Apex design patterns · design patterns in apex kaun se use kiye hain · Do you follow any design patterns while writing Apex?</sub>
+
+### How do you implement the singleton pattern in Apex and when would you use it?
+*Mid (3–6 yrs) · code* · `arch-002`
+
+A singleton means only one instance of a class exists. In Apex, that's one instance per transaction, because static variables reset at the end of every transaction. How I build it: a private constructor, a private static instance, and a static getInstance method that creates it lazily, on the first call. I use it for things that are expensive to load and read many times in the same transaction, like config from custom metadata, the running user's details, or record type maps. For example, if the Account trigger fires several times in one save and each run needs the same settings, getInstance loads them once and every later call reuses that instance. That saves SOQL queries and CPU. The gotcha: don't use it to hold data across users or requests. Apex has no shared memory for that. For cross-transaction caching, Platform Cache is the tool.
+
+- Private constructor + private static instance + getInstance()
+- Lives for one transaction only
+- Good for config, record types, user context
+- Cross-transaction caching needs Platform Cache
+
+```java
+public with sharing class AppConfig {
+    private static AppConfig instance;
+    public Map<String, App_Setting__mdt> settings { get; private set; }
+
+    private AppConfig() {
+        settings = App_Setting__mdt.getAll();
+    }
+
+    public static AppConfig getInstance() {
+        if (instance == null) {
+            instance = new AppConfig();
+        }
+        return instance;
+    }
+}
+// Usage: AppConfig.getInstance().settings.get('Default_Region');
+```
+
+<sub>Also asked as: Write a singleton class in Apex · What is singleton in Salesforce and what is its scope? · How do you avoid querying the same config many times in one transaction? · singleton pattern apex example</sub>
+
+### Explain the factory pattern in Apex with an example.
+*Mid (3–6 yrs) · code* · `arch-003`
+
+The factory pattern hides the decision of which class to create behind one method. Callers depend on an interface, not a concrete class. In Apex, what I usually do is define an interface, keep the mapping of key to class name in custom metadata, and use Type.forName to build the right implementation at runtime. Say we support two payment gateways and the business adds a third. I write one new class, add one metadata record, and I don't touch any existing code. It helps testing too. In a test, I can make the factory return a mock implementation instead of the real one that does callouts. And if you've used fflib, its Application class is basically a set of factories for services, selectors and domains, for the same reason.
+
+- Callers depend on an interface
+- Mapping in custom metadata, Type.forName at runtime
+- Open for extension without editing old code
+- Easy to swap in mocks for tests
+
+```java
+public interface PaymentGateway {
+    String charge(Id orderId, Decimal amount);
+}
+
+public with sharing class PaymentGatewayFactory {
+    @TestVisible private static PaymentGateway mockGateway;
+
+    public static PaymentGateway forProvider(String provider) {
+        if (mockGateway != null) return mockGateway;
+        Payment_Provider__mdt cfg = Payment_Provider__mdt.getInstance(provider);
+        Type impl = Type.forName(cfg.Apex_Class__c);
+        return (PaymentGateway) impl.newInstance();
+    }
+}
+```
+
+<sub>Also asked as: How do you create objects dynamically in Apex using a factory? · What is the factory pattern and why use it in Salesforce? · How do you use Type.forName to pick an implementation at runtime? · factory design pattern salesforce</sub>
+
+### What is the strategy pattern and where would you use it in Salesforce?
+*Mid (3–6 yrs) · code* · `arch-004`
+
+The strategy pattern puts each variation of an algorithm in its own class behind a common interface, and the caller picks one at runtime. I reach for it when business logic differs by something like country, channel or product type. Without it, that turns into a long if-else or switch block inside a trigger handler. For example, say a calculation works differently per country. I'd have one class per country, each with its own calculate method and its own tests. Adding a new country means adding a new class, not editing a risky shared method. It pairs nicely with a factory: the factory picks the strategy, usually from custom metadata, and the service just calls calculate. That keeps the service layer clean, and it makes the rules easy to explain to the business.
+
+- One class per variation, common interface
+- Replaces long if-else/switch blocks
+- Combine with a factory for selection
+- Each strategy is tested independently
+
+```java
+public interface DiscountStrategy {
+    Decimal calculate(Opportunity opp);
+}
+
+public class PartnerDiscount implements DiscountStrategy {
+    public Decimal calculate(Opportunity opp) {
+        return opp.Amount == null ? 0 : opp.Amount * 0.10;
+    }
+}
+
+public class DirectDiscount implements DiscountStrategy {
+    public Decimal calculate(Opportunity opp) {
+        return 0;
+    }
+}
+
+// In the service: DiscountStrategy s = DiscountFactory.forChannel(opp.Channel__c);
+// opp.Discount__c = s.calculate(opp);
+```
+
+<sub>Also asked as: Give a real example of strategy pattern in Apex · How do you avoid a giant if-else block for different business rules? · strategy design pattern apex interface · How do you handle different calculation logic per region or product type?</sub>
+
+### What are Apex Enterprise Patterns (fflib) and what are the layers?
+*Senior (7–10 yrs) · concept* · `arch-005`
+
+Apex Enterprise Patterns is separation of concerns applied to Salesforce, implemented in the open-source fflib Apex Common and Apex Mocks libraries. There are four layers. The service layer exposes business operations, like 'apply discounts' or 'close cases', and it's the entry point for triggers, LWC controllers, batch and APIs. The domain layer wraps a list of records of one object and holds that object's validation, defaulting and trigger logic. The selector layer owns all SOQL for an object, so field lists and security stay consistent. The unit of work collects DML and commits it in the right order in one go. On top, an Application class acts as a factory for all of them, which makes mocking easy with Apex Mocks. So when a user clicks 'close cases', the controller calls the service, the service uses the Case selector and domain, and the unit of work saves at the end. I'd recommend it for large, long-lived orgs and teams. For a small org it can be more ceremony than value.
+
+- Service: business operations, transaction boundary
+- Domain: object behaviour and trigger logic
+- Selector: all SOQL for an object
+- Unit of Work: ordered, bulk DML
+- Application factory + Apex Mocks for unit tests
+
+<sub>Also asked as: Explain fflib and its layers · Have you worked with fflib Apex Common? · What is the difference between service, domain and selector layers? · f f lib apex enterprise patterns kya hai</sub>
+
+### Write a selector class in fflib style and explain why you use a selector layer.
+*Mid (3–6 yrs) · code* · `arch-006`
+
+A selector class is the one place where queries for an object live. Instead of SOQL scattered across triggers, controllers and batches, every caller asks the selector, with methods like selectById or selectByIndustry. Here's why I like it. Say three features all query Accounts and one of them forgets a field. You hit the 'field not queried' error at runtime. With a selector, the field list is consistent, so that doesn't happen. I also get one place to enforce security and sharing, the same query reused across features, and easy mocking in unit tests. In fflib, the selector extends fflib_SObjectSelector, declares the default fields and the object type, and uses the query factory to build conditions. Even without fflib, I follow the same idea with a plain AccountSelector class.
+
+- One selector per object
+- Consistent fields, no 'SObject row was retrieved without querying' errors
+- Central place for security and sharing
+- Mockable in unit tests
+
+```java
+public inherited sharing class AccountsSelector extends fflib_SObjectSelector {
+    public List<Schema.SObjectField> getSObjectFieldList() {
+        return new List<Schema.SObjectField>{
+            Account.Id, Account.Name, Account.Industry, Account.AnnualRevenue
+        };
+    }
+
+    public Schema.SObjectType getSObjectType() {
+        return Account.SObjectType;
+    }
+
+    public List<Account> selectById(Set<Id> ids) {
+        return (List<Account>) selectSObjectsById(ids);
+    }
+
+    public List<Account> selectByIndustry(Set<String> industries) {
+        return (List<Account>) Database.query(
+            newQueryFactory().setCondition('Industry IN :industries').toSOQL()
+        );
+    }
+}
+```
+
+<sub>Also asked as: What is a selector class? · How do you centralise SOQL queries in Apex? · Show me an fflib selector · Why should all queries for an object be in one class?</sub>
+
+### What belongs in a service layer and what does not?
+*Mid (3–6 yrs) · concept* · `arch-007`
+
+The service layer holds the business operations the application exposes, named in business language, like 'submit order' or 'recalculate commissions'. It should be bulkified, so it takes sets of Ids or lists of records. And it should be callable the same way from a trigger, an LWC controller, a batch job, a Flow invocable action or a REST resource. It owns the transaction: it coordinates domain logic, selectors and a single unit of work, and decides what happens on error. For example, 'submit order' might be called from a button on a page and also from a nightly batch. Both go through the same service method with a set of order Ids. What doesn't belong there: UI concerns like formatting messages for a page, raw SOQL that should live in a selector, or object-specific field defaulting that belongs in the domain. Thin controllers and rich services are what make logic reusable across channels.
+
+- Business operations, bulkified inputs
+- Same entry point for UI, batch, Flow, API
+- Owns the transaction boundary
+- No UI formatting, no scattered SOQL
+
+<sub>Also asked as: What is a service class in Salesforce? · How do you design a service layer in Apex? · Should business logic be in the trigger or in a service class? · service layer responsibilities</sub>
+
+### What is the Unit of Work pattern and how does fflib implement it?
+*Senior (7–10 yrs) · code* · `arch-008`
+
+Unit of Work collects all the inserts, updates and deletes during a business operation and commits them together at the end, in the right dependency order, inside a savepoint. In fflib, you create fflib_SObjectUnitOfWork with the list of object types in parent-to-child order. Then you register new or dirty records as you go, and register relationships so child records get the parent Id after the parent is inserted. Say I'm creating an Account, three Contacts and an Opportunity. I register all of them plus the relationships, and I never wire Ids by hand. Then commitWork does one DML per object type, and if anything fails, everything rolls back. That keeps DML statements low, which helps with the 150 DML limit, and the service code reads like business logic. It's also easy to mock in tests, so I can assert what would be saved.
+
+- Collect DML, commit once at the end
+- Object types listed parent-first
+- registerRelationship wires parent Ids
+- Savepoint and rollback on failure
+- Fewer DML statements
+
+```java
+fflib_ISObjectUnitOfWork uow = new fflib_SObjectUnitOfWork(
+    new List<Schema.SObjectType>{ Account.SObjectType, Contact.SObjectType }
+);
+
+for (Lead_Import__c row : rows) {
+    Account acc = new Account(Name = row.Company__c);
+    uow.registerNew(acc);
+
+    Contact con = new Contact(LastName = row.Last_Name__c, Email = row.Email__c);
+    uow.registerNew(con, Contact.AccountId, acc);
+}
+
+uow.commitWork(); // one insert per object type, rolled back on any error
+```
+
+<sub>Also asked as: Explain fflib_SObjectUnitOfWork · How do you insert parent and child records together without managing Ids manually? · What problem does unit of work solve? · unit of work pattern in apex</sub>
+
+### What does separation of concerns mean in a Salesforce codebase?
+*Mid (3–6 yrs) · concept* · `arch-009`
+
+Separation of concerns means each piece of code has one clear job. In Salesforce, I keep the trigger itself logic-free and delegate to a handler. Business rules go in service and domain classes. All SOQL goes in selector classes. LWC controllers stay thin: they just call services and shape data for the UI. Integrations get their own classes for callouts and mapping, with endpoints in Named Credentials. And config goes in custom metadata, not hard-coded values. Here's the payoff in practice. Say a pricing rule lives in a service class. The same rule can be called from a trigger, a Flow, a batch or an API, and I can unit test just that class. Two developers can also work on the same feature without stepping on each other, because one is in the selector and the other is in the service.
+
+- Logic-free triggers delegating to handlers
+- Service/domain for rules, selector for SOQL
+- Thin controllers, separate integration classes
+- Config in custom metadata, not code
+
+<sub>Also asked as: How do you structure Apex code in a big project? · How do you layer your code in Salesforce? · Why shouldn't you put all logic in the trigger? · separation of concerns kya hota hai apex mein</sub>
+
+### Compare the trigger frameworks you have seen. Which would you choose and why?
+*Senior (7–10 yrs) · comparison* · `arch-010`
+
+I've seen three common ones. First, a simple handler base class, like Kevin O'Hara's TriggerHandler: each object gets a handler with beforeInsert, afterUpdate and so on, plus bypass methods. Second, the fflib domain layer, where trigger logic lives in the object's domain class. Third, the Trigger Actions Framework, which is metadata-driven. Each action is a small class registered in custom metadata with an order, and Flows can be plugged in as actions too. A simple handler is easy for any team to learn. fflib makes sense if you already use the full enterprise patterns. For large orgs with many teams, I'd pick Trigger Actions Framework. Say two teams both need logic on Opportunity after update: each writes its own independent action, and ordering and bypass are just configuration. Admins and developers share one execution model. Whatever we choose, the key is one trigger per object and consistency.
+
+- Simple handler: easy, low ceremony
+- fflib domain: fits full enterprise patterns
+- Trigger Actions Framework: metadata ordering, Flow actions, bypass by config
+- Consistency matters more than the brand
+
+<sub>Also asked as: Which trigger framework do you recommend? · Kevin O'Hara trigger handler vs Trigger Actions Framework vs fflib domain · What are the different trigger frameworks in Salesforce? · How do you choose a trigger framework for a new project?</sub>
+
+### Write a basic trigger handler framework with a bypass mechanism.
+*Mid (3–6 yrs) · code* · `arch-011`
+
+I keep one trigger per object, and it only calls a handler. A virtual base class reads Trigger.operationType and routes to overridable methods, so each object's handler only implements the events it needs. For bypass, I keep a static set of handler names. Code like a data fix or an integration can bypass a handler for the rest of the transaction, and clear it after. For example, an integration that syncs Accounts can add 'AccountHandler' to the set, do its update, then remove it. For data loads and admins, I add a configuration bypass too, like a custom permission or a hierarchy custom setting checked in run. That way we can switch logic off for one user without a deployment. What this gives you: predictable order, no logic in the trigger body, and a safe switch for migrations.
+
+- One trigger per object, logic-free
+- switch on Trigger.operationType
+- Static bypass set for code
+- Custom permission or setting bypass for users
+
+```java
+trigger OpportunityTrigger on Opportunity (before insert, before update, after insert, after update) {
+    new OpportunityTriggerHandler().run();
+}
+
+public virtual class TriggerHandler {
+    private static Set<String> bypassed = new Set<String>();
+    public static void bypass(String name) { bypassed.add(name); }
+    public static void clearBypass(String name) { bypassed.remove(name); }
+
+    public void run() {
+        String name = String.valueOf(this).substringBefore(':');
+        if (bypassed.contains(name) || FeatureManagement.checkPermission('Bypass_Triggers')) return;
+        switch on Trigger.operationType {
+            when BEFORE_INSERT { beforeInsert(Trigger.new); }
+            when BEFORE_UPDATE { beforeUpdate(Trigger.new, Trigger.oldMap); }
+            when AFTER_INSERT { afterInsert(Trigger.new); }
+            when AFTER_UPDATE { afterUpdate(Trigger.new, Trigger.oldMap); }
+        }
+    }
+    protected virtual void beforeInsert(List<SObject> newList) {}
+    protected virtual void beforeUpdate(List<SObject> newList, Map<Id, SObject> oldMap) {}
+    protected virtual void afterInsert(List<SObject> newList) {}
+    protected virtual void afterUpdate(List<SObject> newList, Map<Id, SObject> oldMap) {}
+}
+```
+
+<sub>Also asked as: How do you structure a trigger with a handler class? · How do you bypass a trigger during data load? · Show me a trigger handler base class · How do you disable trigger logic temporarily from code?</sub>
+
+### How would you design an error logging framework in Salesforce?
+*Senior (7–10 yrs) · design* · `arch-012`
+
+I build logging around a platform event, because a normal insert of a log record is lost when the transaction rolls back. A Logger class publishes a Log event set to 'Publish Immediately', so the event goes out even if the transaction fails, and a subscriber trigger writes it to a Log custom object. So if a callout fails and the whole save rolls back, the log still lands. Each entry captures level, source class or flow, message, stack trace, record Id, user, and a transaction Id to tie related entries together. Log levels and on/off switches live in custom metadata, so I can turn on debug logging for one user without deploying. I add an invocable action so Flows log the same way, a retention job to purge old logs, and a report or dashboard plus alerts for errors. Before building this, though, I'd look at Nebula Logger. It's a solid open-source option that already does this well.
+
+- Platform event with Publish Immediately survives rollback
+- Subscriber writes Log__c records
+- Levels and switches in custom metadata
+- Invocable action for Flow, retention purge job
+- Consider Nebula Logger before building
+
+```java
+public without sharing class Logger {
+    public static void error(String source, Exception ex, Id recordId) {
+        EventBus.publish(new Log_Event__e(
+            Level__c = 'ERROR',
+            Source__c = source,
+            Message__c = ex.getMessage().left(255),
+            Stack_Trace__c = ex.getStackTraceString(),
+            Record_Id__c = recordId
+        ));
+    }
+}
+// Log_Event__e publish behavior = Publish Immediately.
+// An after insert trigger on Log_Event__e inserts Log__c records.
+```
+
+<sub>Also asked as: How do you log errors in Apex so they survive a rollback? · Design a logging framework for Apex and Flow · Where do you store exceptions in Salesforce? · How do you track failures in batch jobs and integrations? · error logging framework design</sub>
+
+### How do you design Apex to stay within governor limits at scale?
+*Senior (7–10 yrs) · design* · `arch-013`
+
+I design assuming every entry point gets 200 records at a time, and that other automation is running in the same transaction. So: no SOQL or DML inside loops. Collect Ids into sets, query once into maps, and do DML on lists. For example, if 200 Opportunities come in from a data load, I query all their Accounts in one query into a map, not 200 queries. I keep triggers lean, move heavy or non-urgent work to Queueable or Batch Apex, and use Platform Events to decouple processes. I check that queries are selective so they stay fast as data grows. I cache repeated lookups per transaction with static maps or Platform Cache. I also watch the combined cost of Flows and triggers on the same object, because record-triggered Flows share the same limits. And I test with 200 or more records in unit tests, and with realistic volumes in a full sandbox.
+
+- Bulkify: sets, maps, list DML
+- Move heavy work async
+- Selective queries for growing data
+- Flows and triggers share limits
+- Bulk tests with 200+ records
+
+<sub>Also asked as: How do you make code scale for large data volumes and bulk loads? · What design principles do you follow for governor limits? · Your code works for one record but fails for 200, how do you design to avoid that? · governor limits ke liye design kaise karte ho</sub>
+
+### What is large data volume (LDV) and how do you design for it?
+*Senior (7–10 yrs) · concept* · `arch-014`
+
+Large data volume is when an object holds tens of millions of records or more, and the platform starts to feel it. You see slow list views and reports, non-selective query errors in triggers, long sharing recalculations and record lock contention. Say a Case object has grown to 40 million rows over the years. A trigger query on an unindexed filter is exactly where those non-selective errors show up. How I design for it: queries use selective filters on indexed fields, and I can ask Salesforce support for custom indexes or skinny tables where needed. I avoid data skew, meaning too many children under one parent or too many records owned by one user. I keep sharing simple, using public read where possible, and defer sharing calculations during big loads. And I plan data lifecycle from day one: archive old records to Big Objects or an external store, so the hot data stays small.
+
+- Selective queries, indexes, skinny tables via support
+- Avoid account, ownership and lookup skew
+- Simple sharing; defer sharing calc for big loads
+- Archive cold data early
+
+<sub>Also asked as: How do you handle millions of records in Salesforce? · What are LDV best practices? · Your org has 50 million records on one object, what problems do you expect? · large data volume architecture salesforce</sub>
+
+### What is data skew and how do you fix it?
+*Senior (7–10 yrs) · troubleshooting* · `arch-015`
+
+Data skew is when too many records are tied to one parent or one owner. The Salesforce guidance is to stay under roughly 10,000 child records per parent, or records per owner. There are three kinds. Account skew: say 300,000 contacts sit under one 'Unassigned' account. Every child update locks that parent, so you get UNABLE_TO_LOCK_ROW errors and slow sharing recalculation. Ownership skew: one user, often an integration user, owns a huge number of records, so any role or group change gets very expensive. Lookup skew: many records point to the same lookup value. The fixes: spread children across multiple parent records, assign records to several owners, and give skewed owners no role, or a separate role at the top of the hierarchy. And when you process in batches, order by parent Id to cut down lock contention.
+
+- Rule of thumb: about 10,000 children or owned records
+- Account, ownership and lookup skew
+- Symptoms: lock errors, slow sharing recalcs
+- Distribute parents and owners; sort batches by parent
+
+<sub>Also asked as: Explain account data skew and ownership skew · Why do we get UNABLE_TO_LOCK_ROW when many contacts are under one account? · What is lookup skew? · data skew in salesforce kya hai</sub>
+
+### How would you design a data archiving strategy for an org that is running out of storage?
+*Senior (7–10 yrs) · design* · `arch-016`
+
+First I'd find out what's actually using the storage, from the storage usage page. Usually it's tasks, emails, cases, logs or custom history objects. Then I'd agree retention rules with the business and legal, for example 'keep closed cases live for two years'. Next I pick the target. Big Objects keep data on-platform and queryable by index, which is good for history and audit data. An external database or data warehouse works when the data is mainly needed for analytics, and if users still need to view it, I can surface it back with Salesforce Connect external objects. There are also managed archive products. The process itself is a scheduled Batch Apex or ETL job. It copies the records, verifies the copy, then deletes them and empties the recycle bin, with logging. So with that two-year rule, every closed case older than two years gets copied, checked, then removed. One gotcha: files and attachments often need a separate plan.
+
+- Measure storage by object first
+- Agree retention rules with business and legal
+- Targets: Big Objects, external DB, archive products
+- Copy, verify, then delete, on a schedule
+- Salesforce Connect to view archived data
+
+<sub>Also asked as: Our data storage is almost full, what would you do? · How do you archive old cases and tasks in Salesforce? · Design an archiving solution for millions of old records · What are the options to archive data in Salesforce?</sub>
+
+### What are Big Objects and what are their limitations?
+*Mid (3–6 yrs) · concept* · `arch-017`
+
+Big Objects let you store massive amounts of data, billions of records, on the Salesforce platform. They have their own storage allocation, separate from regular data storage. They suit append-mostly data like audit trails, history, IoT readings or archived records. But the trade-offs are big. When you create one, you define an index of up to five fields, and queries must filter on those index fields in order. So you design the index around how you'll read the data. For example, if I index archived cases on Account Id then Created Date, I can filter on Account Id, or Account Id plus date, but not on date alone. Custom Big Objects don't support triggers, Flows, sharing rules or standard reports. You write to them with Database.insertImmediate or the APIs, and that isn't rolled back with the transaction. Also, Async SOQL has been retired, so for large reads I use standard SOQL on the index, Batch Apex or the Bulk API.
+
+- For huge, append-mostly data
+- Index of up to 5 fields, query in index order
+- No triggers, Flows or sharing on custom Big Objects
+- Database.insertImmediate is not rolled back
+
+<sub>Also asked as: When would you use a Big Object? · How do you query a Big Object? · Can you write a trigger on a Big Object? · big object vs custom object</sub>
+
+### How do you decide between a single-org and a multi-org strategy?
+*Senior (7–10 yrs) · comparison* · `arch-018`
+
+I default to a single org unless there's a strong reason not to. One org gives you a single view of the customer, shared processes, one release pipeline, and lower licence and integration cost. Reasons to split: strict legal or data residency rules, business units that share no customers or processes, very different release cadences, or an org hitting platform limits. Multi-org gives autonomy and isolation, but you pay for it with duplicated customisation, cross-org integration, more admin effort and a harder customer 360 story. Say a company has two business units that sell to completely different customers under different compliance rules. That's a real case for two orgs. But if they share customers, splitting mostly creates integration work. So I evaluate it with the business: how much do these units share customers, data, processes and reporting, and what are the compliance constraints? If we do split, I plan the integration layer and master data ownership up front.
+
+- Default to single org for one customer view
+- Split for compliance, residency, unrelated businesses, limits
+- Multi-org costs: duplication, integration, governance
+- Decide on shared customers, data, processes
+
+<sub>Also asked as: Single org vs multiple orgs, what are the trade-offs? · When would you recommend more than one Salesforce org? · Our company has three business units, should they share one org? · multi org strategy salesforce</sub>
+
+### Your company acquired another business and wants to merge their Salesforce org into yours. How would you approach it?
+*Senior (7–10 yrs) · scenario* · `arch-019`
+
+I'd start with discovery on both orgs: objects, fields, automation, integrations, packages, data volumes, users and licences, plus a business process comparison. Then the design decisions. Which processes get standardised, which stay different through record types or business units, and how naming conflicts get resolved, often with a prefix for incoming components. Next, I rebuild the incoming metadata into our source repository and deploy it through our normal pipeline. I don't copy everything blindly, because a merge is a chance to drop dead customisation. For data migration, I need a mapping document, deduplication against our existing accounts and contacts, external Ids for relationships, and several trial loads in a full sandbox. For example, if both orgs have the same customer as an Account, deduplication catches it so we don't end up with two. Finally, I plan cutover, re-pointing integrations, user training, and a period where the old org stays read-only.
+
+- Discovery of metadata, data, integrations, users
+- Standardise vs keep separate processes
+- Rebuild in source control, avoid lift-and-shift
+- Dedupe and trial loads in full sandbox
+- Cutover plan, old org read-only
+
+<sub>Also asked as: How do you plan an org merge? · Two Salesforce orgs need to be consolidated, what steps would you follow? · What are the risks in merging orgs? · org consolidation approach</sub>
+
+### How would you reduce technical debt in a mature Salesforce org?
+*Senior (7–10 yrs) · scenario* · `arch-020`
+
+I treat it as a program, not a one-off clean-up. First I make the debt visible. That means an inventory of unused fields, old Workflow Rules and Process Builders, multiple triggers per object, hard-coded Ids, low test coverage, and static analysis findings from Salesforce Code Analyzer. I score each item by risk and business impact, and fix the dangerous ones first, like anything blocking deployments or causing production errors. For example, a hard-coded Id that keeps breaking deployments goes straight to the top. Process Builder and Workflow Rules reached end of support at the end of 2025, so migrating those to Flow is usually high on the list too. I agree with the product owner to reserve a fixed share of each sprint for debt. And I add guardrails so new debt doesn't creep in: code review standards, PMD gates in CI, and an architecture review for big changes.
+
+- Inventory: fields, legacy automation, triggers, coverage
+- Prioritise by risk and impact
+- Migrate Workflow Rules and Process Builder to Flow
+- Reserve sprint capacity
+- Guardrails: reviews, CI scans
+
+<sub>Also asked as: Our org is messy with years of customisation, where do you start? · How do you prioritise technical debt? · How do you clean up unused fields and automation? · technical debt reduction plan salesforce</sub>
+
+### How do you decide between a declarative solution like Flow and Apex code?
+*Mid (3–6 yrs) · comparison* · `arch-021`
+
+I start with declarative, because Flow is faster to build and admins can maintain it. But I ask a few questions. How complex is the logic, and will it still be readable as a Flow? How much data does it process? Complex record-triggered logic on high-volume objects is often easier to make efficient in Apex. Does it need things Flow handles poorly, like complex collections, sophisticated error handling, callout orchestration or reusable libraries? Who will maintain it? And what already exists on that object? Mixing many Flows and triggers makes order of execution hard to reason about. A common good answer is hybrid. Say a process has clear steps an admin should own, but one step does a heavy calculation over lots of records. I'd let the Flow orchestrate the process, and have it call an invocable Apex action for the heavy part.
+
+- Default to declarative when it stays readable
+- Apex for complex logic, volume, advanced error handling
+- Consider who maintains it
+- Hybrid: Flow + invocable Apex
+
+<sub>Also asked as: Flow vs Apex, how do you choose? · When should you write code instead of using Flow? · clicks vs code decision · What is your decision framework for declarative versus programmatic?</sub>
+
+### How would you use Platform Cache to improve performance? Show an example.
+*Mid (3–6 yrs) · code* · `arch-022`
+
+I use the cache-aside pattern. Try to read from the cache. If it's a miss, load from the database or a callout, and put it in the cache with a time to live. Take exchange rates. The first request loads them, and everyone after that reads from the cache until the time to live runs out. That works because org cache is shared by all users, so I only put non-sensitive, non-user-specific data there, like exchange rates, product catalog settings or tokens from slow external calls. Session cache is per user session. I always code for a miss, because entries can be evicted at any time. And I keep items small, since a single cached item is limited to 100 KB. Setup-wise, you create a partition in Setup and allocate capacity to it. A tidier alternative is the Cache.CacheBuilder interface, which loads the value automatically on a miss.
+
+- Cache-aside: get, on miss load and put
+- Org cache shared, session cache per user
+- Always handle a miss; entries can be evicted
+- Org cache TTL default 24h, max 48h
+
+```java
+public with sharing class ExchangeRateService {
+    private static final String KEY = 'local.Rates.usdRates';
+
+    public static Map<String, Decimal> getRates() {
+        Map<String, Decimal> rates = (Map<String, Decimal>) Cache.Org.get(KEY);
+        if (rates == null) {
+            rates = new Map<String, Decimal>();
+            for (Exchange_Rate__c r : [SELECT Currency__c, Rate__c FROM Exchange_Rate__c]) {
+                rates.put(r.Currency__c, r.Rate__c);
+            }
+            Cache.Org.put(KEY, rates, 3600); // TTL in seconds
+        }
+        return rates;
+    }
+}
+```
+
+<sub>Also asked as: Write code to read and write Platform Cache · How do you cache data across transactions in Salesforce? · cache aside pattern apex · How do you reduce repeated queries for reference data?</sub>
+
+### A record save takes 15 seconds in production. How do you find and fix the performance problem?
+*Senior (7–10 yrs) · troubleshooting* · `arch-023`
+
+First I reproduce it with a debug log for that user, with Apex and workflow levels high enough to see each step. Then I open it in a log analyzer, like the Apex Log Analyzer extension in VS Code, to see a timeline of where the time goes. Usually the culprits are many automations on the same object, like several record-triggered Flows plus triggers, recursion running the same logic multiple times, non-selective queries on large objects, or synchronous callouts. Say the timeline shows the same handler running three times in one save. That's recursion, so recursion control is the fix. In general, I fix the biggest item first: consolidate Flows and triggers, add recursion control, make queries selective, move non-urgent work like rollups or notifications to async, and use before-save Flows for field updates on the same record. I measure again after each change. And if the page itself is slow, I check Lightning page components separately.
+
+- Debug log + log analyzer timeline
+- Common causes: stacked automation, recursion, non-selective SOQL, sync callouts
+- Consolidate, add recursion guards, go async
+- Before-save Flow for same-record updates
+- Measure after each change
+
+<sub>Also asked as: Users say saving an Opportunity is very slow, how do you investigate? · How do you do performance tuning in Salesforce? · How do you find what is consuming CPU time in a transaction? · slow page load troubleshooting salesforce</sub>
+
+### You get a 'Non-selective query against large object type' error in a trigger. How do you fix it?
+*Mid (3–6 yrs) · troubleshooting* · `arch-024`
+
+That error shows up in a trigger when a query on an object with more than about 200,000 records doesn't use a selective filter, so the platform would need a full table scan. First, I run the query through the Query Plan tool in the Developer Console. It shows the cost of each plan and whether an index is used. Then I make the filter selective. Filter on indexed fields like Id, Name, foreign keys, external Ids, unique fields or audit dates. Avoid leading wildcards, negative filters like !=, and comparisons against null on non-indexed fields. And narrow the range. For example, a filter like Status != 'Closed' on a big Case table is a problem on its own. Adding a date filter, or filtering on the Account Ids from the trigger, narrows it down. If the business filter is on a custom field, I can make it an external Id or ask Salesforce support for a custom index. Moving the query to a smaller related set of Ids also helps.
+
+- Triggered when a large object query isn't selective
+- Use the Query Plan tool
+- Filter on indexed fields, avoid != and leading wildcards
+- Custom index via support or external Id
+
+<sub>Also asked as: What does non-selective query error mean? · How do you make a SOQL query selective? · How do you use the Query Plan tool? · query against more than 200,000 rows error in trigger</sub>
+
+### You are asked to do a security architecture review of an org. What do you check?
+*Senior (7–10 yrs) · scenario* · `arch-025`
+
+I review it in layers. Identity: SSO and MFA, login policies, and integration users with least privilege. Access model: OWD settings, role hierarchy, sharing rules, and whether access comes from permission sets and permission set groups rather than bloated profiles. Plus who holds powerful permissions like Modify All Data or View All Data. Code: Apex classes declaring sharing explicitly, CRUD and FLS enforced with WITH USER_MODE or Security.stripInaccessible, no SOQL injection, and Experience Cloud guest user access locked down. Integrations: Named Credentials instead of stored passwords, and connected apps and External Client Apps with scoped OAuth policies. Platform: Health Check score, session settings and, where needed, Shield for encryption, event monitoring and field audit trail. For example, if I find an integration user with Modify All Data, that goes near the top of the list. I finish with a risk-ranked findings list, with an owner on each item.
+
+- Identity: SSO, MFA, integration users
+- Access: OWD, sharing, permission sets, powerful perms
+- Code: sharing keywords, USER_MODE, injection
+- Integrations: Named Credentials, OAuth scopes
+- Health Check, Shield where needed
+
+<sub>Also asked as: How do you assess security in a Salesforce org? · What is your checklist for a security review? · What are common security gaps you have seen in orgs? · security audit salesforce architect</sub>
+
+### You need to migrate 10 million records into Salesforce. How would you plan it?
+*Senior (7–10 yrs) · scenario* · `arch-026`
+
+I'd plan it in phases. First, mapping and cleansing, with an external Id on every object. That way relationships get built with upserts, not lookups by Salesforce Id. Load order follows dependencies: users, then accounts, then contacts, then opportunities and child objects. I'd use Bulk API 2.0 through a tool like Data Loader or an ETL platform, with sized batches. Parallel mode only where records don't share parents, to avoid lock errors. For example, if contacts for the same account land in different parallel batches, they fight over the same parent lock. Before loading, I bypass triggers, Flows and validation rules for the migration user, defer sharing calculations if the org has that enabled, and pre-sort child records by parent Id. I'd run at least two full rehearsals in a full sandbox to measure timing. Then the production load in a planned window, then reconciliation of counts and sample checks, and finally re-enable automation.
+
+- External Ids and upserts for relationships
+- Load in dependency order
+- Bulk API 2.0, sort by parent, careful parallelism
+- Bypass automation, defer sharing calc
+- Rehearse in full sandbox, reconcile after
+
+<sub>Also asked as: How do you load 10 million records into Salesforce? · Design a large data migration · What tools and settings do you use for a huge data load? · 10 million record migration strategy</sub>
+
+### How would you design a scalable integration architecture between Salesforce and several back-end systems?
+*Senior (7–10 yrs) · design* · `arch-027`
+
+I start by classifying each flow by pattern. Request and reply for real-time lookups. Fire-and-forget for notifying other systems. Batch synchronisation for bulk data. Remote call-in, where external systems write to Salesforce. And data virtualisation, where data stays outside and is viewed through Salesforce Connect. With several back-end systems, I prefer a middleware layer like MuleSoft or another iPaaS. Then Salesforce isn't wired point-to-point to everything, and transformation, retries and monitoring live in one place. Say an ERP and a billing system both need order data. Salesforce talks to the middleware once, instead of keeping two separate connections. On the Salesforce side: Named Credentials and External Credentials for auth, Platform Events or Change Data Capture for outbound events, Bulk API for volume, and external Ids for idempotent upserts. And I design for failure from the start: retries with backoff, dead-letter handling, logging with correlation Ids, alerts, and a check of API limits against expected volumes.
+
+- Classify flows by integration pattern
+- Middleware over point-to-point for many systems
+- Named/External Credentials, Platform Events, CDC, Bulk API
+- Idempotent upserts with external Ids
+- Retries, logging, correlation Ids, limit checks
+
+<sub>Also asked as: Design an integration architecture for Salesforce with ERP, billing and a data warehouse · Point-to-point vs middleware, what would you choose? · What integration patterns do you use? · How do you make Salesforce integrations reliable?</sub>
+
+### How do you implement an event-driven architecture on Salesforce?
+*Senior (7–10 yrs) · design* · `arch-028`
+
+Event-driven means systems react to events instead of calling each other directly, which decouples them. On Salesforce, I use Platform Events for business events I define, like 'Order Submitted', and Change Data Capture when subscribers just need to know records were created, updated or deleted. Publishers can be Apex, Flow or APIs. Subscribers can be Apex triggers, Flows, LWC through the empApi, or external systems through the Pub/Sub API using gRPC. Key design choices: use 'Publish After Commit' for business events, so you never announce an order that then rolled back. Use 'Publish Immediately' only for things like logging. Subscribers must be idempotent and use the replay Id to resume after downtime, because events are only retained for a limited time, 72 hours for high-volume events. So if a warehouse system is down overnight, it reconnects with its last replay Id and picks up where it left off. I also check event allocations for publishing and delivery.
+
+- Platform Events for business events, CDC for record changes
+- Pub/Sub API for external subscribers
+- Publish After Commit vs Publish Immediately
+- Idempotent subscribers, replay Id, 72-hour retention
+- Check event allocations
+
+<sub>Also asked as: Platform Events vs Change Data Capture, when do you use which? · How do external systems subscribe to Salesforce events? · What is publish after commit vs publish immediately? · event driven architecture salesforce</sub>
+
+### What packaging strategy would you recommend: unlocked packages, managed 2GP or unpackaged metadata?
+*Senior (7–10 yrs) · comparison* · `arch-029`
+
+For internal enterprise development, I recommend unlocked packages once the team is comfortable with source-driven development. They let you split the org into modules, like a core package and feature packages, with versions and declared dependencies. And you can still change metadata in production if needed. Org-dependent unlocked packages are a useful stepping stone for legacy orgs, where components depend on lots of unpackaged metadata. Managed second-generation packages are for ISVs distributing to other orgs. They have a namespace, protect intellectual property, and support upgrades and AppExchange listing. Plain unpackaged metadata deployments with a manifest are still fine for small teams. My approach: start with unpackaged plus CI. Then carve out stable shared code first, like a logging or trigger framework, into an unlocked package. Say the trigger framework hasn't changed in months and every feature uses it. That's the first package. Then expand as dependencies get cleaner.
+
+- Unlocked: internal modularisation, versions, dependencies
+- Org-dependent unlocked for legacy orgs
+- Managed 2GP: ISVs, namespace, IP protection
+- Start small: package shared frameworks first
+
+<sub>Also asked as: Unlocked vs managed packages, which one for internal development? · When would you use 2GP managed packages? · Should we modularise our org into packages? · packaging strategy for enterprise salesforce</sub>
+
+### What is a Salesforce Center of Excellence and how would you set up governance?
+*Senior (7–10 yrs) · concept* · `arch-030`
+
+A Center of Excellence is the group that owns the platform's direction and standards, so many teams can build on Salesforce without making a mess. It usually includes an executive sponsor, a platform owner, architects, lead admins and developers, and business representatives. Its job covers a few areas: a roadmap and prioritisation of demand, design standards and an architecture review board for significant changes, release management and environment strategy, security and data governance, and enablement through training and documentation. In practice, I'd set up a lightweight intake process, a design review for anything touching shared objects or integrations, naming and coding standards, a single deployment pipeline, and a regular review of org health metrics like limits, technical debt and adoption. For example, if one team wants a new trigger on Account, which everyone shares, it goes through a quick design review first. Governance should help teams move faster, not just say no.
+
+- Sponsor, platform owner, architects, admins, business
+- Roadmap, intake and prioritisation
+- Standards and architecture review board
+- Release, security and data governance
+- Enablement and org health metrics
+
+<sub>Also asked as: What does a CoE do? · How do you govern a Salesforce platform with many teams? · Who should be part of the Center of Excellence? · salesforce governance model</sub>
+
+### What do you look for when reviewing someone's Apex code?
+*Mid (3–6 yrs) · concept* · `arch-031`
+
+My checklist starts with correctness and bulk safety: no SOQL or DML in loops, collections used properly, and logic that works for 200 records. Then security: sharing keywords declared, CRUD and FLS enforced with user mode or stripInaccessible, and no dynamic SOQL built from user input without binding. Then design: logic in the right layer, no hard-coded Ids or URLs, configuration in custom metadata, and sensible naming. Error handling should catch specific exceptions and log them, not swallow them silently. Tests need real assertions, should cover positive, negative and bulk cases, and should create their own data instead of relying on SeeAllData. For example, if I see a test that inserts one Account and asserts nothing, I'll ask for a 200-record case and an actual assert. I let the static analyser catch style issues automatically, so the human review focuses on logic and design. And I keep comments constructive, with a reason for each one.
+
+- Bulk safety and limits
+- Security: sharing, CRUD/FLS, injection
+- Right layer, no hard-coded Ids, config in metadata
+- Meaningful tests with asserts
+- Automate style checks with Code Analyzer
+
+<sub>Also asked as: What are your code review standards? · What is your checklist for a pull request review in Salesforce? · How do you review a junior developer's code? · code review best practices apex</sub>
+
+### How do you lead a team of developers and mentor juniors?
+*Senior (7–10 yrs) · scenario* · `arch-032`
+
+I see my role as making the team successful, not writing all the hard code myself. I set clear standards early, like a coding guide, a trigger framework and a definition of done, so expectations are visible. With juniors, I pair on the first few tasks and give them work that stretches them a little. When I review their pull requests, I explain rather than just fix, so they learn the reason behind each comment. If someone repeats a mistake, I first check whether our standards or examples are unclear, before blaming the person. Then we have a one-to-one and agree on a concrete next step. Say a junior keeps putting queries inside loops. Maybe our examples don't show the map pattern clearly, so I fix the example and walk them through it. I also run short knowledge-sharing sessions, rotate people across areas so knowledge isn't stuck with one person, and protect the team from scope churn by working closely with the product owner.
+
+- Set clear standards and definition of done
+- Pair, stretch tasks, explanatory reviews
+- Fix the system before blaming the person
+- Knowledge sharing and rotation
+- Shield the team from scope churn
+
+<sub>Also asked as: How do you mentor junior Salesforce developers? · Tell me about your leadership style as a tech lead · How do you help a junior developer who keeps making the same mistakes? · team lead role in salesforce project</sub>
+
+### What questions do you ask during requirement gathering for a new Salesforce feature?
+*Mid (3–6 yrs) · scenario* · `arch-033`
+
+I start with the problem, not the solution. What's the business trying to achieve, how are they doing it today, and how will we measure success? Then I get specific. Who are the users and personas, and what should each one see or edit? What data is involved, where does it come from, and how much of it will there be? What are the triggers and edge cases? For example, what happens when a record is reopened, or a value is blank? Are there approvals, notifications, reporting needs or integrations? What compliance or security rules apply? And what's the deadline and priority compared to other work? I confirm my understanding by writing user stories with acceptance criteria. Where it helps, I build a quick prototype in a sandbox, because users react better to something they can click. Often someone clicks through it and says 'oh, we also need this field', which is much cheaper to hear now than later.
+
+- Start with the problem and success measure
+- Personas, data, volumes, edge cases
+- Approvals, reports, integrations, compliance
+- User stories with acceptance criteria
+- Prototype early in a sandbox
+
+<sub>Also asked as: How do you gather requirements from business users? · A stakeholder gives you a one-line requirement, what do you ask? · How do you avoid building the wrong thing? · requirement gathering approach salesforce</sub>
+
+### How do you estimate effort for a Salesforce feature or project?
+*Senior (7–10 yrs) · scenario* · `arch-034`
+
+I first break the feature into small pieces I understand: data model changes, automation, Apex, LWC, integration, data migration, testing and deployment. I estimate each piece, ideally with the developers who'll build it, using story points or a range in days, and I compare with similar work we've done before. Then I add the parts people forget: code review, unit tests, QA support, UAT fixes, documentation and deployment. For unknowns, like an external API nobody has seen, I either give a wider range or propose a short spike to reduce the uncertainty before committing. Say the build looks like five days, but the API is unknown. I'd say 'five to nine days, or give me a short spike and I'll tighten it'. I always state the assumptions with the estimate, so if scope changes, everyone understands why the number moves. I'd rather give an honest range than a precise number that turns out wrong.
+
+- Break down into components
+- Estimate with the team, compare with past work
+- Include reviews, tests, UAT, deployment
+- Spikes or ranges for unknowns
+- Always list assumptions
+
+<sub>Also asked as: How do you give estimates to the client? · Your manager asks for an estimate on a vague requirement, what do you do? · What estimation techniques do you use? · estimation in salesforce projects</sub>
+
+### What is the Salesforce Well-Architected framework?
+*Senior (7–10 yrs) · concept* · `arch-035`
+
+Salesforce Well-Architected is Salesforce's official guidance on what a healthy solution looks like, with patterns and anti-patterns architects can use in design reviews. It was originally organised around three characteristics: Trusted, Easy and Adaptable. In September 2026, Salesforce refreshed it into five pillars: Trust, Reliability, Operational Excellence, Resource and Cost Optimization, and Fairness. Each pillar now has an Agentic Enterprise lens, covering how AI agents that reason and act affect that area. I use it as a checklist when I review a design. Is it secure and compliant? Will it keep working and recover from failure? Can we observe and automate how it runs? Are we spending licences, limits and storage wisely? Is it transparent and accessible? For example, if a design adds a nightly batch with no way to watch it, the 'can we observe how it runs' question flags that straight away. It also helps me explain trade-offs to stakeholders in a shared language.
+
+- Official Salesforce design guidance with patterns/anti-patterns
+- Originally Trusted, Easy, Adaptable
+- Sept 2026: Trust, Reliability, Operational Excellence, Resource and Cost Optimization, Fairness
+- Agentic Enterprise lens per pillar
+
+<sub>Also asked as: Have you used Salesforce Well-Architected? · What are the pillars of Well-Architected? · Trusted, easy, adaptable, what does that mean? · well architected framework salesforce kya hai</sub>
+
+### How would you refactor a legacy org that has 50 triggers with no framework?
+*Senior (7–10 yrs) · scenario* · `arch-036`
+
+I wouldn't rewrite everything at once. First I'd map the triggers per object: what each does, which events, and the related Flows and other automation. And I'd get test coverage and a regression test suite around the critical paths. Then I pick a trigger framework and refactor object by object, starting with the objects causing the most production errors or limit issues. Say Opportunity has six triggers and throws most of the limit errors. That's object number one. I merge its triggers into one trigger, move the logic into handler or action classes in a deliberate order, remove duplicate queries, and add recursion control and bypass switches. Each object goes through the normal pipeline with full regression testing in a full sandbox. Along the way I delete dead code and old automation, and I document the new order of execution so the team follows the pattern going forward.
+
+- Inventory triggers and related automation
+- Build regression tests first
+- One object at a time, worst first
+- Merge into one trigger + handler, add guards
+- Delete dead code, document the pattern
+
+<sub>Also asked as: Our org has multiple triggers per object and no handler pattern, how do you fix it? · How do you consolidate triggers safely? · Legacy org refactoring approach · fifty triggers in the org, what would you do</sub>
+
+### How do you handle a production incident, for example users suddenly cannot save Cases?
+*Senior (7–10 yrs) · scenario* · `arch-037`
+
+First I contain the impact. I confirm the scope, which users and which records, and I tell stakeholders right away what we know and when the next update is. Then I find the cause fast. I check what changed recently, like a deployment, a data load, a config change or a Salesforce release, and I reproduce it with a debug log for an affected user. If a recent change caused it, the fastest fix is often a switch-off rather than a code fix. Say a new Flow went live last night and the log shows it failing on Case save. I deactivate the Flow, or flip a bypass setting, or redeploy the previous version from source control. Once users are working again, I make the proper fix through the hotfix process, with tests. Afterwards I run a blameless post-incident review: root cause, why we didn't catch it, and actions like new tests or monitoring.
+
+- Contain and communicate first
+- Check recent changes, reproduce with debug logs
+- Fastest safe mitigation: deactivate or redeploy previous
+- Proper fix via hotfix process
+- Blameless post-incident review
+
+<sub>Also asked as: Production is down for a key process, what do you do? · Walk me through your incident management approach · A deployment broke production, how do you respond? · production issue handling salesforce</sub>
+
+### Design a solution to sync orders from an ERP into Salesforce in near real time.
+*Senior (7–10 yrs) · design* · `arch-038`
+
+I'd have the ERP or middleware push changes, rather than Salesforce polling. The middleware listens to ERP order events, transforms them, and upserts into Salesforce using the External Id of the ERP order. That way retries never create duplicates. For example, if the same order update is sent twice because of a timeout, the second upsert just matches the existing record. For moderate volume, the REST or Composite API works well. For bursts of thousands, I'd batch them through Bulk API 2.0. Inside Salesforce, I keep the receiving transaction light. The upsert lands the data, and heavy follow-up logic like recalculations or notifications runs asynchronously through a platform event or Queueable. The integration user has only the permissions it needs. Failures go to an error queue in middleware with retry and alerting. And I'd add a nightly reconciliation job comparing counts between systems to catch anything missed. API limits get checked against peak volume.
+
+- Push from ERP via middleware, not polling
+- Upsert on external Id for idempotency
+- Composite API for small, Bulk API 2.0 for bursts
+- Keep the inbound transaction light, async follow-up
+- Error queue, retries, nightly reconciliation
+
+<sub>Also asked as: How would you bring ERP orders into Salesforce as they are created? · Design a near real-time inbound integration · ERP sends thousands of orders per hour to Salesforce, how do you design it? · inbound integration design salesforce</sub>
+
+### When a record is updated you must call an external API, and the call sometimes fails. How do you design it?
+*Senior (7–10 yrs) · design* · `arch-039`
+
+You can't call out synchronously from a trigger. So the trigger enqueues a Queueable that implements Database.AllowsCallouts, passing only the record Ids. The callout uses a Named Credential, so there are no endpoints or secrets in code. Inside the Queueable, I attach a Transaction Finalizer. If the job fails with an unhandled exception, the finalizer runs anyway. It can re-enqueue the job with an attempt counter, up to a limit. After the last attempt, it marks the records with a sync status of 'Failed' and logs the error. Say the external API is down for a few minutes. The first attempt fails, the finalizer re-enqueues it, and a later attempt goes through without anyone touching it. I also store the sync status and last error on the record, so support can see it and resend it with a button. For very high volume, I'd publish a platform event instead and let a subscriber or middleware handle delivery.
+
+- Trigger enqueues Queueable with AllowsCallouts
+- Named Credential for endpoint and auth
+- Finalizer re-enqueues with attempt limit
+- Sync status and error on the record
+- Platform events for high volume
+
+```java
+public class OrderSyncJob implements Queueable, Database.AllowsCallouts {
+    private Set<Id> orderIds;
+    private Integer attempt;
+    public OrderSyncJob(Set<Id> orderIds, Integer attempt) {
+        this.orderIds = orderIds;
+        this.attempt = attempt;
+    }
+    public void execute(QueueableContext ctx) {
+        System.attachFinalizer(new OrderSyncFinalizer(orderIds, attempt));
+        HttpRequest req = new HttpRequest();
+        req.setEndpoint('callout:ERP/orders');
+        req.setMethod('POST');
+        // build body from orders, send, update Sync_Status__c
+    }
+}
+
+public class OrderSyncFinalizer implements Finalizer {
+    private Set<Id> orderIds;
+    private Integer attempt;
+    public OrderSyncFinalizer(Set<Id> orderIds, Integer attempt) {
+        this.orderIds = orderIds;
+        this.attempt = attempt;
+    }
+    public void execute(FinalizerContext ctx) {
+        if (ctx.getResult() == ParentJobResult.UNHANDLED_EXCEPTION && attempt < 3) {
+            System.enqueueJob(new OrderSyncJob(orderIds, attempt + 1));
+        }
+    }
+}
+```
+
+<sub>Also asked as: How do you make callouts from a trigger reliably? · How do you retry failed callouts in Salesforce? · What is a Transaction Finalizer and when would you use it? · callout from trigger with retry</sub>
+
+### A batch job keeps failing with UNABLE_TO_LOCK_ROW errors. How do you troubleshoot it?
+*Mid (3–6 yrs) · troubleshooting* · `arch-040`
+
+UNABLE_TO_LOCK_ROW means two transactions tried to update the same record, or the same parent, at the same time. So I check what's running in parallel: overlapping batch jobs, integrations, or a parallel-mode data load. A common cause is child records under the same parent being processed in different threads. Updating a child can lock its parent, especially with master-detail relationships or rollup summaries. For example, if one account's opportunities are split across two parallel load batches, or two overlapping jobs, both try to lock that same account at once. The fixes: order the batch query by the parent Id, so children of the same parent land in the same chunk. Reduce batch size. Switch data loads to serial mode for skewed data. Schedule jobs so they don't overlap. And fix data skew if one parent has a huge number of children. For transient cases, I add a retry for the failed records rather than failing the whole job.
+
+- Concurrent updates to the same record or parent
+- Check overlapping jobs and parallel loads
+- ORDER BY parent Id, smaller batches, serial mode
+- Fix underlying data skew
+- Retry failed records
+
+<sub>Also asked as: How do you fix record locking errors? · Why do we get unable to lock row in a data load? · Batch Apex fails with lock errors, what do you check? · unable to lock row error resolution</sub>
+
+### Custom metadata types vs custom settings vs custom labels: how do you choose for configuration?
+*Mid (3–6 yrs) · comparison* · `arch-041`
+
+For most application configuration, I use custom metadata types. Things like mappings, feature switches and integration settings. The records are metadata, so they deploy with the code, can be packaged, are cached, and don't count against SOQL limits when read with getAll or getInstance. Hierarchy custom settings are my choice when the value has to vary by user or profile, or when it's changed often in production as data. For example, a bypass switch for an integration user: I set it on that one user in a hierarchy custom setting, and everyone else keeps the default. List custom settings are mostly replaced by custom metadata now. Custom labels are for user-facing text that needs translation. And secrets like API keys don't belong in any of these. They go into Named Credentials and External Credentials.
+
+- Custom metadata: deployable config, no SOQL with getAll/getInstance
+- Hierarchy custom settings: per user/profile values
+- Custom labels: translatable UI text
+- Secrets: Named/External Credentials
+
+<sub>Also asked as: Where do you store configuration in Salesforce? · Why prefer custom metadata over custom settings? · custom metadata vs custom setting difference · How do you avoid hard-coding values in Apex?</sub>
+
+### How do you prevent trigger recursion properly?
+*Mid (3–6 yrs) · design* · `arch-042`
+
+The classic static Boolean flag is risky. The first chunk of 200 records sets it, and the next chunks in the same transaction get skipped silently. Say a large data load sends 1,000 records in one transaction. Only the first 200 get processed, and the rest are skipped with no error. A better approach is to track which record Ids have already been processed for a given operation in a static Set, and only process records not yet in the set. Even better is to make the logic itself idempotent. Only act when the relevant field has actually changed, by comparing Trigger.new to Trigger.oldMap, so re-running it does nothing harmful. I also look at why the recursion happens. Often it's a Flow and a trigger updating the same record back and forth. I'd consolidate that automation, rather than only hiding the symptom.
+
+- Static Boolean skips later 200-record chunks
+- Use a static Set of processed Ids
+- Check field changes against oldMap
+- Fix the root cause: competing automation
+
+```java
+public with sharing class OpportunityStageHandler {
+    private static Set<Id> processed = new Set<Id>();
+
+    public static void afterUpdate(List<Opportunity> newList, Map<Id, Opportunity> oldMap) {
+        List<Opportunity> toProcess = new List<Opportunity>();
+        for (Opportunity opp : newList) {
+            Boolean stageChanged = opp.StageName != oldMap.get(opp.Id).StageName;
+            if (stageChanged && !processed.contains(opp.Id)) {
+                toProcess.add(opp);
+                processed.add(opp.Id);
+            }
+        }
+        if (!toProcess.isEmpty()) {
+            // business logic for changed records only
+        }
+    }
+}
+```
+
+<sub>Also asked as: Why is a static boolean not a good recursion guard? · How do you stop a trigger from running twice? · Trigger recursion handling best practice · recursive trigger kaise rokte hain</sub>
+
+### A global company wants one org for several countries with different processes. How would you design it?
+*Senior (7–10 yrs) · design* · `arch-043`
+
+I'd design a global template with local variations, and be strict about which is which. The shared core covers the data model, key objects, integrations and the security model. Local differences are handled with record types, page layouts or dynamic forms, and business processes for picklist values. Automation is driven by configuration in custom metadata keyed by country, not separate code paths. Say one country needs an extra step that another doesn't. That's a country setting in custom metadata, not a second version of the code. The sharing model uses roles or territories per region, so countries see their own data, plus permission set groups per persona. Multi-currency and the translation workbench cover currency and language. For governance, a global design authority approves changes to the core, and local teams can only change their own configuration. Rollout goes country by country, with a reusable deployment and data migration playbook and a shared release calendar.
+
+- Global core + local configuration
+- Record types, layouts, metadata-driven rules per country
+- Regional sharing, persona permission set groups
+- Multi-currency and translations
+- Design authority, phased rollout
+
+<sub>Also asked as: How do you support different business processes per region in a single org? · Design a global single-org rollout · How do you handle country-specific requirements without duplicating everything? · multi country salesforce org design</sub>
+
+### Why is it a best practice to have only one trigger per object?
+*Fresher (0–2 yrs) · concept* · `arch-044`
+
+Because Salesforce doesn't guarantee the order in which multiple triggers on the same object run. With several triggers, the behaviour can change unexpectedly and bugs get hard to reproduce. Say one Account trigger sets a region field and another trigger reads that region. If the order flips, the second one sees a blank value, and only sometimes. With one trigger per object, I control the order of logic inside a handler class. It also keeps the trigger itself logic-free. The trigger just passes Trigger.new and Trigger.oldMap to the handler, and the handler calls methods for each event, like before insert or after update. That makes the code easier to read, test and reuse. It avoids duplicate queries across triggers. And it gives me one place to add recursion control and a bypass switch for data loads.
+
+- Order of multiple triggers is not guaranteed
+- One trigger, logic in a handler class
+- Easier testing and reuse
+- Single place for recursion control and bypass
+
+<sub>Also asked as: Why one trigger per object? · What happens if an object has multiple triggers? · What is a trigger handler pattern? · one trigger per object rule</sub>
+
+### What is Platform Cache and what is the difference between org cache and session cache?
+*Fresher (0–2 yrs) · concept* · `arch-045`
+
+Platform Cache is an in-memory layer that lets you store data across transactions, so you don't have to query it or call an API again every time. Org cache is shared across all users in the org, so it's for common data like reference tables or settings. Session cache is tied to one user's session, so it's for that user's data, like a shopping cart or their preferences, and it ends when the session ends. For example, a country code reference table goes in org cache, since everyone reads the same thing. A user's shopping cart goes in session cache. You set up a partition in Setup and allocate capacity to org and session cache. Org cache entries live 24 hours by default and up to 48 hours. Session cache lives up to 8 hours. The gotcha: cache isn't guaranteed, so code must always handle a cache miss by loading the data again.
+
+- In-memory storage across transactions
+- Org cache: shared by all users
+- Session cache: per user session, max 8 hours
+- Always handle cache misses
+
+<sub>Also asked as: What is Platform Cache in Salesforce? · Org cache vs session cache · How do you store data in memory across transactions? · platform cache kya hai</sub>
+
+## DevOps and Deployment
+
+### What types of sandboxes are there and how often can you refresh them?
+*Fresher (0–2 yrs) · concept* · `dev-001`
+
+There are four sandbox types. A Developer sandbox copies metadata only, has about 200 MB of data storage, and can be refreshed once a day. It's for individual development. Developer Pro is the same idea with about 1 GB of storage, also refreshable daily, so it's good for bigger dev work or QA. A Partial Copy sandbox includes metadata plus a sample of production data chosen by a sandbox template. It has up to 5 GB and can be refreshed every 5 days, which makes it good for testing and UAT. A Full sandbox is a complete copy of production metadata and data. It can be refreshed every 29 days, and it's used for staging, performance testing and training. So in practice, I'll refresh my Developer sandbox whenever I want a clean start, but a Full sandbox refresh gets planned carefully, because you only get one every 29 days. How many of each you get depends on your edition and licences.
+
+- Developer: metadata only, ~200 MB, daily refresh
+- Developer Pro: ~1 GB, daily refresh
+- Partial Copy: sample data via template, 5 GB, every 5 days
+- Full: full copy, every 29 days
+
+<sub>Also asked as: Explain sandbox types in Salesforce · Developer vs Developer Pro vs Partial Copy vs Full sandbox · What is the refresh interval for a full sandbox? · sandbox kitne type ke hote hain</sub>
+
+### What sandbox strategy would you set up for a team of ten developers?
+*Mid (3–6 yrs) · design* · `dev-002`
+
+Each developer gets their own Developer sandbox or scratch org, so nobody steps on anyone else, ideally with source tracking on. Work merges into a shared integration or QA environment, usually a Developer Pro, where the CI pipeline deploys automatically from the integration branch. UAT runs in a Partial Copy sandbox with realistic sample data. A Full sandbox acts as staging for final regression, performance testing and production-like deployment rehearsals. So a feature goes from my dev sandbox, to QA after merge, then UAT, then staging, then production. I plan the refresh cadence with the release calendar so environments don't drift too far from production. After every refresh, I run a post-copy script that implements the SandboxPostCopy interface. It updates integration endpoints, masks or scrambles personal data, and resets settings. And I keep a checklist for anything manual, like email deliverability and integration user passwords.
+
+- Personal Developer sandbox or scratch org per dev
+- Shared integration/QA org fed by CI
+- Partial Copy for UAT, Full for staging
+- Refresh on a release-aligned schedule
+- SandboxPostCopy script + post-refresh checklist
+
+<sub>Also asked as: How do you design the environment strategy for a Salesforce project? · Which sandboxes do you use for dev, QA, UAT and staging? · What do you do after a sandbox refresh? · sandbox strategy for a project</sub>
+
+### How do you automate post-refresh steps in a sandbox?
+*Mid (3–6 yrs) · code* · `dev-003`
+
+I implement the SandboxPostCopy interface in an Apex class, and select it when I create or refresh the sandbox. Salesforce runs its runApexClass method automatically once the copy completes. Typical tasks: switch integrations to test endpoints or mocks, start a batch job that scrambles email addresses and phone numbers, deactivate scheduled jobs that shouldn't run, and set up test users or reference data. The email scrambling is the one I never skip. Say a Full sandbox has real customer contacts and someone tests an email alert. Without scrambling, a real customer gets a test email. Heavy work goes into a batch job started from the class. I test it with Test.testSandboxPostCopyScript. For regulated data, Salesforce's Data Mask product handles masking more thoroughly, but the post-copy class still covers the configuration steps.
+
+- Implement SandboxPostCopy.runApexClass
+- Runs automatically after refresh
+- Switch endpoints, mask data, stop jobs
+- Test with Test.testSandboxPostCopyScript
+
+```java
+global class PrepareSandbox implements SandboxPostCopy {
+    global void runApexClass(SandboxContext context) {
+        Integration_Settings__c cfg = Integration_Settings__c.getOrgDefaults();
+        cfg.Use_Mock_Endpoint__c = true;
+        upsert cfg;
+
+        // scramble personal data in a batch to stay within limits
+        Database.executeBatch(new MaskContactEmailsBatch(), 2000);
+    }
+}
+
+// In a test:
+// Test.testSandboxPostCopyScript(new PrepareSandbox(),
+//     UserInfo.getOrganizationId(), UserInfo.getOrganizationId(), 'uat');
+```
+
+<sub>Also asked as: What is the SandboxPostCopy interface? · How do you mask data after a sandbox refresh? · Write an Apex class that runs after a sandbox is created · post refresh script salesforce</sub>
+
+### What are change sets and what are their limitations?
+*Fresher (0–2 yrs) · concept* · `dev-004`
+
+A change set is a point-and-click way to move metadata between orgs connected to the same production org, like from a sandbox to production. You create an outbound change set, add components, and upload it. The target org must allow inbound changes through a deployment connection. Then you validate and deploy it there. The limitations are why most teams move to source control and the CLI. You add components manually. Dependency detection is shallow. You can't edit a change set after upload, and you can't delete components with it. There's no version history or rollback. It only works between related orgs, there's a cap of 10,000 files, and some metadata types aren't supported. For example, if I forget one field that a class references, validation fails, and since I can't edit the uploaded change set, I'm building and uploading another one. Salesforce is now positioning DevOps Center, and org-to-org deployment through DX Inspector, in beta, as the modern replacement.
+
+- Only between orgs tied to the same production
+- Manual component selection, shallow dependencies
+- No deletes, no rollback, no edit after upload
+- 10,000 file cap
+- Replaced by source control, CLI, DevOps Center
+
+<sub>Also asked as: How do you deploy using change sets? · Why do teams move away from change sets? · What can't you do with change sets? · change set limitations salesforce</sub>
+
+### What is Salesforce DX and what is the Salesforce CLI?
+*Fresher (0–2 yrs) · concept* · `dev-005`
+
+Salesforce DX is the source-driven way of developing on Salesforce. The source of truth is a Git repository, not an org. Metadata is stored in source format in a project with an sfdx-project.json file, and you use scratch orgs, sandboxes and packages to build and test. The Salesforce CLI is the command-line tool behind it. The current CLI is 'sf', with commands like sf project deploy start and sf org create scratch. The older 'sfdx' style commands, like sfdx force:source:deploy, are deprecated, and new scripts and pipelines should use the sf commands. So if I inherit a pipeline that still calls sfdx force:source:deploy, I'd move it to sf project deploy start. I use the CLI locally from VS Code with the Salesforce Extensions, and in CI tools like GitHub Actions or Jenkins.
+
+- Source-driven development with Git as source of truth
+- Project defined by sfdx-project.json
+- Use 'sf' CLI; old 'sfdx force:' commands are deprecated
+- Works with VS Code and CI tools
+
+<sub>Also asked as: What is SFDX? · What is the difference between sf and sfdx commands? · Which CLI do you use for Salesforce deployments? · salesforce dx kya hai</sub>
+
+### Which Salesforce CLI commands do you use day to day?
+*Mid (3–6 yrs) · code* · `dev-006`
+
+Day to day, I authorise orgs with sf org login web, or sf org login jwt in CI. I retrieve changes with sf project retrieve start, by metadata name, by source directory, or with a manifest. I deploy with sf project deploy start. Before production, I run sf project deploy validate with a test level, and then sf project deploy quick with the job Id. So on release day, the validation has already run, and the quick deploy just takes that job Id and goes. For tests, I use sf apex run test with code coverage. With scratch orgs, I use sf org create scratch, and with source tracking, preview commands show what changed locally and in the org. I also generate a manifest from my source folder when I need a package.xml.
+
+- Auth: sf org login web / jwt
+- Retrieve: sf project retrieve start
+- Deploy: sf project deploy start / validate / quick
+- Tests: sf apex run test
+- Scratch: sf org create scratch
+
+```bash
+sf org login web --alias dev --instance-url https://test.salesforce.com
+sf project retrieve start --metadata ApexClass:AccountService --target-org dev
+sf project deploy start --source-dir force-app --target-org qa
+sf project deploy preview --target-org dev          # with source tracking
+sf apex run test --test-level RunLocalTests --code-coverage --result-format human --target-org qa
+sf project deploy validate --manifest manifest/package.xml --test-level RunLocalTests --target-org prod
+sf project deploy quick --job-id <validationJobId> --target-org prod
+sf project generate manifest --source-dir force-app
+```
+
+<sub>Also asked as: Give me the sf commands to retrieve and deploy metadata · How do you authenticate an org with the CLI? · How do you run Apex tests from the command line? · sf cli commands list</sub>
+
+### What is a scratch org and when would you use it?
+*Fresher (0–2 yrs) · concept* · `dev-007`
+
+A scratch org is a temporary, empty Salesforce org you create from a Dev Hub, using a definition file that sets the edition, features and settings. It lasts between 1 and 30 days, 7 by default, and has source tracking built in. Because it starts empty and is built from the repository, it proves your source is complete. Every developer, or every CI run, starts from a clean, consistent org. For example, if I forgot to commit a custom field, the push into a fresh scratch org fails right away, instead of surprising us later. I use scratch orgs for package development and for features that can be built in isolation. They're less practical for large legacy orgs with lots of unpackaged dependencies or data needs; Developer sandboxes are easier there. You create one with sf org create scratch, push the source, assign permission sets and load sample data.
+
+- Temporary org from a Dev Hub, 1-30 days (default 7)
+- Defined by a scratch org definition file
+- Starts empty, source tracking built in
+- Great for packages and CI; harder for legacy orgs
+
+```bash
+sf org create scratch --definition-file config/project-scratch-def.json --alias feature1 --duration-days 7 --target-dev-hub DevHub
+sf project deploy start --target-org feature1
+sf org assign permset --name Sales_App_User --target-org feature1
+```
+
+<sub>Also asked as: How is a scratch org different from a sandbox? · How do you create a scratch org? · What is a Dev Hub? · scratch org kya hota hai</sub>
+
+### What is source tracking and how does it help developers?
+*Mid (3–6 yrs) · concept* · `dev-008`
+
+Source tracking means the CLI keeps track of changes between your local project and an org, so you don't have to remember which components you changed. Say I add two fields and edit a layout in Setup. sf project retrieve start pulls just those changed components. And sf project deploy start sends only my local changes. It also detects conflicts, when the same component changed both locally and in the org, and stops unless you choose to overwrite. Source tracking is built into scratch orgs. It can be enabled for Developer and Developer Pro sandboxes with a setting on the Dev Hub page in production Setup. It doesn't work on Partial Copy, Full sandboxes or production, so deployments there use explicit source directories or manifests.
+
+- Tracks local vs org changes automatically
+- Retrieve/deploy only what changed
+- Detects conflicts
+- Scratch orgs + Developer/Developer Pro sandboxes (when enabled)
+
+<sub>Also asked as: How does the CLI know what changed in my org? · Can you use source tracking in sandboxes? · What happens when two people change the same thing with source tracking? · source tracking salesforce dx</sub>
+
+### How do you create and release an unlocked package?
+*Senior (7–10 yrs) · code* · `dev-009`
+
+First I define the package in sfdx-project.json with a path, version number and any dependencies, and create it once against the Dev Hub. Each release is a package version built with sf package version create. I always build with code coverage calculated, because a version needs at least 75% Apex coverage to be promoted. Beta versions can be installed in sandboxes for testing. Once approved, I promote the version to released, and only then can it be installed in production. Dependencies are declared in sfdx-project.json, so a feature package can depend on a core package version. For example, a sales feature package declares that it needs a specific version of our core package, and the core goes in first. Installation is through sf package install, usually in the pipeline. Versions make it clear exactly what's in each org, and allow upgrades in a controlled order.
+
+- Package defined in sfdx-project.json with dependencies
+- sf package version create with --code-coverage
+- 75% coverage required to promote
+- Beta in sandboxes, promoted version in production
+
+```bash
+sf package create --name "Core" --package-type Unlocked --path force-app --target-dev-hub DevHub
+sf package version create --package "Core" --installation-key-bypass --code-coverage --wait 20 --target-dev-hub DevHub
+sf package install --package "Core@1.2.0-1" --target-org uat --wait 10
+sf package version promote --package "Core@1.2.0-1" --target-dev-hub DevHub
+sf package install --package "Core@1.2.0-1" --target-org prod --wait 10
+```
+
+<sub>Also asked as: Walk me through unlocked package versioning · What commands do you use to build a package version? · How do package dependencies work? · unlocked package kaise banate hain</sub>
+
+### What is the Metadata API and what is a package.xml?
+*Fresher (0–2 yrs) · concept* · `dev-010`
+
+The Metadata API moves the configuration and code of an org, like objects, fields, Apex classes, Flows and layouts, not the data. Every deployment tool uses it underneath, from change sets to the CLI, Copado and Gearset. A package.xml is a manifest that lists which metadata types and members to retrieve or deploy, along with an API version. For example, the type ApexClass with a list of class names like AccountService and AccountSelector. There are two file formats. The older metadata format stores an object as one big file. The source format used by Salesforce DX splits an object into smaller files per field and list view. That makes Git merges much easier: if two developers each add a different field to Account, they're editing different files. The CLI converts between the two formats automatically.
+
+- Metadata API moves config and code, not data
+- package.xml lists types and members to move
+- Source format splits big files for easier Git merges
+- All deployment tools use it underneath
+
+<sub>Also asked as: What is package.xml used for? · Source format vs metadata format, what is the difference? · How do you retrieve metadata from an org? · metadata api kya hai</sub>
+
+### How do you delete a component like an Apex class or field through deployment?
+*Mid (3–6 yrs) · code* · `dev-011`
+
+Deletions are deployed with a destructive changes manifest that lists the components to remove, alongside a normal package.xml, which can be empty. A pre-destructive file deletes before the deploy. That's useful when the new version can't coexist with the old component. A post-destructive file deletes after, and that's the common case. Say I'm retiring an old class. I deploy the code that removes references to it, and the post-destructive file deletes the class after that. With the sf CLI, I pass the files with --pre-destructive-changes or --post-destructive-changes along with --manifest. In production, deleting Apex still runs tests, so the deployment needs a test level. Before deleting, I check 'Where is this used' and dependencies, because a component referenced elsewhere will fail the deployment. And deleted fields sit in the deleted fields list until purged.
+
+- destructiveChangesPre.xml / destructiveChangesPost.xml
+- Use with a package.xml manifest (can be empty)
+- Post-destructive is the common case
+- Check dependencies first; tests run in production
+
+```html
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- manifest/destructiveChangesPost.xml -->
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>LegacyDiscountCalculator</members>
+        <name>ApexClass</name>
+    </types>
+    <version>65.0</version>
+</Package>
+
+# deploy
+sf project deploy start --manifest manifest/package.xml \
+  --post-destructive-changes manifest/destructiveChangesPost.xml \
+  --test-level RunLocalTests --target-org prod
+```
+
+<sub>Also asked as: What is destructiveChanges.xml? · How do you remove metadata from production? · Pre vs post destructive changes · How do you delete an Apex class from production since you can't delete it in Setup?</sub>
+
+### How would you design a CI/CD pipeline for Salesforce?
+*Senior (7–10 yrs) · design* · `dev-012`
+
+The pipeline starts from Git as the source of truth. When a developer opens a pull request from a feature branch, CI runs static analysis with Salesforce Code Analyzer, plus a validation-only deployment with the relevant tests against the integration org, and posts the results on the pull request. After review and merge, the pipeline deploys automatically to the integration or QA org. Promotion to UAT and staging happens by merging or tagging releases. It deploys only the changed components, using a delta tool, to keep it fast. For production, the pipeline runs a validation with RunLocalTests ahead of the release window, then a quick deploy during the window after approval. So if the validation passes the day before, the release itself doesn't wait for every test to run again. Authentication uses the JWT bearer flow with a certificate stored as a secret. Every run is logged, and failures notify the team.
+
+- Git as source of truth, PR-based flow
+- PR: static analysis + validation deploy
+- Auto-deploy to QA on merge; promote by branch or tag
+- Delta deployments for speed
+- Prod: validate early, quick deploy with approval; JWT auth
+
+<sub>Also asked as: Walk me through your CI/CD process · What stages should a Salesforce pipeline have? · How do you automate deployments with Jenkins or GitHub Actions? · ci cd pipeline design salesforce</sub>
+
+### Show a GitHub Actions workflow that validates a Salesforce pull request.
+*Senior (7–10 yrs) · code* · `dev-013`
+
+On every pull request into main, the workflow checks out the code, installs the Salesforce CLI from npm, and authenticates with the JWT bearer flow. The client Id, username and private key are stored as GitHub secrets. Then it runs Salesforce Code Analyzer with a severity threshold, so high-severity issues fail the build. And it runs a validation-only deployment with RunLocalTests against the target org. Nothing is actually deployed, but we know the change will deploy and the tests pass. So a reviewer opening the pull request already sees a pass or fail check before reading any code. One gotcha for new setups: since Spring '26, Salesforce restricts creating new connected apps. So for a new pipeline I create an External Client App with the JWT bearer flow. Existing connected apps keep working. And the private key file is written only at runtime and never committed.
+
+- Trigger on pull_request
+- Install @salesforce/cli via npm
+- JWT auth with secrets
+- Code Analyzer with --severity-threshold
+- sf project deploy validate with RunLocalTests
+
+```bash
+name: validate-pr
+on:
+  pull_request:
+    branches: [main]
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install Salesforce CLI
+        run: npm install --global @salesforce/cli
+      - name: Authenticate
+        run: |
+          echo "${{ secrets.SF_JWT_KEY }}" > server.key
+          sf org login jwt --client-id ${{ secrets.SF_CLIENT_ID }} \
+            --jwt-key-file server.key --username ${{ secrets.SF_USERNAME }} \
+            --instance-url https://login.salesforce.com --alias target
+      - name: Static analysis
+        run: |
+          sf plugins install code-analyzer
+          sf code-analyzer run --workspace force-app --severity-threshold 2 --output-file results.html
+      - name: Validate deployment
+        run: sf project deploy validate --source-dir force-app --test-level RunLocalTests --target-org target --wait 60
+```
+
+<sub>Also asked as: How do you set up GitHub Actions for Salesforce? · Write a YAML pipeline to validate deployments · How do you authenticate the Salesforce CLI in CI? · github actions salesforce example</sub>
+
+### Compare Copado, Gearset and DevOps Center.
+*Mid (3–6 yrs) · comparison* · `dev-014`
+
+All three sit on top of the Metadata API and Git, but they target different needs. Copado is a full DevOps platform that runs natively in Salesforce, with user stories, pipelines, quality gates, compliance features and test automation. It suits large, regulated enterprises with formal release processes, but it takes effort to set up and administer. Gearset is a SaaS tool known for strong metadata comparison and deployment, with good dependency analysis, CI jobs, backups and an easy learning curve. It's popular with teams that want speed without a heavy platform. DevOps Center is Salesforce's own free tool, now a native platform feature. It's aimed at bringing admins and developers onto source control, with work items and pipeline stages, and GitHub as the main provider. So roughly: a regulated enterprise with formal releases, I'd look at Copado. A team that wants speed, Gearset. Mostly admins on a tight budget, DevOps Center. I'd choose based on team size, admin versus developer mix, compliance needs and budget.
+
+- Copado: native, end-to-end, enterprise and compliance
+- Gearset: SaaS, strong compare/deploy, backups, easy
+- DevOps Center: Salesforce's free native tool, GitHub-based
+- Choose on team mix, compliance, budget
+
+<sub>Also asked as: Which DevOps tool would you recommend for Salesforce? · Copado vs Gearset, what's the difference? · Have you used Copado or Gearset? · devops tools comparison salesforce</sub>
+
+### What is DevOps Center and how does it work?
+*Mid (3–6 yrs) · concept* · `dev-015`
+
+DevOps Center is Salesforce's own tool for managing changes and releases with source control. It's designed so admins can use Git-based workflows without learning Git commands. You create a project linked to a repository, define a pipeline of stages that map to orgs and branches, and track work as work items. Say an admin adds a field in a development sandbox. DevOps Center picks up that change, commits it to a branch, and it gets reviewed as a change request. Then it's promoted stage by stage, with conflict detection along the way. The next-generation version is now generally available as a native platform feature, not a managed package. It includes the DX Inspector panel for tracking changes from inside a sandbox. GitHub is the primary provider, and Bitbucket Cloud support was added, first as a beta. Salesforce positions it, along with org-to-org deployment, as the move away from change sets.
+
+- Projects, pipelines, stages, work items
+- Git under the hood, admin-friendly UI
+- Next-gen version is native and GA
+- GitHub primary; Bitbucket Cloud added (introduced as beta)
+- Positioned as the replacement for change sets
+
+<sub>Also asked as: Have you used Salesforce DevOps Center? · What is the next generation DevOps Center? · Is DevOps Center replacing change sets? · devops center kya hai</sub>
+
+### What branching strategy do you use for Salesforce development?
+*Senior (7–10 yrs) · design* · `dev-016`
+
+I prefer a simple model. Short-lived feature branches off main, merged back through pull requests with review and CI validation, and main always represents what's ready or already in production. The pipeline handles promotion to environments, either with release tags or with environment branches like qa and uat that map to orgs. In larger teams with fixed release cycles, I use a variant of GitFlow. Feature branches go into a develop or integration branch for QA, a release branch is cut for UAT and staging, and hotfix branches come off main and get merged back to both. But the rules matter more than the model. Keep branches short-lived to avoid painful metadata conflicts. Never make changes directly in higher orgs. And back-merge regularly so branches don't drift. For example, a feature branch that sits for three weeks while others keep changing the same objects is where I've seen the worst merges. A two-day branch rarely has that problem.
+
+- Short-lived feature branches + PRs
+- main reflects production-ready code
+- Environment branches or tags map to orgs
+- GitFlow variant for fixed release cycles
+- No direct changes in higher orgs; back-merge often
+
+<sub>Also asked as: How do you manage Git branches across sandboxes? · GitFlow vs trunk-based for Salesforce · How do branches map to environments? · branching strategy salesforce project</sub>
+
+### What are the test levels you can use in a deployment?
+*Mid (3–6 yrs) · concept* · `dev-017`
+
+There are a few test levels. NoTestRun skips tests, and it's the default for sandbox deployments. In production, tests aren't required if the deployment has no Apex. But when it includes Apex classes or triggers, RunLocalTests is the default. RunLocalTests runs all tests in the org except those from managed packages. RunAllTestsInOrg also includes managed package tests. RunSpecifiedTests runs only the test classes you name, which is much faster. The catch: each Apex class and trigger in the deployment must get at least 75% coverage from those tests individually, not just the org-wide average. So if I deploy two classes and name one test class, both classes need 75% from the tests I named. There's also a newer RunRelevantTests level, in beta, where Salesforce picks the tests related to the changed components. I use RunSpecifiedTests for fast, targeted deployments, and RunLocalTests for full releases.
+
+- NoTestRun: sandbox default
+- RunLocalTests: production default with Apex
+- RunAllTestsInOrg: includes managed package tests
+- RunSpecifiedTests: 75% per class/trigger in the package
+- RunRelevantTests: beta, platform-selected tests
+
+<sub>Also asked as: RunLocalTests vs RunSpecifiedTests vs RunAllTestsInOrg · Which tests run when you deploy to production? · What is NoTestRun? · test levels in salesforce deployment</sub>
+
+### What is a validation deployment and quick deploy, and why use them?
+*Mid (3–6 yrs) · concept* · `dev-018`
+
+A validation is a check-only deployment. It compiles everything and runs the tests against the target org, but doesn't commit any change. If it succeeds with tests run, you can do a quick deploy later. That deploys the same components without running the tests again, so the actual release takes minutes instead of possibly hours. You can quick-deploy a validation within 10 days, as long as it succeeded and ran the required tests with enough coverage. With the sf CLI, I run sf project deploy validate with RunLocalTests or specified tests, and note the job Id. Then in the release window, I run sf project deploy quick with that job Id. What I usually do is validate the day before. Say the validation finds a failing test in the afternoon. I still have time to fix it calmly, instead of finding out in the middle of the release window.
+
+- Validate = check-only deploy with tests
+- Quick deploy skips re-running tests
+- Valid for 10 days after validation
+- Validate the day before the release window
+
+```bash
+sf project deploy validate --manifest manifest/package.xml --test-level RunLocalTests --target-org prod --wait 120
+# note the job Id printed, then in the release window:
+sf project deploy quick --job-id <jobId> --target-org prod
+```
+
+<sub>Also asked as: How do you reduce production deployment time? · What is quick deploy in Salesforce? · How long is a validated deployment valid? · validate and quick deploy kaise kaam karta hai</sub>
+
+### How do you deploy profiles and permission sets safely?
+*Senior (7–10 yrs) · scenario* · `dev-019`
+
+Profiles are tricky. A profile deployment only includes the permissions for the components in that same deployment, and some settings in the file can overwrite what's in the target org. So partial profiles can unexpectedly remove access. For example, someone deploys a profile thinking it only adds one field permission, and other settings in that file overwrite what production had. My approach is to move access into permission sets and permission set groups and keep profiles minimal, which is also Salesforce's direction. Permission sets deploy more predictably. When a field or object is added, I add its permission to the right permission set in the same change. If profiles must be deployed, I deploy them together with the related components, review the diff carefully, and test with a user of that profile in staging. After deployment, I verify access with a quick check. And I never let people edit profiles directly in production outside the pipeline.
+
+- Profile deploys can overwrite or drop permissions
+- Move access to permission sets and groups
+- Ship field permissions with the field
+- Deploy profiles with related components; test as that user
+
+<sub>Also asked as: Deploying profiles wiped out permissions, why? · How do you manage profile metadata in source control? · Why should you avoid deploying profiles? · profile deployment issues salesforce</sub>
+
+### What is your rollback strategy for Salesforce deployments?
+*Senior (7–10 yrs) · design* · `dev-020`
+
+Salesforce has no native rollback for metadata, so I plan it before every release. The main tool is source control. Production state is tagged before the release, so rolling back means redeploying the previous version of the changed components, plus destructive changes for anything new that has to be removed. Say a release changes two classes and adds a new Flow. Rollback is the old versions of those two classes from the tag, plus a destructive change for the Flow. For big releases, I keep a rollback package prepared and validated in advance. Not everything can simply be reverted, though. Data changes, deleted fields, or changed field types need a data backup, and sometimes a forward fix instead. For risky features, I build feature toggles with custom metadata or custom permissions, so we can switch new behaviour off without any deployment. Tools like Gearset or Copado can generate rollback packages too. Most important: decide the rollback trigger and owner before the release window.
+
+- No native rollback: redeploy previous version from Git
+- Tag production before release; prepare rollback package
+- Data and destructive changes need backups or forward fixes
+- Feature toggles avoid emergency deployments
+- Agree rollback criteria and owner upfront
+
+<sub>Also asked as: Salesforce doesn't have a rollback button, how do you roll back? · A release broke production, how do you revert it? · How do you plan for rollback before a deployment? · rollback strategy salesforce</sub>
+
+### How do you seed test data into scratch orgs and sandboxes?
+*Mid (3–6 yrs) · scenario* · `dev-021`
+
+For small, related sample data, I export records with sf data export tree, using a SOQL query and the plan option. That saves JSON files that keep parent-child relationships, and I load them into any scratch org with sf data import tree. For example, a handful of Accounts with their Contacts and Opportunities, all linked correctly, in every new org. The plan file is committed to the repository, so every developer and CI run gets the same data. For larger volumes, I use CSV files with the Bulk API, through sf data import bulk or an upsert on an external Id. For generating realistic fake data, tools like Snowfakery are useful. For sandboxes, Partial Copy templates bring a sample from production, and post-copy scripts or tools add masked or synthetic data. One hard rule: I never copy real personal data into lower environments without masking.
+
+- sf data export tree --plan / sf data import tree
+- Commit data plans to Git for consistency
+- Bulk CSV loads for volume
+- Synthetic data generators for realism
+- Mask personal data in lower environments
+
+```bash
+sf data export tree --query "SELECT Name, Industry, (SELECT LastName, Email FROM Contacts) FROM Account LIMIT 50" --plan --output-dir data --target-org dev
+sf data import tree --plan data/Account-Contact-plan.json --target-org feature1
+sf data import bulk --sobject Product2 --file data/products.csv --wait 10 --target-org feature1
+```
+
+<sub>Also asked as: How do you load sample data into a scratch org? · What is sf data import tree? · How do you create consistent test data across environments? · data seeding salesforce dx</sub>
+
+### How do you manage release management for a Salesforce program?
+*Senior (7–10 yrs) · concept* · `dev-022`
+
+I run releases on a predictable cadence, for example every two weeks for regular changes, with a defined process for hotfixes in between. Each release has a scope agreed with the product owner, a branch or tag in Git, and goes through QA, UAT and a staging rehearsal in a full sandbox. The release checklist covers validation in production ahead of time, pre- and post-deployment manual steps, data scripts, communication to users, a rollback plan, and smoke tests after deployment. I also plan around Salesforce's three seasonal releases. We test in a preview sandbox before the upgrade, review release notes for retirements and release updates, and avoid big deployments right on upgrade weekend. So if our regular release would land on the same weekend as a seasonal upgrade, I'd move it, rather than debug two sets of changes at once. Each release closes with release notes for users and a change log for the team.
+
+- Fixed cadence + separate hotfix path
+- Scope, Git tag, QA, UAT, staging rehearsal
+- Checklist: validate early, manual steps, rollback, smoke tests
+- Plan around three seasonal releases with preview sandboxes
+- User communication and release notes
+
+<sub>Also asked as: What does a release process look like for you? · How do you plan releases around Salesforce seasonal upgrades? · What is in your release checklist? · release management salesforce</sub>
+
+### What static code analysis do you use for Salesforce, and how do you put it in the pipeline?
+*Mid (3–6 yrs) · concept* · `dev-023`
+
+I use Salesforce Code Analyzer, now on version 5, which you run with sf code-analyzer run. The older sf scanner command was v4, and it was retired in 2025. It bundles several engines: PMD for Apex and Visualforce rules, ESLint for LWC and JavaScript, RetireJS for vulnerable libraries, a Regex engine for custom checks, and a Flow Scanner engine for Flow security issues. Plus deeper analysis engines like Salesforce Graph Engine. Rules and engines are configured in a code-analyzer.yml file. In CI, I run it on every pull request with a severity threshold, so high-severity issues fail the build, and I publish the report as an artifact. So the reviewer sees the findings on the pull request before reading a single line, and a high-severity one stops the merge. Developers also get the same feedback in VS Code through the extension, so most issues are fixed before the pull request is even opened.
+
+- Salesforce Code Analyzer v5: sf code-analyzer run
+- v4 'sf scanner' retired in 2025
+- Engines: PMD, ESLint, RetireJS, Regex, Flow Scanner, Graph Engine
+- --severity-threshold fails the CI build
+- Same checks in VS Code
+
+```bash
+sf plugins install code-analyzer
+sf code-analyzer run --workspace force-app --rule-selector Recommended --severity-threshold 2 --output-file reports/code-analyzer.html
+```
+
+<sub>Also asked as: What is PMD? · What is Salesforce Code Analyzer? · How do you enforce code quality automatically? · static code analysis apex tools</sub>
+
+### Your production deployment fails because of insufficient code coverage. What do you do?
+*Mid (3–6 yrs) · troubleshooting* · `dev-024`
+
+First I read the deployment result to see which kind of failure it is. A test failure, overall org coverage below 75%, or, with RunSpecifiedTests, a specific class or trigger below 75%. If tests fail only in production, it's usually because they depend on org data or configuration, like a validation rule, a required field, a user or a record type that differs. For example, a test that queries an existing record someone created by hand in the sandbox passes there, and fails in production where that record doesn't exist. So I fix the tests to create their own data. If coverage is low, I find the uncovered classes from the coverage report and write real tests with assertions for them, not filler code. For a targeted release, I can switch to RunSpecifiedTests and include the tests that cover the deployed classes. Long term, I add a coverage check in CI, so we never discover this on release day.
+
+- Identify: failing test, org-wide coverage, or per-class coverage
+- Production-only failures: tests depending on org data or config
+- Write meaningful tests for uncovered classes
+- RunSpecifiedTests for targeted releases
+- Enforce coverage in CI
+
+<sub>Also asked as: Deployment failed with 'Average test coverage across all Apex Classes and Triggers is 74%' · Code coverage is below 75 percent in production, how do you fix it? · Tests pass in sandbox but coverage fails in production · deployment fail ho gaya code coverage ki wajah se</sub>
+
+### What is your hotfix process when there is a critical bug in production?
+*Senior (7–10 yrs) · scenario* · `dev-025`
+
+I create a hotfix branch from main, which matches what's in production, not from the development branch that has unreleased work. Say the develop branch has half-finished features in it. If I branch from there, those features ride along to production with the fix. The fix is made and tested in a sandbox refreshed or synced to production state, ideally a staging or hotfix sandbox, with a regression check of the affected area. It goes through a short but real review. Then a validation in production with RunSpecifiedTests or RunLocalTests, and a quick deploy after approval from the product owner. Right after release, I merge the hotfix branch back into main and into the develop or release branches, so the next regular release doesn't overwrite the fix. The incident and fix get documented, and if a gap in testing caused it, we add a test to prevent it again.
+
+- Branch from main (production state)
+- Test in a production-like sandbox
+- Short review, validate, quick deploy with approval
+- Merge back into all active branches
+- Document and add a regression test
+
+<sub>Also asked as: How do you push an urgent fix to production? · Walk me through a hotfix deployment · How do you avoid the hotfix being overwritten by the next release? · hotfix process salesforce</sub>
+
+### Two developers changed the same component and their changes conflict. How do you handle it?
+*Mid (3–6 yrs) · scenario* · `dev-026`
+
+The real fix is to make sure conflicts surface in Git, not in an org. Each developer works in their own sandbox or scratch org and commits to a feature branch. When both open pull requests, Git shows the conflict at merge time. For Apex, LWC and most XML, I resolve it in the editor with both developers, keeping both changes where they're compatible, then run the tests and a validation again. Say both added a different method to the same service class. That's usually an easy merge: keep both methods. Flows are harder, because the XML isn't really mergeable by hand. So we coordinate: one person owns a Flow at a time, or the second developer rebuilds their change on top of the merged version. To reduce conflicts, I keep branches short-lived, pull from main often, split large classes and Flows into smaller units, and use source format so each field lives in its own file.
+
+- Personal dev orgs + feature branches; conflicts show in Git
+- Resolve together, re-run tests and validation
+- Flows: single owner or rebuild on merged version
+- Short-lived branches, frequent pulls, smaller units
+
+<sub>Also asked as: How do you resolve merge conflicts in Salesforce metadata? · Two people edited the same Flow or Apex class, what do you do? · Someone's deployment overwrote another developer's change · metadata conflict resolution git</sub>
+
+### How do you deploy only the changed components instead of the whole repository?
+*Mid (3–6 yrs) · code* · `dev-027`
+
+I use a delta deployment, which generates a manifest of only the components that changed between two Git commits. The common open-source tool is the sfdx-git-delta plugin, run as sf sgd source delta. It compares the from and to commits, and writes a package.xml for added or changed components, plus a destructiveChanges.xml for deleted ones. The pipeline then deploys that manifest with the destructive changes file. Say the repository has 2,000 components and a release touches six of them. The delta deploys those six, not the whole repository. That makes deployments much faster and reduces risk, because you only touch what changed. The trade-offs: the from commit must be the last commit successfully deployed to that org, so I store it as a tag. And I still do periodic full validations to catch drift between Git and the org.
+
+- Diff two commits to build package.xml
+- Deletions go into destructiveChanges.xml
+- Faster, lower-risk deployments
+- Track the last deployed commit per org
+- Periodic full validation to catch drift
+
+```bash
+sf plugins install sfdx-git-delta
+sf sgd source delta --from "origin/main" --to "HEAD" --output-dir changed
+sf project deploy start --manifest changed/package/package.xml \
+  --post-destructive-changes changed/destructiveChanges/destructiveChanges.xml \
+  --test-level RunLocalTests --target-org qa
+```
+
+<sub>Also asked as: What is sfdx-git-delta? · How do you do delta deployments in CI? · Full deployment takes too long, how do you speed it up? · delta deployment salesforce git</sub>
+
+### A deployment works in the sandbox but fails in production. What are the common reasons?
+*Senior (7–10 yrs) · troubleshooting* · `dev-028`
+
+Usually it's differences between the orgs. Tests behave differently: production runs tests by default when Apex is included, and sandboxes don't. So test failures or coverage gaps only show up in production. Tests may also depend on data or users that only exist in the sandbox. Missing dependencies are another big one, like a field, record type, permission or custom setting created manually in the sandbox but not included in the package. For example, someone creates a record type by hand in the sandbox, a Flow references it, and production doesn't have it, so the deployment fails. Configuration differs too: features enabled, picklist values, validation rules or active Flows changed directly in production. Sometimes it's an API version difference, a managed package version mismatch, or production being on a newer Salesforce release. I compare the orgs with a diff tool, read the exact component errors, and fix the root cause in source control rather than patching production by hand.
+
+- Tests run by default in production when Apex is included
+- Test data or user dependencies
+- Missing components created manually in sandbox
+- Config drift in production, package or release version differences
+- Compare orgs, fix in source control
+
+<sub>Also asked as: Why would a deployment succeed in UAT and fail in prod? · Deployment fails only in production, how do you debug? · What differences between sandbox and production break deployments? · prod deployment failure reasons</sub>
+
+### How would you move a team from change sets to source-driven development?
+*Senior (7–10 yrs) · scenario* · `dev-029`
+
+I'd do it gradually, so delivery doesn't stop. First, set up a Git repository and retrieve the current production metadata into source format as the baseline, excluding things we don't manage, like some managed package components. Then pick a tool that fits the team: DevOps Center or a commercial tool if there are many admins, or the sf CLI with GitHub Actions if the team is developer-heavy. Next, start with one team or one stream of work. Define the branching strategy and the rule that higher environments only get changes through the pipeline. Say we start with one team's next sprint. Their changes go through Git and the pipeline, while the other teams stay on change sets for now. I'd add validation and static analysis on pull requests, train admins and developers with hands-on sessions, and document the workflow. Once it's stable, onboard the rest, lock down direct changes in production with permissions, and retire change sets.
+
+- Baseline production metadata into Git
+- Pick tooling to fit the admin/developer mix
+- Pilot with one team, define branching rules
+- Add PR validation and static analysis; train people
+- Lock down direct production changes, retire change sets
+
+<sub>Also asked as: We still use change sets, how do we adopt Git and CI/CD? · How do you introduce Salesforce DX to a team? · Migration plan from change sets to a DevOps pipeline · change sets se git par kaise shift kare</sub>
+
+### Why should you use version control like Git for Salesforce development?
+*Fresher (0–2 yrs) · concept* · `dev-030`
+
+Git gives the team a single source of truth for metadata and code, outside any one org. Every change has a history, an author and a reason. So we can see who changed what, compare versions, and redeploy an older version if something breaks. That matters, because Salesforce has no built-in rollback. Say a validation rule change breaks case creation on a Friday evening. With Git, I can see exactly what changed and who changed it, and redeploy the previous version. Git also lets several developers work in parallel on branches and combine their work through pull requests with code review. And it's the foundation for CI/CD: pipelines read from the repository to validate and deploy automatically, and tools like DevOps Center, Copado and Gearset all build on Git. Without it, orgs drift apart, changes get overwritten, and nobody knows exactly what is in production.
+
+- Single source of truth outside any org
+- History, comparison and rollback
+- Parallel work with branches and PR reviews
+- Foundation for CI/CD and DevOps tools
+
+<sub>Also asked as: What is the benefit of Git in Salesforce projects? · Why not just develop directly in the org? · What is source of truth in Salesforce DevOps? · git kyun use karte hain salesforce mein</sub>

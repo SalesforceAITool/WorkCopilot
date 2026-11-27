@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata"><label>Work Time Log</label><description>Logs technician time on a Work Order when status changes to Completed</description><processType>AutoLaunchedFlow</processType></Flow>

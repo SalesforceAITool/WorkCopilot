@@ -1,0 +1,757 @@
+# Experience Cloud: site lifecycle, features and scenarios
+
+52 questions. Levels: Fresher (0–2 yrs) 19 · Mid (3–6 yrs) 20 · Senior (7–10 yrs) 13
+
+## Experience Cloud Lifecycle
+
+### Walk me through the full lifecycle of an Experience Cloud site, from planning to go-live and beyond.
+*Mid (3–6 yrs) · design* · `expx-001`
+
+I think of it in eight stages. First, planning: who the users are, what they need to do, and how many there will be. Second, I pick a template, usually Build Your Own (LWR) for custom work or an Aura template like Customer Service or Partner Central for ready-made features. Third, licenses, based on whether users need roles, reports or sales objects. Fourth, I create the site and set up members, profiles and permission sets. Fifth, sharing: external OWD, sharing sets for Customer Community users, roles and sharing rules for Plus and partners. Sixth, branding, pages, navigation and CMS content in Experience Builder. Seventh, guest access and security review, then publish and activate. Last, I deploy through sandboxes with ExperienceBundle or DigitalExperienceBundle, and after launch I run moderation and analytics. For example, for a laptop seller's support portal: Customer Service template, Customer Community licenses, a sharing set on Case, knowledge for deflection.
+
+- Plan users and use cases, then template and licenses
+- Members, profiles, permission sets, then sharing
+- Builder: branding, pages, navigation, CMS
+- Security review, publish, activate, deploy, monitor
+
+<sub>Also asked as: What are the stages of building a portal in Salesforce? · Explain the Experience Cloud site lifecycle end to end · How do you take a community from idea to production? · experience cloud site life cycle steps</sub>
+
+### What do you decide in the planning phase before building an Experience Cloud site?
+*Fresher (0–2 yrs) · concept* · `expx-002`
+
+Before I open Experience Builder, I answer a few questions with the business. Who are the users: customers, partners, or anonymous visitors? Roughly how many, and how often will they log in, because that drives member-based versus login-based licenses. What must they do: view cases, register deals, read articles, pay invoices? Which records should each user see, so I can plan the sharing model early. How will they log in: username and password, social sign-on, or company SSO? And what branding, languages and devices are needed. Say a clinic wants patients to book appointments and see their invoices. I would note individual users, high volume, read-mostly access, so Customer Community licenses with sharing sets and probably person accounts. Getting this right early avoids a painful license or sharing redesign later.
+
+- Audience, volume and login frequency
+- Use cases decide objects and template
+- Sharing model planned early
+- Login method, branding, languages
+
+<sub>Also asked as: What questions do you ask the business before creating a portal? · How do you plan an Experience Cloud implementation? · Requirements gathering for a community site · planning a customer portal what to consider</sub>
+
+### How do you choose the right Experience Cloud template for a project?
+*Mid (3–6 yrs) · comparison* · `expx-003`
+
+I match the template to the main job of the site and to how much custom development we plan. Customer Service is an Aura template with cases, knowledge and questions ready to go, good for a support portal. Help Center is lighter and focused on public self-service articles. Customer Account Portal suits customers checking their account, orders and invoices. Partner Central is built for channel sales, with lead inbox, deal registration and partner dashboards. Build Your Own (LWR) is a fast, mostly blank site for teams who will build with Lightning web components. For example, a manufacturer with dealers who register deals would start on Partner Central, while a brand that wants a fast, custom-designed product site would go with Build Your Own (LWR). I also check that every standard component we rely on exists in that template, because LWR does not have all the Aura components.
+
+- Customer Service: cases, knowledge, Q&A
+- Partner Central: leads, deals, channel sales
+- Build Your Own (LWR): fast, custom LWC builds
+- Check component availability before choosing
+
+<sub>Also asked as: Customer Service vs Partner Central vs Build Your Own LWR, which do you pick? · Which template would you use for a partner portal? · How do you decide between Help Center and Customer Account Portal templates? · choosing community template</sub>
+
+### A manufacturer has about 200 dealers and 50,000 end customers who need portal access. Which licenses would you recommend?
+*Mid (3–6 yrs) · scenario* · `expx-004`
+
+I would split them by what each group needs to do. The dealer staff work leads and opportunities and need reports, so they get Partner Community licenses, or the Channel Account license if pricing per partner account works out better. The 50,000 end customers mostly log cases, read articles and check their products, so Customer Community licenses fit, and since many will log in only a few times a month, login-based licenses are usually cheaper than member-based ones. If some business customers need to see each other's records through roles or need reports, those few get Customer Community Plus. I also avoid giving everyone a bigger license than needed, because Customer Community users skip the role hierarchy, which keeps sharing recalculation light at high volume. I always confirm final pricing and object limits with the Salesforce account team.
+
+- Partner Community or Channel Account for dealers
+- Customer Community for high-volume consumers
+- Login-based for infrequent users
+- Plus only where roles or reports are needed
+
+<sub>Also asked as: How do you pick the right external license for different user groups? · Dealers and consumers on one portal, which licenses? · Customer Community vs Partner license for a dealer network · license selection for experience cloud project</sub>
+
+### What are the steps to set up a new Experience Cloud site?
+*Fresher (0–2 yrs) · concept* · `expx-005`
+
+First I enable Digital Experiences in Setup and confirm the domain, which with enhanced domains looks like yourcompany.my.site.com. Then in All Sites I click New, pick a template, and give the site a name and URL path. That opens Experience Workspaces, where under Administration I add members by profile or permission set, choose the login and registration options, and set up email templates. Next I go to Experience Builder to design pages, theme and navigation. Then I set up access: object permissions on the external profiles, sharing sets or sharing rules, and the guest user profile if any page is public. Finally I publish from Builder and activate from Administration. For example, for a solar installer's customer portal I would create the site from the Customer Service template at the path /support, add the Customer Community User profile as a member, and add a sharing set on Case before activating.
+
+- Enable Digital Experiences, check domain
+- All Sites > New > template, name, URL
+- Administration: members, login, emails
+- Builder: pages; then sharing, publish, activate
+
+<sub>Also asked as: How do you create a community in Salesforce? · Steps to enable digital experiences and create a site · How do I get started with Experience Cloud setup? · create experience site steps</sub>
+
+### How does a contact become an Experience Cloud user, and how do you give them access to the site?
+*Fresher (0–2 yrs) · concept* · `expx-006`
+
+An external user is always tied to a contact on an account. On the contact I click Enable Customer User, or Enable Partner User for a partner account, pick an external license and profile, and save. For partner and Customer Community Plus users, the account owner must have a role, because their portal roles sit under that owner in the hierarchy. The user then needs to be a member of the site: in Administration, Members, I add their profile or a permission set. Without that, the user exists but cannot log in to the site. For example, when a new contact at a dealer joins, I enable them as a partner user with the Partner Community User profile, and since that profile is already a site member, they get a welcome email if that option is on and can log in right away.
+
+- External user = contact on an account
+- Enable Customer User or Enable Partner User
+- Account owner needs a role for role-based licenses
+- Site membership via profile or permission set
+
+<sub>Also asked as: How do you create a portal user from a contact? · What is Enable Customer User? · How do you add members to an Experience Cloud site? · steps to create community user</sub>
+
+### How do you handle branding, pages and navigation in Experience Builder?
+*Fresher (0–2 yrs) · concept* · `expx-007`
+
+Branding lives in the Theme panel, where I set colors, fonts, logo and header images; I can save these as branding sets and switch between them. Pages come from the Pages menu, where I create a standard page, an object page, or a record detail page, then drag components onto it. Each page uses a theme layout that controls the header and footer. Navigation is a navigation menu component where I add menu items that point to site pages, Salesforce objects, external URLs or menu labels with sub-items, and I can mark items as public or private. For example, for a bike shop's owner portal I would set the brand colors, add a "My Bikes" object page for a custom object, and add it to the navigation menu under "My Account". Remember that nothing goes live until I publish.
+
+- Theme panel and branding sets for colors and fonts
+- Pages: standard, object and record pages
+- Theme layout controls header and footer
+- Navigation menu items point to pages, objects or URLs
+
+<sub>Also asked as: How do you change the look and feel of an Experience Cloud site? · What are theme, branding sets and navigation menus? · How do you add a new page and menu item in a community? · branding in experience builder</sub>
+
+### What is the difference between previewing, publishing and activating an Experience Cloud site?
+*Fresher (0–2 yrs) · comparison* · `expx-008`
+
+Publishing pushes the changes from Experience Builder to the live version of the site. Activating changes the site status so that members can actually reach it. A new site starts in Preview, where only admins with the right access can view it. When I activate it, the status becomes Active, members can log in, and welcome emails go out if that setting is on. I can also deactivate it, which makes it Inactive and shows a maintenance message. Preview inside Builder just shows my unsaved draft so I can check it on desktop, tablet and phone sizes. For example, on a new clinic portal I publish many times during build while it stays in Preview status, and only on go-live day do I activate it so patients start getting their welcome emails.
+
+- Publish: pushes Builder changes live
+- Activate: makes site reachable to members
+- Statuses: Preview, Active, Inactive
+- Welcome emails go out on activation if enabled
+
+<sub>Also asked as: Publish vs activate in Experience Cloud · What are the site statuses Preview, Active and Inactive? · Why can users not see the site after I published it? · difference publish and activate community</sub>
+
+### Which metadata types do you need to deploy an Experience Cloud site from sandbox to production?
+*Mid (3–6 yrs) · code* · `expx-009`
+
+A site is made of a few metadata types that travel together. Network holds the site settings like members and login options, CustomSite holds the underlying site and URL, and the Builder content is either ExperienceBundle for Aura and older LWR sites, or DigitalExperienceBundle with DigitalExperienceConfig for enhanced LWR sites. For Aura sites I first turn on the ExperienceBundle Metadata API setting in Digital Experiences settings. I also include the pieces the site depends on: NavigationMenu, Audience, profiles, permission sets, Apex classes and LWCs. For example, if I deploy a partner site, I retrieve these with a package.xml, commit them to Git, and deploy them in one go. CMS content in a separate workspace and some settings, like which users are members, may still need manual steps after deployment.
+
+- Network + CustomSite + bundle type travel together
+- ExperienceBundle: Aura and non-enhanced LWR
+- DigitalExperienceBundle + DigitalExperienceConfig: enhanced LWR
+- Include menus, audiences, profiles, code
+
+```html
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types><members>Partner_Portal</members><name>Network</name></types>
+    <types><members>Partner_Portal</members><name>CustomSite</name></types>
+    <!-- Aura / non-enhanced LWR site -->
+    <types><members>Partner_Portal1</members><name>ExperienceBundle</name></types>
+    <!-- Enhanced LWR site: use these instead -->
+    <!-- <types><members>site/Partner_Portal1</members><name>DigitalExperienceBundle</name></types> -->
+    <!-- <types><members>Partner_Portal1</members><name>DigitalExperienceConfig</name></types> -->
+    <types><members>*</members><name>NavigationMenu</name></types>
+    <types><members>*</members><name>Audience</name></types>
+    <version>62.0</version>
+</Package>
+```
+
+<sub>Also asked as: How do you move a community with change sets or SFDX? · What is ExperienceBundle and DigitalExperienceBundle? · package.xml for Experience Cloud deployment · deploy experience site metadata</sub>
+
+### How would you manage releases and change management for an Experience Cloud site that several teams work on?
+*Senior (7–10 yrs) · design* · `expx-010`
+
+The main risk is that Builder changes are made by clicking, so two teams can overwrite each other. My rule is one source of truth in Git: admins make Builder changes in a dev sandbox, retrieve the site bundle, and commit it like code. For enhanced LWR sites, DigitalExperienceBundle splits the site into smaller pieces like routes and views, which makes merges and reviews easier than one big ExperienceBundle. Each release goes dev to QA to UAT to production through the pipeline, never by editing production Builder directly. I keep a post-deploy checklist: publish the site, check members and login settings, move CMS content, and smoke-test as a real external user. For example, if the marketing team edits the home page while developers ship a new LWC, both changes merge in Git first, and only the merged bundle is deployed.
+
+- Git is the source of truth, no direct prod edits
+- Retrieve Builder changes and commit them
+- Enhanced LWR bundle splits into smaller files
+- Post-deploy: publish, members, CMS, test as user
+
+<sub>Also asked as: What is your deployment strategy for a portal with many developers? · How do you avoid overwriting site changes during deployment? · Source control and CI/CD for Experience Cloud · change management for community builder changes</sub>
+
+### After a site goes live, how do you manage moderation, engagement and analytics?
+*Mid (3–6 yrs) · concept* · `expx-011`
+
+After launch the work moves into Experience Workspaces. For moderation I set up moderation rules with keyword lists, so a post with banned words can be blocked, replaced, sent for review or flagged, and rate limit rules to slow down spam posting. I give trusted members or staff moderation permissions so they can review flagged content. For engagement I can turn on reputation points and recognition badges. For analytics I use the dashboards in Workspaces, Salesforce's free analytics package for ready-made reports on logins and activity, and a Google Analytics tracking ID set in the site settings for page views. For example, on a gadget company's Q&A forum I would block posts containing competitor coupon links, review first posts from new members, and watch weekly how many questions got a best answer without a case being logged.
+
+- Moderation rules: block, replace, review, flag
+- Rate limit rules against spam
+- Reputation and badges for engagement
+- Workspace dashboards and Google Analytics
+
+<sub>Also asked as: How do you monitor an Experience Cloud site after launch? · What are moderation rules in Experience Cloud? · How do you track adoption of a community? · site analytics and moderation</sub>
+
+## Experience Cloud
+
+### What is Market Development Funds (MDF) in a partner portal and how does it work?
+*Mid (3–6 yrs) · concept* · `expx-012`
+
+MDF is money a vendor sets aside for partners to spend on marketing, and Salesforce tracks it with a small set of channel marketing objects. A partner marketing budget holds the total amount for a period. From that budget I create fund allocations for individual partner accounts. The partner then submits a fund request through the portal, describing the campaign and amount, and it goes through an approval process. After the activity happens, the partner submits a fund claim with proof, like invoices, and once it is approved the claim is paid. For example, a network-equipment maker gives a reseller a 10,000 dollar allocation for the quarter; the reseller requests 3,000 for a trade-show booth, gets it approved, runs the event, then claims the money back with receipts. I expose these objects on Partner Central pages and use approvals and reports to track spend.
+
+- Budget > allocation > request > claim
+- Requests and claims go through approvals
+- Partners submit through the portal
+- Reports show spend per partner
+
+<sub>Also asked as: How do partners request marketing funds in Salesforce? · Explain fund allocation, fund request and fund claim · What are the channel marketing objects in PRM? · MDF partner relationship management</sub>
+
+### How do you make Knowledge articles visible on an Experience Cloud site?
+*Fresher (0–2 yrs) · concept* · `expx-013`
+
+Three things must line up: the article channel, data category visibility, and user access. When an article is published, it has channel checkboxes: Internal App, Customer, Partner, and Public Knowledge Base. Customer users only see articles marked for Customer, partner users need Partner, and guest users need Public Knowledge Base. Then, if articles use data categories, the external profile or the guest profile needs visibility to those categories. Finally the users need Read on the Knowledge object and the fields shown. For example, a printer company publishes a "Paper jam fix" article for Customer and Public Knowledge Base, so anyone on the help site can read it, while a "Warranty override process" article stays Internal App only. On the site I use the standard search and article components so people find answers before logging a case.
+
+- Channels: Internal App, Customer, Partner, Public Knowledge Base
+- Data category visibility per profile
+- Read access on Knowledge object and fields
+- Search on the site deflects cases
+
+<sub>Also asked as: What are Knowledge channels for customers and partners? · Why is my knowledge article not showing in the portal? · How to publish articles to a customer community · knowledge in experience cloud setup</sub>
+
+### Write a registration handler for social sign-on that creates a portal user the first time someone logs in with Google.
+*Senior (7–10 yrs) · code* · `expx-014`
+
+When someone signs in through an auth provider like Google, Salesforce calls the registration handler class. createUser runs the first time: for a site login the portalId is set, so I create a contact on a default account and return a new external user linked to that contact. updateUser runs on later logins, where I usually just sync the name or email. For example, a fitness brand lets members sign in with Google; the first login creates a contact under a "Self-Registered Members" account and a Customer Community user. I avoid hard-coded Ids by querying the account and profile by name or from custom metadata, I keep usernames unique, and I make sure the default account owner has a role if the license needs one.
+
+- createUser: first login, build contact and user
+- updateUser: later logins, sync details
+- portalId is set for site logins
+- No hard-coded Ids; unique usernames
+
+```java
+global class GoogleRegHandler implements Auth.RegistrationHandler {
+    global User createUser(Id portalId, Auth.UserData data) {
+        if (portalId == null) return null; // only for site logins
+        Account acc = [SELECT Id FROM Account WHERE Name = 'Self-Registered Members' LIMIT 1];
+        Profile p = [SELECT Id FROM Profile WHERE Name = 'Customer Community User' LIMIT 1];
+        Contact c = new Contact(AccountId = acc.Id, FirstName = data.firstName,
+                                LastName = data.lastName, Email = data.email);
+        insert c;
+        return new User(
+            ContactId = c.Id, ProfileId = p.Id, Email = data.email,
+            Username = data.email + '.members', LastName = data.lastName,
+            FirstName = data.firstName, Alias = data.email.left(8),
+            TimeZoneSidKey = 'America/New_York', LocaleSidKey = 'en_US',
+            EmailEncodingKey = 'UTF-8', LanguageLocaleKey = 'en_US');
+    }
+    global void updateUser(Id userId, Id portalId, Auth.UserData data) {
+        update new User(Id = userId, Email = data.email, LastName = data.lastName);
+    }
+}
+```
+
+<sub>Also asked as: How does Auth.RegistrationHandler work for Experience Cloud? · Social login creating community users automatically · What do createUser and updateUser do in a registration handler? · registration handler apex code</sub>
+
+### What login options can you configure for an Experience Cloud site?
+*Mid (3–6 yrs) · concept* · `expx-015`
+
+In Administration, under Login and Registration, I choose the login page type: the default page, a page I build in Experience Builder, or a Visualforce page. On that page I can show username and password, buttons for social sign-on through auth providers like Google or Facebook, and buttons for SAML single sign-on with a corporate identity provider. I can also turn on self-registration, and use passwordless login where users sign in with a one-time code sent by email or SMS. A login discovery page can ask for the email first and then send the user to the right method. I also brand the page, set the logout URL and pick the password and forgot-password pages. For example, a hotel chain's guest portal might offer email code login and Google, while its partner travel agents see an Okta SSO button.
+
+- Login page: default, Builder page or Visualforce
+- Social sign-on and SAML SSO buttons
+- Self-registration and passwordless login
+- Login discovery routes users to a method
+
+<sub>Also asked as: How do you customize the login page of a community? · What are the Login and Registration settings in Experience Cloud? · Can portal users log in without a password? · experience cloud login page options</sub>
+
+### How do you get the current site and user information inside an LWC on an Experience Cloud site?
+*Fresher (0–2 yrs) · code* · `expx-016`
+
+Salesforce gives scoped modules for this. @salesforce/user/Id gives the current user Id, @salesforce/user/isGuest tells me if the visitor is not logged in, @salesforce/community/Id gives the site Id, and @salesforce/community/basePath gives the site path prefix, which helps when building links. For example, on a pet insurance portal I show a "Log in to see your policies" message to guests and the policy list to logged-in users, all in one component. If I need the user's account, I pass the user Id to Apex and query the user's ContactId and Contact.AccountId there. In Apex, Network.getNetworkId() tells me which site the request came from.
+
+- @salesforce/user/Id and @salesforce/user/isGuest
+- @salesforce/community/Id and basePath
+- Query ContactId and AccountId in Apex
+- Network.getNetworkId() in Apex
+
+```java
+import { LightningElement } from 'lwc';
+import userId from '@salesforce/user/Id';
+import isGuest from '@salesforce/user/isGuest';
+import basePath from '@salesforce/community/basePath';
+
+export default class PolicyHeader extends LightningElement {
+    isGuest = isGuest;
+    userId = userId;
+    get loginUrl() {
+        return `${basePath}/login`;
+    }
+}
+```
+
+<sub>Also asked as: Which @salesforce/community modules are there? · How do I know if the user is a guest in LWC? · Get community base path and site Id in LWC · current user id in experience cloud lwc</sub>
+
+### What is the difference between a guest user and an authenticated external user?
+*Fresher (0–2 yrs) · comparison* · `expx-017`
+
+A guest user is the single shared user that represents every anonymous visitor to the site's public pages. It has no license cost, it uses the site's guest user profile, and it can only get read access to records through guest user sharing rules. An authenticated external user is a real person tied to a contact, with a Customer Community, Plus, Partner or other license, their own profile, and access through sharing sets, roles or sharing rules. For example, on a car dealer's site, anyone can browse the public "Book a test drive" page as the guest user, but only a logged-in owner can see their own service history. The key point is that whatever the guest user can see, the whole internet can see, so I keep its access to the minimum.
+
+- Guest: one shared user per site, no license
+- Guest access: read-only via guest sharing rules
+- Authenticated: real contact, license, profile
+- Guest access is public to everyone
+
+<sub>Also asked as: Guest user vs logged in community user · Who is the guest user in Experience Cloud? · Does a guest user need a license? · difference between public user and portal user</sub>
+
+### What guest user restrictions does Salesforce enforce today after the guest security changes?
+*Mid (3–6 yrs) · concept* · `expx-018`
+
+Salesforce locked down guest users a few years ago, and these rules cannot be turned off. The org-wide default for guest users is Private on every object. The only way to give them record access is a guest user sharing rule, and that is read-only. Their object permissions are limited to Read and Create, never Edit, Delete, View All or Modify All. Records a guest creates are assigned to a default internal owner, because guests cannot own records. Guests cannot be added to queues or public groups, cannot get manual or Apex managed sharing, and lost the View All Users permission. For example, if a pizza chain's public site lets visitors post a feedback form, the guest can create the feedback record, but it is owned by the site's default owner and the guest cannot read it back afterwards.
+
+- Guest OWD is Private, cannot change
+- Read-only access via guest sharing rules only
+- Object perms: Read and Create only
+- Guest records go to a default owner
+
+<sub>Also asked as: What changed with secure guest user record access? · Can a guest user update or delete records? · Who owns records created by a guest user? · guest user security policy rules</sub>
+
+### What is the difference between an Experience Cloud site, Salesforce Sites and a Visualforce portal?
+*Mid (3–6 yrs) · comparison* · `expx-019`
+
+Salesforce Sites, formerly Force.com Sites, gives you public Visualforce pages on your org's domain for anonymous visitors, but there is no login for external members, no Experience Builder and no ready-made portal features. Experience Cloud is the full external portal product: logged-in customers and partners with licenses, sharing sets and roles, Experience Builder with drag-and-drop pages, templates, knowledge, CMS, moderation and analytics. A Visualforce page can still run inside an Experience Cloud site if you have legacy pages. For example, if a museum only needs a simple public event list pulled from Salesforce, Salesforce Sites with one Visualforce page could do it. If members must log in to see their tickets and update their profile, that is an Experience Cloud site. For anything new, I go with Experience Cloud and LWC.
+
+- Salesforce Sites: public Visualforce pages, no member login
+- Experience Cloud: licensed members, Builder, templates
+- Visualforce can run inside Experience sites
+- New builds: Experience Cloud with LWC
+
+<sub>Also asked as: Experience Cloud vs Force.com Sites · When would you use Salesforce Sites instead of Experience Cloud? · Are Salesforce Sites the same as communities? · experience cloud vs salesforce sites</sub>
+
+### How do you add an Agentforce service agent to an Experience Cloud site?
+*Mid (3–6 yrs) · concept* · `expx-020`
+
+I deploy the agent through Messaging, the same way as live chat. First I build and test the service agent in Agentforce Builder, with subagents (formerly topics) and actions for things like order status or case creation. Then I create an Enhanced Chat messaging channel for web, route it with an Omni-Channel flow that sends conversations to the agent, and set a fallback queue so it can escalate to a human. Next I set up an Embedded Service deployment, publish it, and in Experience Builder drag the Embedded Messaging component onto the page or footer and publish the site. I add the site domain to the CORS allowed list, or the chat window will not load. For example, an electronics shop's help center lets the agent answer "where is my order" at night and hand complex warranty claims to a human agent in the morning.
+
+- Build and test the agent first
+- Enhanced Chat channel + Omni-Channel flow + fallback queue
+- Embedded Service deployment + Embedded Messaging component
+- Add the site domain to CORS
+
+<sub>Also asked as: Can Agentforce answer customer questions on our portal? · How do you embed an AI agent in a community? · Agentforce on Experience Cloud with handoff to a human · deploy agentforce agent on help center site</sub>
+
+## Experience Cloud Scenarios
+
+### Customers log in to the portal but cannot see their own cases. How do you troubleshoot it?
+*Fresher (0–2 yrs) · troubleshooting* · `expx-021`
+
+I check access layer by layer while logged in as that user. First, object and field access: does the external profile or permission set have Read on Case and the fields shown? Second, record access: for Customer Community users there are no roles, so a sharing set must include their profile and map Case to the user's account or contact, for example User Contact.Account equals Case Account. Third, the data itself: do the cases actually have the AccountId or ContactId filled in? Cases created by an integration often miss the contact. Fourth, the page: is the list view filter "My cases" when the cases are owned by agents? For example, at an appliance company, the sharing set mapped on Contact but cases came in from Email-to-Case without a matched contact, so the fix was in the data, not the setup.
+
+- Check profile Read on Case and fields
+- Sharing set includes the profile with the right mapping
+- Cases must have AccountId or ContactId
+- Check list view filters on the page
+
+<sub>Also asked as: Portal users see an empty case list, what would you check? · Customer community user can't see cases on their account · My cases page shows nothing for external users · customers cannot view their cases in community</sub>
+
+### When you click Enable Customer User on a contact, you get an error that the portal account owner must have a role. What do you do?
+*Fresher (0–2 yrs) · troubleshooting* · `expx-022`
+
+This error means the account's owner has no role in the role hierarchy, and Salesforce needs one to place the external user's portal role under that owner. The fix is to give the account owner a role, or change the account owner to an internal user who has one. For example, if accounts were loaded by an integration user without a role, every new dealer account fails this way, so I either assign that integration user a role or, better, reassign those accounts to the real channel managers who do have roles. I also keep an eye on ownership skew: I do not put thousands of portal accounts under one owner, because that slows down sharing recalculation. The rule mainly matters for role-based licenses like Partner Community and Customer Community Plus.
+
+- Account owner needs a role
+- Fix by assigning a role or changing the owner
+- Common with integration-owned accounts
+- Avoid ownership skew on portal accounts
+
+<sub>Also asked as: Error portal account owner must have a role, how to fix? · Cannot create partner user because account owner has no role · Why does enabling a community user fail? · portal account owner role error</sub>
+
+### A customer user must see all the records of other users in the same account, not just their own. How do you set this up?
+*Mid (3–6 yrs) · scenario* · `expx-023`
+
+The answer depends on the license. For Customer Community users, who have no roles, I use a sharing set that maps the user's Contact.Account to the record's Account field. Then every user on that account sees every record linked to the account, no matter who created it. If only some users, like a company admin, should see everything while others see only their own, I either use Customer Community Plus with roles, where the Manager or Executive role sees the User role's records, or super user access for that person. For example, at an office-supplies company, the buying team at one client needs to see all orders for their company: a sharing set on the custom Order object with Account mapped to the user's account solves it, with Read Only or Read/Write access as needed.
+
+- Customer Community: sharing set on Account
+- Selective access: Plus roles or super user access
+- Sharing set access level Read Only or Read/Write
+- Records must carry the AccountId
+
+<sub>Also asked as: Customer community user needs to see colleagues' cases · How do users from the same company see each other's records in the portal? · Share records across users of the same account in Experience Cloud · see records of others in same account</sub>
+
+### In a partner portal, the partner's sales manager should see all deals of their company, but each sales rep only their own. How do you design this?
+*Mid (3–6 yrs) · scenario* · `expx-024`
+
+I use partner roles. When a partner account is enabled, Salesforce creates up to three roles under the account owner, typically Executive, Manager and User, and I choose how many in the Digital Experiences settings. I give the reps the User role and the sales manager the Manager role, with the external OWD on Opportunity set to Private. Because roles roll up, the manager automatically sees opportunities owned by the reps below, and reps see only their own and what is shared with them. For example, a reseller has five reps and one manager: each rep registers deals they own, and the manager sees all five pipelines on a report. If the manager also needs to edit them, the role hierarchy gives that too. I avoid creating more roles than needed, since every partner account adds roles to the hierarchy.
+
+- Up to three partner roles per account
+- Set number of roles in Digital Experiences settings
+- Manager role sees reps' records via hierarchy
+- External OWD Private on Opportunity
+
+<sub>Also asked as: Partner manager needs to see team opportunities · How do partner roles work for executives and reps? · Different visibility inside one partner account · partner role hierarchy setup</sub>
+
+### Guest users must be able to browse a product catalog on the public site without logging in. How do you set it up?
+*Fresher (0–2 yrs) · scenario* · `expx-025`
+
+I give the guest user read access in the narrowest way. On the guest user profile I grant Read on Product and only the fields that are safe to show, like name, description, image and price. Because guest OWD is always Private, I create a guest user sharing rule on Product, for example "IsActive equals true and Show on Website equals true", which gives read-only access to only those products. Then I make the catalog page public in Experience Builder and use a list or a custom LWC to display it. For example, a furniture maker shows its active sofa range publicly, while discontinued or internal-only items stay hidden because they do not match the rule. Before go-live I check the Guest User Sharing Rule Access Report to confirm nothing extra is exposed.
+
+- Guest profile: Read on the object and safe fields
+- Guest user sharing rule with tight criteria
+- Make the page public in Builder
+- Verify with the Guest User Sharing Rule Access Report
+
+<sub>Also asked as: Show records to anonymous visitors on a public page · Public product list in Experience Cloud · How do guest users get read access to records? · guest user view product records</sub>
+
+### A guest user creates a record through a public form and then needs to update it in the next step. How do you handle this in Apex safely?
+*Senior (7–10 yrs) · code* · `expx-026`
+
+Guests cannot edit records, and once the record is saved it belongs to the default owner, so the guest cannot even read it. The update has to run in system mode, which means a without sharing class, and that is risky, so I keep it as small as possible. My controller stays with sharing, and only one private inner class runs without sharing for the single update. I never trust an Id sent from the browser alone: I return a random token when the record is created, store it on the record, and require that token plus the Id for the update, only within a short time window. For example, on a home-insurance quote form, step one creates the lead and step two adds the property details, so the update method only touches those few fields.
+
+- Keep the main class with sharing
+- Small without sharing inner class for one update
+- Verify a token, not just the record Id
+- Update only the fields the form needs
+
+```java
+public with sharing class QuoteFormController {
+    @AuraEnabled
+    public static void addDetails(Id leadId, String token, String propertyType) {
+        new Elevated().updateLead(leadId, token, propertyType);
+    }
+    // Only this class runs in system mode, and only for this one update
+    private without sharing class Elevated {
+        void updateLead(Id leadId, String token, String propertyType) {
+            List<Lead> leads = [SELECT Id FROM Lead
+                WHERE Id = :leadId AND Form_Token__c = :token
+                AND CreatedDate = LAST_N_DAYS:1 LIMIT 1];
+            if (leads.isEmpty()) {
+                throw new AuraHandledException('Request not allowed');
+            }
+            leads[0].Property_Type__c = propertyType;
+            update leads;
+        }
+    }
+}
+```
+
+<sub>Also asked as: Guest user needs to update a record they just created · When is without sharing OK for guest users? · Multi-step guest form update record Apex · guest user without sharing caution</sub>
+
+### Employees must log in to the same portal through the company SSO, while customers use their own credentials. How would you set it up?
+*Senior (7–10 yrs) · scenario* · `expx-027`
+
+Internal users can be members of an Experience Cloud site too, so I treat this as two login paths on one page. For employees I set up SAML single sign-on with the corporate identity provider, like Okta or Microsoft Entra ID, and match users by Federation ID. Then in Login and Registration I turn on that SSO option for the site, so the login page shows a "Log in with company account" button, and I add the internal profiles or a permission set as site members. Customers keep username and password, or social sign-on. A login discovery page is cleaner: the user types an email, and if it ends with the company domain, they are sent to SSO. For example, a telecom company's support agents open the customer portal to see what the customer sees, using SSO, while customers log in normally.
+
+- SAML SSO with Federation ID matching
+- Enable the SSO option on the site login page
+- Internal profiles added as site members
+- Login discovery routes by email domain
+
+<sub>Also asked as: Internal users and external users on the same Experience site login · Add corporate SAML SSO button to the community login page · How do employees access the customer portal? · login page must use company sso</sub>
+
+### You built an LWC that must show details of the record being viewed on an Experience Cloud record page. How do you pass the record Id?
+*Fresher (0–2 yrs) · code* · `expx-028`
+
+On a site record page, I declare a recordId property in the component's js-meta.xml for the Experience Builder target and set its default to the expression {!recordId}. Builder then fills it from the record Id in the page URL, and in the JavaScript I just use @api recordId. For example, a warranty portal has a "My Device" record page, and my custom "Warranty Status" LWC uses that Id to call Apex and show how many months of cover are left. If recordId comes through as undefined, I check that the component is on a record page and not a standard page, and that the property is set to the expression in the Builder property panel. External users also need access to the Apex class and to the record.
+
+- Declare recordId property with default {!recordId}
+- Use @api recordId in JS
+- Component must sit on a record page
+- Apex class and record access for the profile
+
+```html
+<!-- warrantyStatus.js-meta.xml -->
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <isExposed>true</isExposed>
+    <targets>
+        <target>lightningCommunity__Page</target>
+        <target>lightningCommunity__Default</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightningCommunity__Default">
+            <property name="recordId" type="String" default="{!recordId}"/>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>
+
+// warrantyStatus.js
+// @api recordId;
+```
+
+<sub>Also asked as: recordId is undefined in my LWC on the community page · How do I get recordId in Experience Builder? · Expose LWC with record Id property for community · lwc recordId experience cloud</sub>
+
+### Self-registered users must be linked to their real company account instead of one default account. How would you do it?
+*Mid (3–6 yrs) · scenario* · `expx-029`
+
+The standard self-registration puts everyone under one default account, so I customize the registration step. I ask for something that identifies the company, like a customer number, and in a custom registration handler or flow I look up the account by that number. If it matches, I create the contact under that account and then the user; if not, I put them under a holding account and create a task for the team to review. I never match only on email domain without checks, because anyone can type a domain. For example, a building-materials supplier asks new sign-ups for their trade account number; if it matches, they instantly see their company's orders through the sharing set. I also add email verification, so people cannot register with someone else's address.
+
+- Collect an identifier like customer number
+- Look up the account in the registration logic
+- No match: holding account plus review task
+- Verify email before granting access
+
+<sub>Also asked as: Self registration should attach users to the right account · Match new portal sign-ups to existing accounts · Custom self-registration with account lookup · self registration assign correct account</sub>
+
+### New portal users are not receiving welcome emails. What would you check?
+*Fresher (0–2 yrs) · troubleshooting* · `expx-030`
+
+I start with the site settings. In Administration, Emails, the "Send welcome email" option must be on, and a welcome email template must be selected. Welcome emails only go out when the site is Active; if the site is still in Preview, users added during that time do not get one, so after activating I may need to reset passwords to send them a login link. Then I check the user: is the email correct, is the user a site member through their profile or permission set, and was the user created by a data load that suppressed emails? Finally I check org email deliverability and the email logs. For example, a dental clinic loaded 500 patients while the site was in Preview, so none got an email; after activation, a password reset for those users sent the links.
+
+- Send welcome email setting and template
+- Site must be Active
+- User is a site member, email correct
+- Check deliverability and email logs
+
+<sub>Also asked as: Welcome email not sent to community users · Why didn't external users get their login email? · Experience Cloud new user email missing · portal user did not get password email</sub>
+
+### Partners and customers use the same site, but each group should see a different home page. How do you do it?
+*Fresher (0–2 yrs) · scenario* · `expx-031`
+
+I use page variations with audiences. In Experience Builder I create two variations of the Home page: one with partner content like leads and deal registration, and one with customer content like cases and articles. Then I create audiences, for example "Partners" based on profile or user type and "Customers" for the rest, and assign each variation to its audience. Salesforce shows each user the matching variation, with a default for anyone who matches no audience. For smaller differences I keep one page and set audience-based visibility on single components instead. For example, a solar panel maker shows installers a "Register a new installation" banner and shows homeowners a "Track my system" banner on the same home page URL. Remember to publish after changing audiences.
+
+- Page variations assigned to audiences
+- Audience criteria: profile, user type, location, fields
+- Default variation for everyone else
+- Component-level visibility for small changes
+
+<sub>Also asked as: Show a different landing page to different user types · Page variations with audiences in Experience Builder · Personalize community home page by profile · different home page for partners and customers</sub>
+
+### The marketing team wants to update banners and news on the portal without asking developers for a deployment. How do you enable that?
+*Fresher (0–2 yrs) · scenario* · `expx-032`
+
+I set them up with Salesforce CMS. I create a CMS workspace, add the site as a channel, and give the marketing users contributor or content manager roles in that workspace. They create content items like news, images and banners, and publish them to the site. On the site I place CMS components, like a banner or a content list, that pull the latest published items, so new content appears without anyone touching Experience Builder or deploying metadata. For example, a coffee brand's team posts a "New winter blend" news item on Monday, it shows on the portal home page right after they publish, and it disappears when they unpublish it. If we have several sites, the same content can be shared to each channel. Developers only get involved if the layout itself must change.
+
+- CMS workspace with the site as a channel
+- Marketing gets contributor or manager roles
+- CMS components show published content
+- Content can be reused across sites
+
+<sub>Also asked as: How can business users manage content on the site? · Use Salesforce CMS for portal banners and news · Content updates without release in Experience Cloud · marketing edit community content</sub>
+
+### A third-party analytics or chat script does not load on the Experience Cloud site. How do you fix it?
+*Mid (3–6 yrs) · troubleshooting* · `expx-033`
+
+This is almost always the Content Security Policy blocking the script. I open the browser console, which shows the blocked URL and which rule blocked it. In Experience Builder, under Settings, Security and Privacy, I add that domain as a trusted site for the right directive, like scripts or connections, and for Aura sites I check the script security level, since strict mode blocks inline scripts. Many scripts go in the head markup setting, so I confirm it was added there. Then I publish the site, because security changes only apply after publishing. For example, a clothing store adds a review widget: the console shows its script and API domains blocked, I add both as trusted sites, publish, and it loads. I only add domains I trust, because every trusted site widens the attack surface.
+
+- Browser console shows the blocked URL
+- Add trusted sites in Security and Privacy settings
+- Check head markup and script security level
+- Publish after the change
+
+<sub>Also asked as: External JavaScript blocked on community page · Content Security Policy error in Experience Cloud · How do you add trusted sites to an Experience site? · csp blocking script experience builder</sub>
+
+### Leads from the website must go to the right partner by region, and if a partner does not act within two days the lead should go to another partner. How would you design it?
+*Senior (7–10 yrs) · scenario* · `expx-034`
+
+I would split it into routing, acceptance and escalation. For routing, a record-triggered flow or lead assignment rules check the region and assign the lead to that region's partner queue, where partner users are members. Partners see the lead in a lead list or the lead inbox on Partner Central and accept it, which makes them the owner. For escalation, a scheduled path on the flow runs two days after assignment: if the lead is still owned by the queue, or its status has not moved, the flow reassigns it to a backup partner queue and notifies the channel manager. For example, a security-camera maker routes a Texas lead to the Southwest partners' queue; nobody accepts in 48 hours, so it moves to the next partner automatically. I report on accept time per partner to keep it fair.
+
+- Assign by region to partner queues
+- Partners accept leads from the portal
+- Scheduled path checks the SLA and reassigns
+- Report on acceptance time per partner
+
+<sub>Also asked as: Partner lead distribution with SLA · Assign leads to partners by territory and reassign if ignored · How do partners accept leads in the portal? · lead routing to channel partners</sub>
+
+### Two partners register the same deal for the same end customer. How would you handle channel conflict?
+*Senior (7–10 yrs) · scenario* · `expx-035`
+
+I catch it at submission and decide it in an approval. When a partner registers a deal, the registration flow checks for an open registration with the same end-customer company and similar product, using matching rules on a normalized company name or website. If a match exists, the new registration is flagged and routed to the channel manager instead of being auto-approved. The first-come rule is the usual default, but the channel manager can consider who has the relationship. Approved registrations get an expiry date, so a partner cannot hold a deal forever without progress. For example, two IT resellers both submit "Acme Hospital, 200 laptops": the second one is flagged, the manager sees both side by side, approves the first, and the second partner gets a rejection with the reason. Partners never see each other's registrations.
+
+- Duplicate check on submission
+- Conflicts go to the channel manager
+- Expiry dates on approved registrations
+- Partners never see each other's deals
+
+<sub>Also asked as: Duplicate deal registration from different partners · Channel conflict in partner relationship management · How do you stop two resellers claiming the same opportunity? · deal registration conflict handling</sub>
+
+### You made changes in Experience Builder but users still see the old version of the site. What is wrong?
+*Fresher (0–2 yrs) · troubleshooting* · `expx-036`
+
+Most of the time the site simply has not been published. Builder changes are drafts until I click Publish. On LWR sites there is an extra catch: the site is published as a snapshot, so even if I deploy a new version of an LWC or Apex-backed component, users only see it after I republish the site. I also check audiences, because the change may be on a page variation or component that the user's audience does not get. And browser or CDN caching can delay changes for a short while, so I test in a private window. For example, a developer deployed a fixed "Order Status" LWC to a gift shop's LWR portal, but customers kept seeing the bug until someone republished the site.
+
+- Publish to push Builder drafts live
+- LWR: republish after deploying components
+- Check audience-based variations
+- Test in a private window for caching
+
+<sub>Also asked as: Experience Builder changes not showing on the live site · Updated LWC but community still shows old version · Why do users not see my site changes? · community not updating after changes</sub>
+
+### A site deployment to a new org fails or the site looks incomplete after deployment. How do you troubleshoot it?
+*Senior (7–10 yrs) · troubleshooting* · `expx-037`
+
+I check the usual causes in order. First, the right bundle type: enhanced LWR sites use DigitalExperienceBundle, while Aura and older LWR sites use ExperienceBundle, and for Aura sites the ExperienceBundle Metadata API setting must be on in both orgs. A common trap is creating the site manually in the target org first: a new LWR site there will be enhanced, so deploying a non-enhanced site on top of it fails on the type mismatch. Second, dependencies: Network and CustomSite must be in the package, plus navigation menus, audiences, Apex, LWCs and profiles. Third, missing content: CMS items and some settings like members or email templates may need manual steps. For example, a team created an empty "Partners" site in production "to save time", and the deploy failed; renaming that site and freeing its URL let the real deploy create it correctly.
+
+- Match ExperienceBundle vs DigitalExperienceBundle
+- Do not pre-create the site in the target org
+- Include Network, CustomSite and dependencies
+- CMS content and some settings are manual
+
+<sub>Also asked as: ExperienceBundle deployment error · Community deployed but pages are missing · DigitalExperienceBundle deploy fails in target org · experience site deployment failed</sub>
+
+### Customers create cases from the portal, but the cases must go to the right support team automatically. How do you set it up?
+*Fresher (0–2 yrs) · scenario* · `expx-038`
+
+I route them the same way as any other case, but I make sure the routing actually fires for portal-created cases. The form asks for a product or category, and I set Origin to Web or Portal with a default value. Then either case assignment rules or a record-triggered flow assigns the case to the right queue, for example "Product equals Printer goes to the Printer Support queue", and Omni-Channel pushes it to available agents. If cases come from a custom LWC that inserts through Apex, assignment rules do not run by default, so I set DMLOptions with the default assignment rule, or let a flow do the routing. For example, at a home-appliance company a customer picks "Dishwasher" and the case lands with the kitchen appliances team within seconds.
+
+- Capture product or category on the form
+- Assignment rules or record-triggered flow
+- Apex inserts need DMLOptions for assignment rules
+- Omni-Channel delivers to agents
+
+```java
+Database.DMLOptions dmo = new Database.DMLOptions();
+dmo.assignmentRuleHeader.useDefaultRule = true;
+Case c = new Case(Subject = subject, Origin = 'Web');
+c.setOptions(dmo);
+insert c;
+```
+
+<sub>Also asked as: Route portal cases to the correct queue · Cases created in community are not assigned · Case assignment rules for Experience Cloud cases · portal case routing</sub>
+
+### A distributor's portal users must see opportunities of the dealer accounts under them. How would you design the sharing?
+*Senior (7–10 yrs) · scenario* · `expx-039`
+
+Normal partner sharing stops at the partner's own account, so I need cross-account sharing. The cleanest option for partner users is Account Relationships. I enable it in Digital Experiences settings, which cannot be undone, then create an account relationship data sharing rule that says, for relationship type Distributor, share Opportunity with Read or Read/Write access. Then I create an account relationship record between the distributor and each dealer account. Channel managers can add new relationships themselves without new sharing rules. For example, a tyre maker's regional distributor sees the opportunities of its 15 dealers, while dealers still only see their own. If the license or object does not fit this feature, the fallback is Apex managed sharing driven by a custom junction object, with a batch to keep it in sync.
+
+- Enable Account Relationships (irreversible)
+- Data sharing rule per relationship type and object
+- Account relationship records link the accounts
+- Fallback: Apex managed sharing
+
+<sub>Also asked as: Share records between two partner accounts · Distributor needs access to sub-dealer data in portal · What are account relationships in Experience Cloud? · cross account sharing for partners</sub>
+
+### Portal users see blank owner names or cannot find other users of their own company. What would you check?
+*Mid (3–6 yrs) · troubleshooting* · `expx-040`
+
+This is about access to User records, not the main record. The external OWD on User is usually Private, so external users only see themselves and users they are allowed to see. In Sharing Settings I check Portal User Visibility, which lets users of the same external account see each other, and Site User Visibility, which lets members of the same site see each other. For internal users, like the case owner, I can add a user sharing rule that shares a support-team group with the external users' roles or groups. On public pages, there is a separate site setting to let guest users see other members. For example, a customer at a software company could see their case but the "Owner" field was blank, so I shared the support agents' users with the customer users through a user sharing rule.
+
+- User external OWD is often Private
+- Portal User Visibility and Site User Visibility
+- User sharing rules for internal owners
+- Separate guest setting for seeing members
+
+<sub>Also asked as: External users cannot see other users in the site · Owner name not visible to community users · User sharing for Experience Cloud users · portal user visibility setting</sub>
+
+### The security team asks you to audit a public Experience Cloud site before go-live. What do you check?
+*Senior (7–10 yrs) · scenario* · `expx-041`
+
+I check what an anonymous person could reach, then what a logged-in user could reach. For guests: the guest profile should have only Read and Create on needed objects, minimal fields, API access off, and no extra Apex class or Visualforce access. I run the Guest User Sharing Rule Access Report and review every guest sharing rule. I review every Apex class used by public pages: AuraEnabled methods must be with sharing, enforce user mode or strip fields, and never return records based only on an Id from the browser. Then I check trusted sites, clickjack protection, and that "Let guest users see other members" is off unless needed. For logged-in users, I test as a real external user from two different accounts to confirm one cannot see the other's data. Finally I run Health Check and fix findings before launch.
+
+- Guest profile: minimal objects, fields, Apex access
+- Guest User Sharing Rule Access Report
+- Review AuraEnabled Apex for sharing and IDOR
+- Test cross-account access as real users
+
+<sub>Also asked as: Security review checklist for a public community · How do you make sure guest users cannot see sensitive data? · Pen test preparation for Experience Cloud site · guest user security audit</sub>
+
+### A customer contact leaves their company. How do you remove their portal access?
+*Fresher (0–2 yrs) · scenario* · `expx-042`
+
+For most cases I simply deactivate the user record. That stops logins right away, keeps their history, and frees the license, and I can reactivate them later if they come back. The other option is Disable Customer User or Disable Partner User on the contact, which permanently breaks the link between the contact and that user and removes their portal role; I use it only when we are sure, for example when the contact must be moved or deleted. Before either step, I check if the user owns records like open cases, and reassign them so nothing gets stuck. For example, when a buyer at a client of an office-furniture supplier quits, I deactivate their user, move their open quote requests to the new buyer, and the new buyer gets enabled from their own contact.
+
+- Deactivate: stops login, reversible, frees license
+- Disable on contact: permanent, removes link and role
+- Reassign records owned by the user first
+- Enable the replacement from their own contact
+
+<sub>Also asked as: Deactivate a community user · Offboarding an external user in Experience Cloud · Disable customer user vs deactivate user · remove portal access for contact</sub>
+
+### You must migrate tens of thousands of existing customers into the portal as users. How would you plan the load?
+*Senior (7–10 yrs) · scenario* · `expx-043`
+
+I load in order: accounts, then contacts, then users with ContactId, ProfileId and a unique username, in batches. Before that, I make sure each account owner has a role if role-based licenses are used, and I spread accounts across several owners to avoid ownership skew. If they are Customer Community users, there are no portal roles, which keeps the load fast; for Plus or partner users, every new account creates roles, so I check role counts and load in smaller batches. I turn welcome emails off during the load and send a planned invitation or password reset later, in waves. I also defer or test sharing recalculation, because sharing sets and rules run for each new user. For example, for a utility company moving 80,000 customers, I would do a small pilot of 500, measure the time, then load the rest overnight.
+
+- Load accounts, contacts, then users
+- Account owners need roles; avoid ownership skew
+- Welcome emails off, invite in waves
+- Pilot first, then batch the rest
+
+<sub>Also asked as: Bulk create community users with Data Loader · Mass enable customer users from contacts · Data migration of portal users · load thousands of experience cloud users</sub>
+
+### The portal must support English, Spanish and French. How would you set up a multilingual site?
+*Mid (3–6 yrs) · scenario* · `expx-044`
+
+I handle it in two layers. First, the site content: in Experience Builder settings I add the languages and pick the default, then add a language selector component. I can translate page text in Builder by switching languages, or export the content for translation, send it to translators, and import it back. Second, the Salesforce data: field labels, picklist values and custom labels are translated in Translation Workbench, and Knowledge articles get translated versions if multilingual Knowledge is on. Users see the site in their user language, and guests see the default or the one they pick. For example, a travel company's booking portal shows "Mis reservas" to Spanish users, while the picklist "Trip Type" shows translated values because of Translation Workbench. I avoid hard-coded text in LWCs and use custom labels instead.
+
+- Add languages and a language selector in Builder
+- Export and import site content for translation
+- Translation Workbench for labels and picklists
+- Custom labels in LWCs, not hard-coded text
+
+<sub>Also asked as: Translate an Experience Cloud site · How do you add languages in Experience Builder? · Multi-language community setup · site translation experience cloud</sub>
+
+### Customers want to see their order history in the portal, but orders live in an external ERP and should not be stored in Salesforce. How would you do it?
+*Senior (7–10 yrs) · scenario* · `expx-045`
+
+I have two options. If the ERP has an OData API, I can use Salesforce Connect external objects, which show ERP orders like normal records, with a lookup to the account, so the portal can list them and sharing still controls access. Otherwise, a custom LWC calls Apex, and Apex calls the ERP through a Named Credential. The key security point is that the Apex looks up the logged-in user's account itself and sends that account number to the ERP; it never trusts an account number sent from the browser. I add caching or a short timeout, so a slow ERP does not freeze the page, and show a friendly message if it is down. For example, a spare-parts supplier shows each dealer their last 12 months of orders live from SAP, and nothing is copied into Salesforce.
+
+- Salesforce Connect external objects for OData
+- Or LWC > Apex > Named Credential callout
+- Derive the account in Apex, never from the browser
+- Timeouts, caching and friendly errors
+
+<sub>Also asked as: Show ERP data on an Experience Cloud site without storing it · External objects in a customer portal · Real-time callout from a community LWC · portal shows data from external system</sub>
+
+### Partner managers want to see dashboards of their team's pipeline inside the portal. How do you deliver that?
+*Mid (3–6 yrs) · scenario* · `expx-046`
+
+First I check the license: Partner Community and Customer Community Plus users can run reports and dashboards, and with the Create and Customize Reports, Report Builder and Edit My Reports permissions they can build their own, while plain Customer Community users cannot use reports. Then I build reports on opportunities and save them in a folder shared with the partner roles, and because of sharing each manager only sees their own company's deals. On Aura templates like Partner Central, I place the dashboard or report chart components on a page. On LWR sites, embedding reports and dashboards is newer, so I check its current status in the release notes, and if it is not available I build a small LWC chart from Apex aggregate queries. For example, a solar distributor's partner managers open the portal home page and see open pipeline by stage and deals closing this month for their team.
+
+- License decides report access
+- Share report folders with partner roles
+- Sharing keeps each partner to their own data
+- Aura: dashboard components; LWR: check status or build LWC
+
+<sub>Also asked as: Show reports and dashboards to partner users · Can external users run reports in Experience Cloud? · Embed dashboards in a partner site · partner portal reporting</sub>
+
+### You added the Embedded Messaging component for the Agentforce agent, but the chat window does not appear on the site. What do you check?
+*Mid (3–6 yrs) · troubleshooting* · `expx-047`
+
+I check the chain from deployment to site. First, is the Embedded Service deployment published after the last change, and is the messaging channel active? Second, is the site domain in the CORS allowed origins list, with https at the start? Without it the chat window will not load at all. Third, trusted sites and CSP in the site's security settings, since the browser console will show blocked requests. Fourth, is the component on the right page, footer or theme layout, and did I republish the site? Fifth, the routing: the Omni-Channel flow must send the session to the agent, and the agent must be active. For example, a shoe store's help center worked in the test window but not on the site; adding the site's my.site.com domain to CORS and republishing fixed it.
+
+- Deployment published and channel active
+- Site domain in CORS allowed origins
+- Check CSP errors in the console
+- Component placed and site republished; agent active
+
+<sub>Also asked as: Chat button not showing on Experience Cloud site · Agentforce chat does not load in the portal · Embedded messaging window missing on community · enhanced chat not working on site</sub>
+
+### A support agent attaches a file to a case, but the customer cannot see it in the portal. Why?
+*Mid (3–6 yrs) · troubleshooting* · `expx-048`
+
+Most likely the file is shared with internal users only. Each file link to a record has a visibility setting: all users, internal users only, or shared users. When an agent attaches a file from inside Salesforce, it may default to internal only, so the customer cannot see it even though they can see the case. The fix is to let customers access that file, from the file's sharing options on the record, or set the link's Visibility to AllUsers when files are added by automation. I also confirm the customer can see the case itself and that the Files component is on the site's case page. For example, a laptop seller's agent uploaded a shipping label to the case, the customer saw nothing, and switching the file to customer-visible fixed it right away. I keep internal notes internal on purpose.
+
+- File link visibility: AllUsers vs InternalUsers
+- Agent uploads may be internal only
+- Set Visibility AllUsers in automation
+- Customer still needs access to the case
+
+<sub>Also asked as: Files on cases not visible to community users · Customer cannot see attachment uploaded by agent · File visibility for external users · contentdocumentlink visibility portal</sub>
+
+### You are building a B2C portal for individual customers, not companies. How do you model accounts and contacts?
+*Senior (7–10 yrs) · design* · `expx-049`
+
+Every external user needs a contact on an account, so with individuals I have two choices. Person accounts are the cleanest: each customer is one account-contact record, and they can be enabled as Customer Community users directly. The other option is a bucket model where many contacts sit under a few generic accounts, but I avoid putting too many contacts under one account, because a very large account causes data skew and locking during sharing changes; the common guidance is to stay under about 10,000 children per account, so I spread them across several bucket accounts. With bucket accounts, sharing sets must map on Contact, not Account, or every customer sees everyone else. For example, a gym chain with 200,000 members uses person accounts, so each member sees only their own bookings and invoices.
+
+- Person accounts: one record per customer
+- Bucket accounts risk data skew
+- Spread contacts; stay well under 10,000 per account
+- Bucket model: sharing set must map on Contact
+
+<sub>Also asked as: B2C community with person accounts · Bucket account vs person accounts for portal users · How to model consumers in Experience Cloud? · individual customers portal account model</sub>
+
+### A company has two brands with different customers. Would you build one Experience Cloud site or two?
+*Senior (7–10 yrs) · design* · `expx-050`
+
+I decide based on how different the users, branding and access are. If both brands share the same users, processes and mostly the same pages, one site with audiences and branding sets is easier to maintain. If they have different customers, different domains, different login pages and legal terms, two sites are cleaner, and they can still share LWCs, Apex and CMS content through channels. Sharing is org-wide, so two sites do not separate data by themselves; I still need sharing sets or rules that keep each brand's customers to their own records. For example, a kitchenware group with a premium brand and a budget brand would build two sites on their own domains with separate login pages, reuse the same case LWC, and share CMS articles where they overlap. More sites mean more deployments and testing, so I do not split without a reason.
+
+- One site + audiences when users and processes match
+- Separate sites for different domains, logins, terms
+- Reuse LWC, Apex and CMS across sites
+- Sharing still controls data, not the site
+
+<sub>Also asked as: One site or multiple sites in the same org? · Multi-brand portal design in Experience Cloud · When do you create separate communities? · single site vs multiple sites decision</sub>
+
+### The business wants the portal on its own address, like support.company.com, instead of the my.site.com URL. How do you set it up?
+*Fresher (0–2 yrs) · scenario* · `expx-051`
+
+I add a custom domain in Setup, under Domains. I enter support.company.com and pick how HTTPS is handled, usually letting Salesforce serve it through its CDN with a certificate it manages. The company's DNS team then creates a CNAME record pointing that domain to the target Salesforce gives, and once DNS has propagated the domain becomes active. Next, in Custom URLs, I map the domain to the site, for example the root path to the support site. I then update any links, email templates and SSO or auth provider callback URLs that used the old address. For example, a bicycle brand moves its owner portal from bikebrand.my.site.com to support.bikebrand.com; old links keep working, but customers now see the brand's own address, which builds trust and helps search.
+
+- Setup > Domains: add domain and HTTPS option
+- DNS team adds the CNAME record
+- Custom URLs map the domain to the site
+- Update emails, links and SSO callback URLs
+
+<sub>Also asked as: Custom domain for Experience Cloud site · How do you change the community URL to our own domain? · Set up custom URL for a portal · experience cloud custom domain cname</sub>
+
+### How do you navigate from an LWC to another page within an Experience Cloud site?
+*Mid (3–6 yrs) · code* · `expx-052`
+
+I use NavigationMixin with page reference types that work on sites. For a site page I use comm__namedPage with the page's API name, and for a record I use standard__recordPage, which opens the site's record detail page. I avoid hard-coding URLs like "/s/cases", because the path differs between Aura and LWR sites and between sandboxes and production. For example, on a car-service portal, after a customer books a service, my LWC sends them to the "Booking Confirmed" page, and a "View booking" button opens the booking record page. If a named page does not exist on the site, navigation fails, so I check the API name in Builder's page settings.
+
+- comm__namedPage with the page API name
+- standard__recordPage for records
+- No hard-coded site URLs
+- Check the page API name in Builder
+
+```java
+import { LightningElement, api } from 'lwc';
+import { NavigationMixin } from 'lightning/navigation';
+
+export default class BookingDone extends NavigationMixin(LightningElement) {
+    @api bookingId;
+    goToConfirmation() {
+        this[NavigationMixin.Navigate]({
+            type: 'comm__namedPage',
+            attributes: { name: 'Booking_Confirmed__c' }
+        });
+    }
+    openBooking() {
+        this[NavigationMixin.Navigate]({
+            type: 'standard__recordPage',
+            attributes: { recordId: this.bookingId, actionName: 'view' }
+        });
+    }
+}
+```
+
+<sub>Also asked as: NavigationMixin in Experience Cloud · Link to a community page from LWC · comm__namedPage example · navigate to record page in community lwc</sub>

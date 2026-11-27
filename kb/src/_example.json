@@ -1,0 +1,22 @@
+[
+  {
+    "id": "apex-async-001",
+    "topic": "Asynchronous Apex",
+    "level": "mid",
+    "type": "comparison",
+    "q": "What is the difference between a future method and a Queueable class?",
+    "alt": [
+      "Queueable vs future method, when do you use which?",
+      "Why would you choose Queueable over @future?",
+      "Can you chain future methods, and what is the alternative?"
+    ],
+    "a": "Both run Apex in the background, but Queueable is the more flexible one. A future method only accepts primitive parameters, you cannot monitor it, and you cannot chain it. A Queueable class can take complex types like sObjects or custom objects, it returns a job Id so you can track it in AsyncApexJob, and it can enqueue another job from its execute method to chain work. I use future only for quick, simple callouts, and Queueable for anything that needs state, chaining or monitoring.",
+    "points": [
+      "Future: static void method, primitives only, no job Id, no chaining",
+      "Queueable: complex parameters, job Id for monitoring, chaining from execute",
+      "Both need Database.AllowsCallouts / callout=true for callouts"
+    ],
+    "code": "public class PriceSync implements Queueable, Database.AllowsCallouts {\n    private List<Id> ids;\n    public PriceSync(List<Id> ids) { this.ids = ids; }\n    public void execute(QueueableContext ctx) {\n        // callout and update here\n    }\n}\n// Id jobId = System.enqueueJob(new PriceSync(recordIds));",
+    "tags": ["queueable", "future method", "asynchronous apex", "callout"]
+  }
+]

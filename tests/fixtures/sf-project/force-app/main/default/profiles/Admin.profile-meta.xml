@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Profile xmlns="http://soap.sforce.com/2006/04/metadata"><classAccesses><apexClass>PriceRevisionQueueable</apexClass><enabled>true</enabled></classAccesses><classAccesses><apexClass>WorkOrderTriggerHandler</apexClass><enabled>true</enabled></classAccesses><fieldPermissions><field>WorkOrder.Revised_Price__c</field><editable>true</editable></fieldPermissions></Profile>

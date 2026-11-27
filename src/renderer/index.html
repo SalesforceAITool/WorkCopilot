@@ -1,0 +1,264 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' wss://api.deepgram.com; img-src 'self' data:">
+  <title>Work Copilot</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="shell">
+    <!-- toolbar (drag the window from here) -->
+    <div class="bar">
+      <div id="dragGrip" class="move-btn" title="Hold and drag to move the overlay anywhere">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M3 12h18M9 6l3-3 3 3M9 18l3 3 3-3M6 9l-3 3 3 3M18 9l3 3-3 3"/></svg>
+      </div>
+      <button id="btnListen" class="pill" title="Start/stop listening (Ctrl+Alt+L)">
+        <span id="dot" class="dot"></span><span id="listenLabel">Listen</span>
+        <span id="level" class="level hidden" title="Audio being heard"><i id="levelFill"></i></span>
+      </button>
+      <button id="btnAnswer" class="pill" title="Answer the latest question (Ctrl+Alt+A)">Answer <kbd>Ctrl+Alt+A</kbd></button>
+      <button id="btnShot" class="pill" title="Answer using a screenshot of your screen (Ctrl+Alt+S)">Screenshot <kbd>Ctrl+Alt+S</kbd></button>
+      <input id="chat" class="chat" placeholder="Type a question and press Enter…" spellcheck="false">
+      <select id="modeQuick" class="mode" title="How questions are answered:
+⚡ Smart — question about your project → instant answer from your project booklet; anything else → Claude only
+Booklet + Claude — instant booklet answer (if it matches), then Claude
+Booklet only — instant booklet answer; Claude only when nothing matches
+Claude only — always Claude">
+        <option value="smart">⚡ Smart</option>
+        <option value="both">Booklet + Claude</option>
+        <option value="bank">Booklet only</option>
+        <option value="claude">Claude only</option>
+      </select>
+      <button id="btnSetup" class="pill setup" title="Meeting setup"><span id="setupLabel">Setup</span></button>
+      <button id="btnPractice" class="icon" title="Practice interview: Claude asks, you answer, then read the model answer">🎯</button>
+      <button id="btnBank" class="icon" title="Search the Salesforce Q&A bank">📚</button>
+      <button id="btnSettings" class="icon" title="Projects & options">⚙</button>
+      <button id="btnCompact" class="sq-btn" title="Collapse to toolbar"></button>
+      <button id="btnMin" class="icon" title="Minimize to taskbar (Ctrl+Alt+H brings it back)">—</button>
+      <button id="btnMax" class="icon" title="Maximize">□</button>
+      <button id="btnQuit" class="icon" title="Quit">✕</button>
+    </div>
+
+    <div id="notice" class="notice hidden"></div>
+
+    <!-- live transcript -->
+    <div id="transcript" class="transcript"><span class="muted">Press Listen — the meeting audio will appear here.</span></div>
+
+    <!-- answer card -->
+    <div class="card panel" id="card">
+      <div class="nav">
+        <button id="prev" class="icon small" title="Older answer">‹</button>
+        <button id="next" class="icon small" title="Newer answer">›</button>
+        <span id="meta" class="muted"></span>
+      </div>
+      <div id="q" class="q"><span class="muted">Questions about your work are answered from your folder; general questions from Claude.</span></div>
+      <div id="a" class="a"></div>
+    </div>
+
+    <!-- meeting setup -->
+    <div id="setup" class="card panel hidden">
+      <div class="row head"><b>Meeting setup</b><span class="muted">Fill this in before the meeting starts</span></div>
+
+      <div class="label">How should answers come?</div>
+      <div id="speedCards" class="speeds"></div>
+
+      <div class="grid2">
+        <label class="field">Scenario
+          <select id="mScenario"></select>
+        </label>
+        <label class="field">Answer style
+          <select id="mStyle"></select>
+        </label>
+      </div>
+
+      <label class="field">About this meeting
+        <span class="muted small">Who is in it, the topic, which project, what to stress or avoid.
+          <a href="#" id="useExample">Use the example</a></span>
+        <textarea id="mBrief" rows="4" spellcheck="false"></textarea>
+      </label>
+
+      <label class="field">Names and terms that may come up
+        <span class="muted small">Client, product, object or class names, ticket numbers — comma separated. Helps the transcription and Claude get them right.</span>
+        <input id="mTerms" class="text" placeholder="e.g. Amkor, QTC-1566, Work Time Log, PriceRevisionQueueable" spellcheck="false">
+      </label>
+
+      <div>
+        <div class="field">Projects for this meeting
+          <div id="mFolders" class="folders-pick"></div>
+        </div>
+      </div>
+
+      <div class="row actions">
+        <button id="btnStart" class="pill primary">▶ Start meeting</button>
+        <button id="btnSaveSetup" class="pill">Save</button>
+        <span id="setupStatus" class="muted"></span>
+      </div>
+    </div>
+
+    <!-- projects & options -->
+    <!-- practice interview -->
+    <div id="practicePanel" class="card panel hidden">
+      <div id="pSetup">
+        <div class="row head"><b>🎯 Practice interview</b><span id="pHistory" class="muted small"></span></div>
+        <div class="muted small">What is the interview for? Pick one or more — most questions come from these.</div>
+        <div id="pAreas" class="chips"></div>
+        <div class="row toggles">
+          <label>Experience
+            <select id="pExperience">
+              <option value="fresher">Fresher (0–2 yrs)</option>
+              <option value="mid">3–4 years</option>
+              <option value="five">5–7 years</option>
+              <option value="lead">8+ years / Lead</option>
+            </select>
+          </label>
+          <label>Questions
+            <select id="pCount"><option value="5">5</option><option value="10">10</option><option value="15">15</option><option value="20">20</option></select>
+          </label>
+          <label>Questions from
+            <select id="pSource">
+              <option value="booklet">Booklet — instant, fact-checked</option>
+              <option value="mix">Booklet + new ones from Claude</option>
+              <option value="claude">Claude — all new questions</option>
+            </select>
+          </label>
+        </div>
+        <div class="row toggles">
+          <label><input type="checkbox" id="pBasics" checked> Mix in Salesforce basics</label>
+          <label><input type="checkbox" id="pMine" checked> Mix in my project / resume questions</label>
+          <label><input type="checkbox" id="pSpeak"> Read questions aloud</label>
+        </div>
+        <div class="row">
+          <button id="pStart" class="pill primary">Start practice</button>
+          <button id="pStarred" class="pill hidden">Practise ⭐ starred</button>
+        </div>
+      </div>
+      <div id="pQuestion" class="hidden">
+        <div class="row head"><span id="pMeta" class="muted small"></span>
+          <span><button id="pStar" class="icon" title="Star for revision">☆</button><button id="pEnd" class="pill small-pill">End</button></span></div>
+        <div id="pQ" class="practice-q"></div>
+        <textarea id="pMy" class="text practice-answer" rows="3" placeholder="Say your answer out loud, or type it here to get feedback…"></textarea>
+        <div class="row">
+          <button id="pShow" class="pill primary">Show answer</button>
+          <button id="pCheck" class="pill" title="Claude scores your typed answer and shows what was missing">Check my answer</button>
+          <button id="pNext" class="pill">Next ›</button>
+        </div>
+        <div id="pFeedback" class="practice-feedback hidden"></div>
+        <div id="pAnswer" class="practice-a hidden"></div>
+      </div>
+      <div id="pSummary" class="hidden">
+        <div class="row head"><b>Practice done</b><span id="pSumLine" class="muted small"></span></div>
+        <ol id="pSumList" class="practice-sum"></ol>
+        <div class="row">
+          <button id="pAgain" class="pill primary">New practice</button>
+          <button id="pStarred2" class="pill">Practise ⭐ starred</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- end-to-end self test -->
+    <div id="selftestPanel" class="card panel hidden">
+      <div class="row head"><b>Full test</b><span class="muted small">checks everything a real interview uses</span></div>
+      <ol id="selftestSteps" class="selftest"></ol>
+      <div id="selftestSummary" class="selftest-summary"></div>
+      <div class="row">
+        <button id="btnSelfTestAgain" class="pill">Run again</button>
+        <button id="btnSelfTestAnswer" class="pill hidden">See the test answer</button>
+      </div>
+    </div>
+
+    <!-- Q&A bank: search and read -->
+    <div id="bankPanel" class="card panel hidden">
+      <div class="row head"><b>Salesforce Q&A bank</b><span id="bankCount" class="muted"></span></div>
+      <input id="bankQuery" class="text bank-search" placeholder="Search, e.g. trigger recursion, CPQ price rules, batch apex…" spellcheck="false">
+      <div id="bankResults" class="bank-results"></div>
+    </div>
+
+    <div id="settings" class="card panel settings hidden">
+      <div class="row head">
+        <b>Project folders</b>
+        <span id="stats" class="muted"></span>
+      </div>
+      <div id="folders"></div>
+      <div class="row">
+        <button id="btnAddFolder" class="pill">+ Add folder</button>
+        <button id="btnReindex" class="pill">↻ Re-index</button>
+      </div>
+      <div class="row head"><b>About me</b><span class="muted small">for "tell me about yourself", your experience and project background</span></div>
+      <div class="folder"><span><b>Resume:</b> <span id="resumeName" class="muted">not added</span></span>
+        <span><button id="btnAddResume" class="pill small-pill">Add resume…</button>
+        <button id="btnResumeQA" class="pill small-pill" title="Claude reads your resume once and writes instant answers about you">Build Q&A</button></span></div>
+      <div id="docList"></div>
+      <div class="row">
+        <button id="btnAddDocs" class="pill small-pill" title="Design documents, SDDs, process notes about your projects (PDF, Word, text)">+ Project documents…</button>
+        <button id="btnDocsQA" class="pill small-pill" title="Claude reads the documents once and writes instant answers about your projects">Build Q&A from documents</button>
+      </div>
+      <div id="docsStatus" class="muted small"></div>
+      <div class="row toggles">
+        <label><input type="checkbox" id="optAuto"> Auto-answer detected questions</label>
+        <label><input type="checkbox" id="optMic"> Also transcribe my mic</label>
+        <label><input type="checkbox" id="optHide"> Hide from screen share</label>
+      </div>
+      <div class="row toggles">
+        <label>Meeting audio language
+          <select id="optLang">
+            <option value="en-IN">Indian English (recommended)</option>
+            <option value="en">US / UK English</option>
+          </select>
+        </label>
+      </div>
+      <div class="row toggles">
+        <label>Claude answers
+          <select id="optAnswerEngine">
+            <option value="claude-code">Claude Code — uses my Claude plan (Pro/Max)</option>
+            <option value="api">API key — pay per use</option>
+          </select>
+        </label>
+        <span id="answerEngineStatus" class="muted small"></span>
+      </div>
+      <div class="row toggles">
+        <label>Meeting transcription
+          <select id="optEngine">
+            <option value="local">Free offline (Whisper on this PC)</option>
+            <option value="deepgram">Deepgram (cloud, needs key, most accurate)</option>
+          </select>
+        </label>
+        <label id="modelRow">Offline model
+          <select id="optModel"></select>
+        </label>
+      </div>
+      <div class="row deepgram" id="deepgramRow">
+        <input id="deepgramKey" type="password" placeholder="Paste Deepgram API key" spellcheck="false" autocomplete="off">
+        <button id="btnSaveDeepgram" class="pill">Use Deepgram</button>
+        <span id="deepgramResult" class="small"></span>
+      </div>
+      <div class="row"><span id="deepgramHint" class="muted small"></span></div>
+      <div class="row" id="modelStatusRow">
+        <span id="modelStatus" class="muted"></span>
+        <button id="btnDownloadModel" class="pill hidden">Download now</button>
+      </div>
+      <div class="row toggles">
+        <label>Answers
+          <select id="optAnswerSource">
+            <option value="smart">⚡ Smart: project question → my project booklet (instant), anything else → Claude</option>
+            <option value="both">Instant Q&A-bank answer + Claude</option>
+            <option value="bank">Q&A bank only — Claude only when nothing matches</option>
+            <option value="claude">Claude only</option>
+          </select>
+        </label>
+      </div>
+      <div class="row toggles">
+        <label>My role (answers sound like this role)
+          <input id="optRole" class="text" maxlength="80" placeholder="Salesforce Technical Lead" spellcheck="false">
+        </label>
+      </div>
+      <div class="row"><span id="bankStatus" class="muted small"></span></div>
+      <div class="row"><button id="btnSelfTest" class="pill" title="Checks Claude, the Q&A bank, your project and speech-to-text, then plays a recorded interview question through the whole app">▶ Run full test</button></div>
+      <div id="keys" class="muted"></div>
+    </div>
+    <div id="resizeGrip" class="resize-grip" title="Drag to resize"></div>
+  </div>
+  <script src="renderer.js"></script>
+</body>
+</html>

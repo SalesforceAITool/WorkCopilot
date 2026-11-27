@@ -1,0 +1,36 @@
+{
+  "name": "work-copilot",
+  "version": "1.7.1",
+  "description": "Meeting overlay that answers questions about your own projects using Claude",
+  "main": "src/main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "test-index": "node scripts/test-index.js",
+    "test": "node --test --test-timeout=30000 tests/*.test.js",
+    "test:e2e": "node --test --test-timeout=90000 tests/e2e/*.e2e.js",
+    "test:e2e:window": "node --test --test-timeout=150000 tests/e2e/window.e2e.js",
+    "test:e2e:stt": "node --test --test-timeout=600000 tests/e2e/local-stt.e2e.js",
+    "test:e2e:claude-code": "node --test --test-timeout=150000 tests/e2e/claude-code.e2e.js",
+    "test:e2e:deepgram": "node --test --test-timeout=150000 tests/e2e/deepgram.e2e.js",
+    "test:e2e:bank": "node --test --test-timeout=560000 tests/e2e/bank.e2e.js",
+    "test:e2e:self-test": "node --test --test-timeout=560000 tests/e2e/self-test.e2e.js",
+    "test:e2e:practice": "node --test --test-timeout=560000 tests/e2e/practice.e2e.js",
+    "build:win": "bash scripts/build-windows.sh"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.135.0",
+    "@huggingface/transformers": "^3.8.1",
+    "sherpa-onnx-node": "^1.13.8",
+    "tar-stream": "^3.2.2",
+    "unbzip2-stream": "^1.4.3",
+    "mammoth": "^1.13.0",
+    "pdfjs-dist": "^3.11.174"
+  },
+  "devDependencies": {
+    "electron": "^44.9.0",
+    "jsdom": "^24.1.3",
+    "playwright-core": "^1.64.1",
+    "electron-builder": "^26.0.0"
+  }
+}

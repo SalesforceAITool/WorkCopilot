@@ -1,0 +1,2144 @@
+[
+  {
+    "id": "exp-001",
+    "topic": "Experience Cloud",
+    "level": "fresher",
+    "type": "concept",
+    "q": "What is Experience Cloud and what is it used for?",
+    "alt": [
+      "Can you explain Salesforce Experience Cloud?",
+      "What is Community Cloud now called and what does it do?",
+      "What are Experience Cloud sites used for?",
+      "experience cloud kya hai, basics batao"
+    ],
+    "a": "Experience Cloud lets you build branded websites and portals on top of your Salesforce org, so people outside the company can work with your Salesforce data. Typical examples are customer self-service portals where customers log cases and read knowledge articles, partner portals where resellers register deals and work leads, and public sites like help centers. Say a laptop seller wants its distributors to register deals and its customers to track repair cases. Both can be sites on the same org. The big advantage is that it uses the same data, security model, flows and components as the internal org, so there's no separate database to sync. The product was formerly called Community Cloud and is now Experience Cloud, which is why people still call these sites communities. You build the site in Experience Builder, pick a template, and control access through external licenses, profiles, permission sets and sharing.",
+    "points": [
+      "Formerly Community Cloud, now Experience Cloud",
+      "Customer portals, partner portals, help centers, public sites",
+      "Same org data and security model, built in Experience Builder"
+    ],
+    "tags": [
+      "experience cloud",
+      "community cloud",
+      "portal",
+      "sites"
+    ]
+  },
+  {
+    "id": "exp-002",
+    "topic": "Experience Cloud",
+    "level": "fresher",
+    "type": "concept",
+    "q": "What license types are available for Experience Cloud users?",
+    "alt": [
+      "Which external user licenses does Salesforce offer for communities?",
+      "What licenses do portal users need?",
+      "Explain Customer Community, Customer Community Plus and Partner Community licenses",
+      "external user license types in experience cloud"
+    ],
+    "a": "The main external licenses are Customer Community, Customer Community Plus, Partner Community and External Apps. Customer Community is for high-volume B2C portals. These users have no roles, so their access mostly comes from sharing sets. Customer Community Plus adds roles, sharing rules and reports, which suits B2B customer portals. Partner Community is for resellers and adds sales objects like leads, opportunities and campaigns. External Apps is a more flexible license for custom-branded apps with more custom object capacity. Most come as member-based or login-based options. There's also a Channel Account license priced per partner account, and guest users need no license at all for public pages. For example, a laptop seller might use Customer Community for consumers checking repairs, Plus for business customers who want reports on their fleet's cases, and Partner Community for its distributors.",
+    "points": [
+      "Customer Community: high volume, no roles, sharing sets",
+      "Customer Community Plus: roles, sharing rules, reports",
+      "Partner Community: leads, opportunities, campaigns",
+      "External Apps: custom branded apps; guest users need no license"
+    ],
+    "tags": [
+      "licenses",
+      "customer community",
+      "partner community",
+      "external apps"
+    ]
+  },
+  {
+    "id": "exp-003",
+    "topic": "Experience Cloud",
+    "level": "mid",
+    "type": "comparison",
+    "q": "What is the difference between Customer Community, Customer Community Plus and Partner Community licenses?",
+    "alt": [
+      "Customer Community vs Customer Community Plus, which one would you pick?",
+      "When do you need Partner Community instead of Customer Community Plus?",
+      "Why would a client pay extra for Community Plus?",
+      "difference between community plus and partner license"
+    ],
+    "a": "The difference is mainly the sharing model and which objects are available. Customer Community users have no role in the hierarchy, so sharing rules can't include them. I give them access with sharing sets based on their account or contact. Customer Community Plus users get a role under their account, so I can use role-based sharing rules and manual sharing, and they can use reports and dashboards. Partner Community has the same role-based model but also unlocks leads, opportunities and campaigns, which you need for deal registration and lead distribution. So, for a laptop seller: thousands of home users checking their own repair cases are large B2C volume, so they get Customer Community. A B2B customer's IT manager who needs to see every case across her company, with reports, gets Plus. A distributor's sales staff who sell on the seller's behalf get Partner Community.",
+    "points": [
+      "Customer Community: no roles, sharing sets, best for large volume",
+      "Plus: external roles, sharing rules, reports and dashboards",
+      "Partner: adds leads, opportunities, campaigns"
+    ],
+    "tags": [
+      "licenses",
+      "customer community plus",
+      "partner community",
+      "sharing"
+    ]
+  },
+  {
+    "id": "exp-004",
+    "topic": "Experience Cloud",
+    "level": "fresher",
+    "type": "comparison",
+    "q": "What is the difference between LWR templates and Aura templates in Experience Cloud?",
+    "alt": [
+      "LWR vs Aura site, which one should I choose?",
+      "What is Lightning Web Runtime in Experience Cloud?",
+      "Build Your Own LWR vs Customer Service template",
+      "L W R versus aura experience site"
+    ],
+    "a": "LWR templates run on the Lightning Web Runtime and are built only with Lightning Web Components, while Aura templates like Customer Service, Partner Central and Help Center run on the older Aura framework. LWR sites are much faster because pages are frozen and cached at publish time and served efficiently, so they suit public and high-traffic sites. The trade-off is that LWR templates such as Build Your Own (LWR) and Microsite (LWR) come with fewer out-of-the-box pages and components, so you build more yourself, and Aura components can't be used there. Aura templates give you ready-made pages for cases, knowledge and partner features faster. For example, a public product help site with heavy traffic and a custom design suits LWR, while a quick partner portal that needs standard deal pages out of the box might go faster on Partner Central. For new builds where performance and custom design matter, I usually lean to LWR.",
+    "points": [
+      "LWR: LWC only, faster, publish-time caching, more custom work",
+      "Aura: Customer Service, Partner Central, Help Center, more ready-made pages",
+      "Aura components do not run on LWR sites"
+    ],
+    "tags": [
+      "lwr",
+      "aura",
+      "templates",
+      "experience builder"
+    ]
+  },
+  {
+    "id": "exp-005",
+    "topic": "Experience Cloud",
+    "level": "fresher",
+    "type": "concept",
+    "q": "What is Experience Builder?",
+    "alt": [
+      "How do you design pages for an Experience Cloud site?",
+      "What tool do you use to build a community site?",
+      "explain experience builder in salesforce"
+    ],
+    "a": "Experience Builder is the drag-and-drop tool where you design and configure an Experience Cloud site. In it I create pages, drag standard or custom Lightning Web Components onto them, set the theme and branding, configure navigation menus, and set page-level visibility and audience targeting. It also shows a preview for different devices and lets me publish changes when they're ready. For example, if a laptop seller wants a new Warranty page on its customer portal, I'd add the page in the builder, drop in a custom warranty-lookup component, add it to the menu, check how it looks on a phone, and publish. Things like members, login and registration, and security settings live in the Administration area, which you open from the builder or from the All Sites list in Setup.",
+    "points": [
+      "Drag-and-drop pages, components, theme, navigation",
+      "Preview by device, publish when ready",
+      "Administration covers members, login, registration"
+    ],
+    "tags": [
+      "experience builder",
+      "sites",
+      "pages",
+      "branding"
+    ]
+  },
+  {
+    "id": "exp-006",
+    "topic": "Experience Cloud",
+    "level": "mid",
+    "type": "concept",
+    "q": "What is audience targeting in Experience Cloud?",
+    "alt": [
+      "How do you show different content to different users on the same site?",
+      "How can partners and customers see different components on one page?",
+      "What are audiences in Experience Builder?",
+      "personalize experience site based on user profile or location"
+    ],
+    "a": "Audience targeting lets one site show different page variations, components, branding sets or navigation menus to different groups of users. You define an audience with criteria like profile, location, domain, permission, record type or user fields, and assign it to a page variation or a component. For example, on a distributor partner portal, gold-tier partners see a special promotions banner and other partners don't, or users from a certain country get a localized page. The important point is that it's personalization, not security. So I never rely on it to hide sensitive data. If the gold-tier price list is hidden only by an audience, a silver partner could still reach that data another way, so the data itself has to be protected with sharing and field-level security.",
+    "points": [
+      "Criteria: profile, location, permission, record type, user fields",
+      "Applies to page variations, components, branding, menus",
+      "Personalization only, not a security control"
+    ],
+    "tags": [
+      "audience targeting",
+      "personalization",
+      "experience builder"
+    ]
+  },
+  {
+    "id": "exp-007",
+    "topic": "Experience Cloud",
+    "level": "mid",
+    "type": "concept",
+    "q": "What is a sharing set and when do you use it?",
+    "alt": [
+      "How do Customer Community users get access to records without roles?",
+      "Explain sharing sets in Experience Cloud",
+      "How do you share cases with high volume portal users?",
+      "sharing set kab use karte hain"
+    ],
+    "a": "A sharing set gives external users access to records related to their own account or contact. You define it per profile and per object, map a field on the user, like Account or Contact, to a lookup on the target record, and choose Read or Read/Write. For example, on a laptop seller's customer portal, mapping Contact on User to Contact on Case means each customer sees only the cases they raised. Mapping Account to Account means they see all cases for their company. I use sharing sets mainly for Customer Community users, because they have no role, so normal sharing rules can't target them. One limitation: sharing sets can't add conditions like only open cases. If the customer should only see open repairs, I handle that with list view filters or a different design.",
+    "points": [
+      "Maps user Account or Contact to a lookup on the record",
+      "Configured per profile and object, Read or Read/Write",
+      "Main access tool for Customer Community users",
+      "No criteria like Status filters"
+    ],
+    "tags": [
+      "sharing set",
+      "external sharing",
+      "customer community",
+      "security"
+    ]
+  },
+  {
+    "id": "exp-008",
+    "topic": "Experience Cloud",
+    "level": "mid",
+    "type": "concept",
+    "q": "What is a share group in Experience Cloud?",
+    "alt": [
+      "How do you share records owned by high volume users with other users?",
+      "Share group vs sharing set",
+      "How can internal users see records created by Customer Community users?"
+    ],
+    "a": "A share group solves the reverse problem of a sharing set. A sharing set lets high-volume users see records related to them, while a share group lets other users see records owned by high-volume users. Customer Community users have no role, so records they own don't roll up anywhere. In the share group for a site, you add internal users or other external users, and they get access to all records owned by the high-volume users covered by the related sharing set. For example, on a laptop seller's portal, customers create and own their own warranty registration records. Without a share group, the support team couldn't see them through the hierarchy. Adding the support team to the share group gives them access to those customer-owned records.",
+    "points": [
+      "Shares records owned by high-volume users",
+      "Configured per site with its sharing set",
+      "Complements sharing sets"
+    ],
+    "tags": [
+      "share group",
+      "sharing set",
+      "high volume users",
+      "external sharing"
+    ]
+  },
+  {
+    "id": "exp-009",
+    "topic": "Experience Cloud",
+    "level": "fresher",
+    "type": "concept",
+    "q": "What is the External Organization-Wide Default and why is it useful?",
+    "alt": [
+      "Explain external OWD versus internal OWD",
+      "Can internal and external users have different default access?",
+      "What is external sharing model in Salesforce?"
+    ],
+    "a": "External org-wide defaults let you set a separate baseline access level for external users, including portal and guest users, from the one you use for internal employees. The rule is that the external default must be the same as or more restrictive than the internal one. A typical setup is Accounts or Cases Public Read Only internally but Private externally. Say a laptop seller wants all its support agents to see every case, so internally Case is Public Read Only. Externally it's Private, so a customer on the portal sees only what sharing sets, sharing rules or account roles give them, never another customer's cases. It removes the need to make internal access private just to protect data from portal users, and it simplifies the sharing design.",
+    "points": [
+      "Separate default for external and guest users",
+      "External must be equal or more restrictive",
+      "Common: internal Public Read Only, external Private"
+    ],
+    "tags": [
+      "external owd",
+      "org wide defaults",
+      "sharing",
+      "security"
+    ]
+  },
+  {
+    "id": "exp-010",
+    "topic": "Experience Cloud",
+    "level": "mid",
+    "type": "concept",
+    "q": "How does the role hierarchy work for partner and Customer Community Plus users?",
+    "alt": [
+      "What are account roles for external users?",
+      "How many roles can a partner account have?",
+      "Partner executive, manager, user roles explained",
+      "external role hierarchy in experience cloud"
+    ],
+    "a": "When you enable the first external user on a partner or Customer Community Plus account, Salesforce creates roles for that account, under the role of the account owner in the internal hierarchy. A partner account can have up to three roles, typically Executive, Manager and User, and that number is configurable for the org. Users higher in the account's roles see records owned by users below them, and the internal account owner and their managers see the partner's records too. Say a distributor has a sales head and five reps on the partner portal. The sales head in the Executive role sees all five reps' deals, and the channel manager who owns that account sees them too. Because external users have roles, I can write sharing rules for them. I keep the number of roles as low as possible, often one, because many roles per account creates a very large hierarchy.",
+    "points": [
+      "Roles created per account, under the account owner's role",
+      "Up to three per account, configurable",
+      "Enables role-based sharing rules; keep the count low"
+    ],
+    "tags": [
+      "account roles",
+      "role hierarchy",
+      "partner community",
+      "customer community plus"
+    ]
+  },
+  {
+    "id": "exp-011",
+    "topic": "Experience Cloud",
+    "level": "mid",
+    "type": "concept",
+    "q": "What is super user access in Experience Cloud?",
+    "alt": [
+      "How can a partner user see records of other users at the same account?",
+      "Explain super user access for partner users",
+      "What does Enable Partner Super User Access do?"
+    ],
+    "a": "Super user access lets an external user see and edit data owned by other users at the same account who are at the same role level or below. It's enabled in Digital Experiences settings and then granted to specific users from their contact record. For example, on a distributor partner portal, two partner managers sit at the same role level. Normally one can't see the other's deals. If one of them is a super user, she can see the opportunities, cases and leads owned by her peer at that distributor, not just her subordinates. It's useful when a lead person at a customer or partner company needs visibility across colleagues' work without giving everyone a higher role. I grant it only to the few users who really need that broader view.",
+    "points": [
+      "Access to records of peers and subordinates in the same account",
+      "Enable in settings, then grant per contact",
+      "Use sparingly"
+    ],
+    "tags": [
+      "super user",
+      "partner users",
+      "external sharing"
+    ]
+  },
+  {
+    "id": "exp-012",
+    "topic": "Experience Cloud",
+    "level": "mid",
+    "type": "concept",
+    "q": "How do you secure guest user access on a public Experience Cloud site?",
+    "alt": [
+      "What are guest user security best practices?",
+      "What changed with guest user sharing rules?",
+      "How do unauthenticated users see data on a site?",
+      "guest user ko records kaise dikhate hain securely"
+    ],
+    "a": "Guest users are anyone visiting the site without logging in, so I treat them as untrusted. Their external default is Private, records they create are assigned to a default owner instead of the guest user, and the only way to share records with them is a guest user sharing rule, which grants read only access. On the guest profile I give only the objects and fields really needed, never View All or Modify All, and I review which Apex classes and flows they can run. Apex used by guests should run with sharing and user-mode queries. For example, a laptop seller's public help page can show active product records through a guest sharing rule, but a guest should never be able to query cases. I also turn off settings like letting guests see other members, and run the Guest User Access Report and Salesforce Health Check to review exposure.",
+    "points": [
+      "External OWD Private, records go to a default owner",
+      "Guest user sharing rules give read only access",
+      "Minimal profile, review Apex classes and flows",
+      "Apex with sharing and WITH USER_MODE"
+    ],
+    "tags": [
+      "guest user",
+      "security",
+      "public site",
+      "sharing rules"
+    ]
+  },
+  {
+    "id": "exp-013",
+    "topic": "Experience Cloud",
+    "level": "senior",
+    "type": "scenario",
+    "q": "You need a public web form where anonymous visitors can submit a support request without logging in. How would you build it securely?",
+    "alt": [
+      "Guest users need to create cases from the website, how do you design it?",
+      "How do you let unauthenticated users submit a form on an Experience site?",
+      "Secure anonymous case submission in Experience Cloud",
+      "public contact us form on community creating records"
+    ],
+    "a": "I'd give the guest user the narrowest possible path. The page uses a screen flow or an LWC, and the guest profile only gets Create on Case and the specific fields in the form, with no Read on other cases. Guest-created records are automatically owned by the site's default owner, so the guest never keeps visibility. If I need Apex, the class runs with sharing, validates and sanitizes input, and inserts with user mode or Security.stripInaccessible. I'd add reCAPTCHA or a similar bot check, and rate limiting where possible, to stop spam. Say someone on a laptop seller's site reports a dead battery without an account. They fill name, email, serial number and the problem, hit submit, and just see a confirmation message, never the case record itself. Finally, I run the guest user access review to confirm nothing else is exposed.",
+    "points": [
+      "Create-only access on needed fields",
+      "Default owner takes the record",
+      "Apex with sharing, input validation, user mode",
+      "Bot protection, no record returned to the guest"
+    ],
+    "tags": [
+      "guest user",
+      "web form",
+      "security",
+      "case",
+      "scenario"
+    ]
+  },
+  {
+    "id": "exp-014",
+    "topic": "Experience Cloud",
+    "level": "mid",
+    "type": "code",
+    "q": "Write an Apex controller that returns the logged-in portal user's cases to an LWC on an Experience Cloud site.",
+    "alt": [
+      "How do you write Apex for a community component that respects sharing?",
+      "Show code for an LWC on an Experience site fetching only the user's cases",
+      "Apex for experience cloud with sharing and user mode",
+      "secure apex controller for portal users"
+    ],
+    "a": "I keep the class with sharing and use a user-mode query, so Salesforce enforces sharing, object permissions and field-level security for the external user. I don't filter by a hard-coded account. Sharing sets or roles already limit which cases come back, and I can add an extra filter on the user's contact if the requirement is only cases they raised. For example, on a laptop seller's portal, an IT manager at a customer company with an Account-to-Account sharing set gets all her company's cases, and adding a contact filter would narrow it to just the ones she logged. The method is cacheable so the LWC can call it with wire. The gotcha: the external user's profile or a permission set must have access to the Apex class, otherwise the component fails on the site even though it works internally.",
+    "points": [
+      "with sharing plus WITH USER_MODE",
+      "Cacheable for wire",
+      "Grant Apex class access to the external profile"
+    ],
+    "code": "public with sharing class PortalCaseController {\n    @AuraEnabled(cacheable=true)\n    public static List<Case> getMyCases() {\n        Id contactId = [SELECT ContactId FROM User WHERE Id = :UserInfo.getUserId()].ContactId;\n        return [\n            SELECT Id, CaseNumber, Subject, Status, CreatedDate\n            FROM Case\n            WHERE ContactId = :contactId\n            WITH USER_MODE\n            ORDER BY CreatedDate DESC\n            LIMIT 50\n        ];\n    }\n}",
+    "tags": [
+      "apex",
+      "lwc",
+      "with sharing",
+      "user mode",
+      "portal"
+    ]
+  },
+  {
+    "id": "exp-015",
+    "topic": "Experience Cloud",
+    "level": "fresher",
+    "type": "concept",
+    "q": "How does self-registration work on an Experience Cloud site?",
+    "alt": [
+      "How can customers sign up on a portal by themselves?",
+      "What happens when a user self-registers on a community?",
+      "Explain self registration and the default account",
+      "self registration setup in experience cloud"
+    ],
+    "a": "Self-registration lets visitors create their own login on the site. In the site's Administration, under Login and Registration, I enable self-registration, choose the default profile for new users, and pick a default account if the users are individuals. When someone registers, Salesforce creates a contact and an external user for them. In person account orgs it can create a person account instead. If I need custom logic, like matching an existing contact by email or collecting extra fields, I use a configurable registration page with a flow, or a custom Apex registration handler. For example, a laptop buyer registers to track a repair, and the handler finds she's already a contact from her purchase and links her login to that contact instead of making a new one. I also make sure the default account has an owner with a role, because external users need that to be created.",
+    "points": [
+      "Enable in Login and Registration settings",
+      "Default profile and default account",
+      "Customize with a flow or Apex handler"
+    ],
+    "tags": [
+      "self registration",
+      "login",
+      "external users",
+      "experience cloud"
+    ]
+  },
+  {
+    "id": "exp-016",
+    "topic": "Experience Cloud",
+    "level": "senior",
+    "type": "scenario",
+    "q": "A client wants their customers to log in to the portal with Google or with the company identity provider. How would you set up SSO for external users?",
+    "alt": [
+      "How do customers log in with Google or Facebook to a portal?",
+      "SSO for community users, how does it work?",
+      "How do you integrate an external identity provider with an Experience site?",
+      "what is a registration handler in salesforce"
+    ],
+    "a": "For external users I usually configure an Auth Provider for social login or an OpenID Connect provider, or a SAML single sign-on setting if the customer has their own identity provider. Then on the site's Login and Registration page I enable that login option so it shows as a button. For Auth Providers, a registration handler class decides what happens on first login. It can match an existing user, or create a contact and external user, and it updates user details on later logins. For SAML, Just-in-Time provisioning can create users. For example, home customers click Log in with Google, while a business customer's staff click their company login button and come in through SAML. I also set the login page type, session timeout and multi-factor authentication policy for external users. The key design point is deciding which system is the source of truth for identities.",
+    "points": [
+      "Auth Provider for social or OpenID Connect, SAML for enterprise IdP",
+      "Registration handler or JIT provisioning creates users",
+      "Enable on the site's login page, plan MFA"
+    ],
+    "tags": [
+      "sso",
+      "auth provider",
+      "saml",
+      "registration handler",
+      "login"
+    ]
+  },
+  {
+    "id": "exp-017",
+    "topic": "Experience Cloud",
+    "level": "fresher",
+    "type": "code",
+    "q": "How do you make a Lightning Web Component available in Experience Builder?",
+    "alt": [
+      "My LWC doesn't show up in the Experience Builder component list, why?",
+      "What targets do you add for LWC in community pages?",
+      "Expose LWC to experience cloud site",
+      "js-meta.xml for experience builder"
+    ],
+    "a": "In the component's js-meta.xml file I set isExposed to true and add the Experience Cloud targets. lightningCommunity__Page makes it draggable onto pages, and lightningCommunity__Default lets it have properties that admins can set in the builder. I define those properties in a targetConfig for lightningCommunity__Default. After deploying, the component shows up under Custom Components in Experience Builder. For example, a warranty-lookup component could expose a Show Expired Warranties checkbox, so the site admin can turn it on or off in the builder without a developer. If the component uses Apex, the external users' profile needs access to the Apex class, and the data must be accessible through sharing and field permissions, otherwise it works in the builder but shows nothing to customers.",
+    "points": [
+      "isExposed true",
+      "Targets lightningCommunity__Page and lightningCommunity__Default",
+      "Builder properties in targetConfig"
+    ],
+    "code": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<LightningComponentBundle xmlns=\"http://soap.sforce.com/2006/04/metadata\">\n    <apiVersion>62.0</apiVersion>\n    <isExposed>true</isExposed>\n    <targets>\n        <target>lightningCommunity__Page</target>\n        <target>lightningCommunity__Default</target>\n    </targets>\n    <targetConfigs>\n        <targetConfig targets=\"lightningCommunity__Default\">\n            <property name=\"title\" type=\"String\" default=\"My Cases\"/>\n        </targetConfig>\n    </targetConfigs>\n</LightningComponentBundle>",
+    "tags": [
+      "lwc",
+      "experience builder",
+      "js-meta.xml",
+      "targets"
+    ]
+  },
+  {
+    "id": "exp-018",
+    "topic": "Experience Cloud",
+    "level": "fresher",
+    "type": "concept",
+    "q": "What is Salesforce CMS and how is it used with Experience Cloud?",
+    "alt": [
+      "How do you manage content like banners and articles on an Experience site?",
+      "What are CMS workspaces?",
+      "Explain enhanced CMS in Salesforce",
+      "content management in experience cloud"
+    ],
+    "a": "Salesforce CMS is the built-in content management system. You create and manage content like news, images, documents and banners in workspaces, then publish it to one or more channels, like Experience Cloud sites. Content authors can work on drafts, use translations, and publish without changing the site layout. In Experience Builder, components like CMS Collections or content detail pages display that content. Newer enhanced CMS workspaces work with enhanced LWR sites and add features like content search and sharing content across sites. For example, a laptop seller's marketing team writes a Back to School offer banner once, translates it, and publishes it to both the customer portal and the distributor portal, without a developer touching either site. That's the point: it separates content from design.",
+    "points": [
+      "Workspaces hold content, channels publish it",
+      "Drafts, translations, reuse across sites",
+      "Enhanced CMS workspaces pair with enhanced LWR sites"
+    ],
+    "tags": [
+      "cms",
+      "content",
+      "experience cloud",
+      "lwr"
+    ]
+  },
+  {
+    "id": "exp-019",
+    "topic": "Experience Cloud",
+    "level": "mid",
+    "type": "concept",
+    "q": "How do partner portals handle deal registration and lead distribution?",
+    "alt": [
+      "What PRM features does Experience Cloud provide?",
+      "How do partners register deals in Salesforce?",
+      "How do you assign leads to partners?",
+      "partner relationship management features in partner central"
+    ],
+    "a": "For partner relationship management I use the Partner Central template or a custom site with Partner Community licenses. Deal registration lets a partner submit an opportunity they found. Usually that's an opportunity or lead created through a form, and an approval process or flow lets the channel manager approve it, which protects the partner's claim on the deal. For lead distribution, channel managers assign leads to a partner account's queue or users, often with assignment rules or flows, and partners can accept or reject leads they're given. Say a laptop distributor finds a school that wants 200 laptops. They register the deal on the portal, the channel manager approves it, and no other partner can claim that school. Around that you add a partner dashboard, market development funds and training content, and the sharing model makes sure each partner sees only their own leads and opportunities.",
+    "points": [
+      "Partner Community license, Partner Central template",
+      "Deal registration through a form plus approval",
+      "Lead distribution through queues, assignment rules, accept or reject"
+    ],
+    "tags": [
+      "prm",
+      "partner portal",
+      "deal registration",
+      "lead distribution"
+    ]
+  },
+  {
+    "id": "exp-020",
+    "topic": "Experience Cloud",
+    "level": "senior",
+    "type": "scenario",
+    "q": "A public Experience Cloud site is slow. How would you improve its performance?",
+    "alt": [
+      "How do you optimize page load time on a community?",
+      "Experience site performance and caching best practices",
+      "Our portal home page takes too long to load, what can you do?",
+      "site performance tuning in experience cloud"
+    ],
+    "a": "First I measure, using the browser developer tools and the Experience Cloud page optimizer to find which components or server calls are slow. Then the biggest win is often moving to an LWR template, because LWR freezes pages at publish time and uses HTTP caching and a CDN, which helps guest traffic a lot. For data, I make Apex methods cacheable, use Lightning Data Service where I can, cut the number of server calls per page, and query only needed fields with selective filters. I lazy-load components below the fold, compress and size images, and keep the component count per page small. For example, if a laptop seller's public product page makes six Apex calls on load, I'd combine them into one cacheable call. I also make sure the CDN is on and avoid personalizing public pages unnecessarily, because personalized content can't be cached as well.",
+    "points": [
+      "Measure first with dev tools and page optimizer",
+      "LWR publish-time freezing, HTTP caching, CDN",
+      "Cacheable Apex, fewer calls, lazy loading, smaller images"
+    ],
+    "tags": [
+      "performance",
+      "caching",
+      "cdn",
+      "lwr",
+      "experience cloud"
+    ]
+  },
+  {
+    "id": "exp-021",
+    "topic": "Experience Cloud",
+    "level": "fresher",
+    "type": "scenario",
+    "q": "In a customer portal, each customer should see only their own cases. How would you configure this?",
+    "alt": [
+      "Portal users can see other customers' cases, how do you fix the sharing?",
+      "How do you restrict community users to their own cases?",
+      "Customer should only see cases of their company in the portal",
+      "only my cases in experience cloud"
+    ],
+    "a": "I'd start by setting the external org-wide default for Case to Private, so portal users see nothing by default. For Customer Community users, I create a sharing set on their profile that maps the user's Contact to the Case's Contact, with Read or Read/Write, so each person sees only the cases they raised. If the business wants everyone at the same company to see the company's cases, I map the user's Account to the Case's Account instead. For Customer Community Plus users I could also use their role or super user access. Then I check the profile has Read on Case and the needed fields. Finally I test properly. Say Ravi from one customer logs in. I confirm he sees his laptop repair cases, and I confirm he can't open a case belonging to a different customer, even by pasting its URL.",
+    "points": [
+      "External OWD Private for Case",
+      "Sharing set: Contact to Contact, or Account to Account",
+      "Test by logging in as the portal user"
+    ],
+    "tags": [
+      "sharing set",
+      "cases",
+      "customer portal",
+      "scenario"
+    ]
+  },
+  {
+    "id": "exp-022",
+    "topic": "Experience Cloud",
+    "level": "senior",
+    "type": "scenario",
+    "q": "Partner users should see only opportunities of the accounts they work with, not other partners' deals. How would you design the sharing?",
+    "alt": [
+      "How do you stop one partner seeing another partner's opportunities?",
+      "Partner portal opportunity visibility design",
+      "Partners should see opportunities for their customer accounts only",
+      "sharing opportunities with partner community users"
+    ],
+    "a": "I'd set the external org-wide default for Opportunity to Private. Opportunities owned by a partner user are already visible to people above them in that partner account's roles, so partner managers see their team's deals automatically. For opportunities owned internally but related to the partner, I'd fill a partner account lookup on the opportunity and use a sharing rule or Apex managed sharing to share it with that partner account's role group. If the partner works with specific end-customer accounts, I can share those accounts and their opportunities based on a field like Partner Account. I avoid broad role-and-below rules across partners. Then I test with two distributors, say North Distributors and South Distributors, and prove that a South user can't see a single North deal, even ones the internal team owns.",
+    "points": [
+      "External OWD Private for Opportunity",
+      "Partner role hierarchy covers partner-owned deals",
+      "Share internally owned deals by partner account field",
+      "Test isolation between two partners"
+    ],
+    "tags": [
+      "partner community",
+      "opportunity",
+      "sharing rules",
+      "scenario"
+    ]
+  },
+  {
+    "id": "exp-023",
+    "topic": "Experience Cloud",
+    "level": "mid",
+    "type": "scenario",
+    "q": "A portal user gets an insufficient privileges or no data error on a page that works fine for internal users. How do you troubleshoot it?",
+    "alt": [
+      "Component works internally but not on the community, why?",
+      "External user can't see a record on the Experience site",
+      "Insufficient privileges error in experience cloud",
+      "portal user not able to view data what to check"
+    ],
+    "a": "I check the layers in order. First, is the user a member of the site through their profile or a permission set? Then object and field permissions on the external profile, because external profiles are usually much tighter. Next, record access: the external org-wide default, sharing sets, sharing rules or account roles, and I use the record's sharing view to see why the user does or doesn't have access. If a custom component is involved, the profile needs access to the Apex class, and the class shouldn't be failing on a user-mode query. I also check page-level visibility and audience settings in Experience Builder. For example, a distributor user can't see the Price List page. Logging in as her from her contact record, which is the fastest way to reproduce it, I might find her profile has no Read on the price list object at all.",
+    "points": [
+      "Site membership, then object and field permissions",
+      "External OWD, sharing sets, rules, roles",
+      "Apex class access, page visibility, login as user"
+    ],
+    "tags": [
+      "troubleshooting",
+      "permissions",
+      "sharing",
+      "portal user"
+    ]
+  },
+  {
+    "id": "exp-024",
+    "topic": "Experience Cloud",
+    "level": "mid",
+    "type": "scenario",
+    "q": "A partner company wants their own manager to create and deactivate portal users for their staff without calling your support team. How would you enable this?",
+    "alt": [
+      "What is delegated external user administration?",
+      "Can a partner admin manage users in the portal?",
+      "How to let customer admins create community users themselves",
+      "external delegated admin experience cloud"
+    ],
+    "a": "I'd use delegated external user administration. I enable it on the external users' profile, give that manager the Delegated External User Administrator permission, and specify which profiles they're allowed to assign. On the site I add the user management component, or a page where they can create, edit, reset passwords and deactivate users, but only for contacts on their own account. For example, a distributor's office manager hires a new rep on Monday. She creates his portal login herself, and when another rep leaves on Friday she deactivates him, all without raising a ticket, and she can't touch any other distributor's users. That removes routine support work while keeping them inside their own company's boundary. I'd also add a report or audit for the internal channel team so they can see who was created or deactivated.",
+    "points": [
+      "Delegated External User Administrator permission",
+      "Limit assignable profiles",
+      "Scope stays within the user's own account"
+    ],
+    "tags": [
+      "delegated admin",
+      "partner users",
+      "user management",
+      "scenario"
+    ]
+  },
+  {
+    "id": "exp-025",
+    "topic": "Experience Cloud",
+    "level": "fresher",
+    "type": "comparison",
+    "q": "What is the difference between member-based and login-based Experience Cloud licenses?",
+    "alt": [
+      "Login license vs member license, which is cheaper?",
+      "How do login-based community licenses work?",
+      "When should a client buy logins instead of members?"
+    ],
+    "a": "A member-based license is a named seat assigned to one user, who can log in as often as they want. A login-based license is used up per day a user logs in, from a pool of logins bought for the period. So the choice depends on usage. If users log in rarely, like a customer who checks a repair case a few times a year, login-based is cheaper. If users come in many times a month, like an active distributor rep working deals every day, member-based is better. The access rights are the same for the same license type; only the billing model differs. So before recommending one, I always estimate how often each user group will log in.",
+    "points": [
+      "Member: named seat, unlimited logins",
+      "Login: billed per daily unique login",
+      "Choose based on login frequency"
+    ],
+    "tags": [
+      "licenses",
+      "login based",
+      "member based",
+      "pricing"
+    ]
+  },
+  {
+    "id": "exp-026",
+    "topic": "Experience Cloud",
+    "level": "mid",
+    "type": "scenario",
+    "q": "After deploying a custom LWC to the portal, external users see a blank component while admins previewing the site see data. What would you check?",
+    "alt": [
+      "LWC shows data in preview but not for community users",
+      "Custom component empty on the Experience site for customers",
+      "Why is my Apex returning nothing for portal users?",
+      "site user can't see lwc data"
+    ],
+    "a": "Admins have broad access, so preview hides permission problems. First I check that the external profile or permission set has access to the Apex class the component calls, because without it the call fails. Then object and field-level security for that profile, since a user-mode query or stripInaccessible removes fields they can't read. Next is record sharing: the external OWD is often Private, so the user may need a sharing set or rule. I also look at the browser console and a debug log for the external user to see the actual error. For example, a new My Laptops component on the customer portal is blank for customers. Very often the external profile simply has no access to the new Apex class. Finally I confirm the site was republished after the change, because LWR sites serve the last published version.",
+    "points": [
+      "Apex class access on the external profile",
+      "FLS and object permissions",
+      "Sharing for external users, debug log, republish LWR"
+    ],
+    "tags": [
+      "lwc",
+      "troubleshooting",
+      "apex access",
+      "scenario"
+    ]
+  },
+  {
+    "id": "exp-027",
+    "topic": "Experience Cloud",
+    "level": "senior",
+    "type": "scenario",
+    "q": "A client expects millions of B2C customers to use their Experience Cloud portal. How would you design it?",
+    "alt": [
+      "Architecture for a portal with millions of users",
+      "High volume portal design considerations",
+      "Large B2C customer community, what licenses and sharing would you use?",
+      "scalable customer portal design salesforce"
+    ],
+    "a": "For very large B2C volumes I'd use Customer Community login-based licenses, often with person accounts, because those users have no roles and the sharing engine scales much better. Access comes from sharing sets based on the user's contact or account, plus share groups if internal teams need to see records the customers own. I'd avoid Customer Community Plus here, since every account with an enabled user adds roles and can create a huge hierarchy. I'd plan for ownership and account data skew, for example by not putting thousands of users under one default account. Say a laptop seller has two million home buyers who log in now and then to register a warranty or check a repair. Each is a person account with a login-based license. For the front end, an LWR site with CDN caching, cacheable Apex, and self-registration or social login keeps it fast and low-touch.",
+    "points": [
+      "Customer Community, login-based, person accounts",
+      "Sharing sets and share groups instead of roles",
+      "Avoid data skew on default accounts",
+      "LWR with CDN for scale"
+    ],
+    "tags": [
+      "design",
+      "high volume",
+      "b2c",
+      "scalability",
+      "experience cloud"
+    ]
+  },
+  {
+    "id": "exp-028",
+    "topic": "Experience Cloud",
+    "level": "mid",
+    "type": "scenario",
+    "q": "Guest users on a public page cannot see knowledge articles or product records anymore. How would you fix it?",
+    "alt": [
+      "Public site visitors see no records, what's missing?",
+      "Records not visible to guest users on community",
+      "How do you share records with the guest user?",
+      "guest user sharing rule not working"
+    ],
+    "a": "Guest users get no record access from defaults, because their external access is Private. So for records like a product catalog, I'd create a guest user sharing rule on that object with criteria like Active equals true, which grants read only access to the site's guest user. I also check the guest profile has Read on the object and the fields shown. For knowledge, I check the articles are published to the public channel, the guest has access to the data categories, and the site's knowledge settings allow guest access. If an Apex class serves the data, the guest profile needs class access. For example, on a laptop seller's public site, a rule sharing only active laptop models means discontinued or unreleased models never show. That's why I keep the criteria tight, so only truly public records are shared.",
+    "points": [
+      "Guest user sharing rule, read only, tight criteria",
+      "Object and field access on the guest profile",
+      "Knowledge: public channel and data categories"
+    ],
+    "tags": [
+      "guest user",
+      "sharing rules",
+      "knowledge",
+      "troubleshooting"
+    ]
+  },
+  {
+    "id": "exp-029",
+    "topic": "Experience Cloud",
+    "level": "fresher",
+    "type": "concept",
+    "q": "How do you make some pages public and others visible only after login on an Experience site?",
+    "alt": [
+      "Public vs private pages in Experience Builder",
+      "How to allow guest access to a page in a community?",
+      "Some pages should need login, others should be open, how?",
+      "page access settings experience site"
+    ],
+    "a": "First, in the site settings in Experience Builder, I allow guest users to access the site, otherwise every page requires login. Then each page has a page access setting: public, so guest users can open it, or requires login, so unauthenticated visitors get sent to the login page. For example, on a laptop seller's portal, the home page, FAQ and contact form are public, while My Cases and account pages require login. I still protect the data behind those pages through sharing and the guest profile, because hiding a page isn't enough if the data is reachable another way, like through an Apex method the guest can still call.",
+    "points": [
+      "Enable public access in site settings",
+      "Per-page public or requires login",
+      "Data security still comes from sharing"
+    ],
+    "tags": [
+      "public pages",
+      "guest access",
+      "login",
+      "experience builder"
+    ]
+  },
+  {
+    "id": "exp-030",
+    "topic": "Experience Cloud",
+    "level": "senior",
+    "type": "scenario",
+    "q": "The business wants to move an existing Aura-based Customer Service site to an LWR template. How would you plan it?",
+    "alt": [
+      "Migrating an Aura community to LWR, what are the challenges?",
+      "Can you convert an Aura Experience site to LWR?",
+      "Plan for rebuilding a portal on Lightning Web Runtime",
+      "aura to lwr site migration"
+    ],
+    "a": "There's no in-place conversion, so I treat it as a rebuild on a new LWR site. I start with an inventory of every page, standard component, custom Aura component and theme setting on the current site. Aura components have to be rewritten as LWCs, and some standard Aura template components have no LWR equivalent, so I plan custom builds for those. I also review navigation, audience targeting, SEO settings and URLs, and set up redirects so existing links keep working. For example, if a laptop seller's customers have bookmarked the old My Cases page, that URL should redirect to the new one. Sharing, profiles and licenses usually stay the same since they're org-level. I build and test on a new site in a sandbox, do user acceptance testing with real external users, then switch the domain or URL over in a planned cutover.",
+    "points": [
+      "No conversion, rebuild as a new site",
+      "Rewrite Aura components as LWC, fill component gaps",
+      "Plan URLs, redirects, SEO, then cutover"
+    ],
+    "tags": [
+      "lwr",
+      "aura",
+      "migration",
+      "scenario",
+      "experience cloud"
+    ]
+  },
+  {
+    "id": "hc-001",
+    "topic": "Health Cloud",
+    "level": "fresher",
+    "type": "concept",
+    "q": "What is Health Cloud?",
+    "alt": [
+      "Can you explain Salesforce Health Cloud?",
+      "What is Agentforce Health?",
+      "What problems does Health Cloud solve for hospitals and insurers?",
+      "health cloud kya hai"
+    ],
+    "a": "Health Cloud, which Salesforce now markets as Agentforce Health, is its industry solution for healthcare organizations, like hospitals, clinics, home health providers and health insurers. It extends Sales and Service Cloud with a healthcare data model for patients or members, clinical data, care plans, care programs, providers, and payer objects like member plans and benefits. On top of that it gives you the patient or member 360 view, timeline, care coordination, utilization management, appointment management and FHIR-based interoperability. Think of a care coordinator at a clinic who's looking after a patient with diabetes. Instead of checking the EHR, a spreadsheet and her email, she opens one patient record and sees his conditions, his care plan, his care team and his next appointment. That's the goal: one view of the person, so care teams and service agents can coordinate care and service better.",
+    "points": [
+      "Industry solution for providers, payers, life sciences",
+      "Healthcare data model: patients, clinical, care plans, providers",
+      "Patient 360, care management, interoperability"
+    ],
+    "tags": [
+      "health cloud",
+      "healthcare",
+      "industry cloud",
+      "overview"
+    ]
+  },
+  {
+    "id": "hc-002",
+    "topic": "Health Cloud",
+    "level": "fresher",
+    "type": "concept",
+    "q": "How are patients or members stored in Health Cloud?",
+    "alt": [
+      "Does Health Cloud use person accounts?",
+      "What is the patient data model in Health Cloud?",
+      "Individual model vs person accounts in Health Cloud",
+      "how is a patient represented in salesforce health cloud"
+    ],
+    "a": "Patients and members are stored as person accounts, which combine an account and a contact into one record for an individual. Person accounts are the recommended model for current Health Cloud implementations, and the clinical objects look up to the patient's account. So if a clinic registers a patient called Sunita, she's one person account, and her diagnoses, vitals and medications all point to that account. Older implementations used the Individual model, where a contact was linked to a separate one-to-one account, and you may still see that in legacy orgs. Record types separate patients, members, providers and other people. The important point is that enabling person accounts can't be undone, so it's a design decision you confirm early in the project.",
+    "points": [
+      "Person accounts are the recommended patient model",
+      "Older orgs may use the Individual model",
+      "Enabling person accounts is irreversible"
+    ],
+    "tags": [
+      "person accounts",
+      "patient",
+      "member",
+      "data model"
+    ]
+  },
+  {
+    "id": "hc-003",
+    "topic": "Health Cloud",
+    "level": "mid",
+    "type": "concept",
+    "q": "What is the clinical data model in Health Cloud and which objects does it include?",
+    "alt": [
+      "Which standard objects store clinical data in Health Cloud?",
+      "Explain HealthCondition, CareObservation and ClinicalEncounter",
+      "How does Health Cloud store diagnoses, vitals and medications?",
+      "fhir aligned clinical data model objects"
+    ],
+    "a": "The clinical data model is a set of standard objects, aligned with FHIR R4, that store a patient's medical information. The key ones are HealthCondition for diagnoses and problems, CareObservation for vitals and lab results, ClinicalEncounter for visits, MedicationStatement and MedicationRequest for medications, AllergyIntolerance, PatientImmunization and PatientMedicalProcedure. Codes like ICD-10, SNOMED or LOINC are stored through the CodeSet and CodeSetBundle objects. For example, a clinic visit where a patient is diagnosed with hypertension and has her blood pressure taken becomes a ClinicalEncounter, a HealthCondition with the ICD-10 code, and a CareObservation with the reading. These objects replaced the older EHR data model objects from the managed package, so for new projects I build on the clinical data model, which makes FHIR integrations much easier to map.",
+    "points": [
+      "FHIR R4 aligned standard objects",
+      "HealthCondition, CareObservation, ClinicalEncounter, MedicationStatement",
+      "Codes via CodeSet and CodeSetBundle",
+      "Succeeds the older EHR data model"
+    ],
+    "tags": [
+      "clinical data model",
+      "fhir",
+      "healthcondition",
+      "careobservation"
+    ]
+  },
+  {
+    "id": "hc-004",
+    "topic": "Health Cloud",
+    "level": "mid",
+    "type": "concept",
+    "q": "What is a care plan in Health Cloud and how does Integrated Care Management work?",
+    "alt": [
+      "How are care plans modeled in Health Cloud?",
+      "Explain problems, goals and interventions in Health Cloud",
+      "What are care plan templates?",
+      "integrated care management care plan object"
+    ],
+    "a": "A care plan is the structured plan for a patient's care: the problems being addressed, the goals for each problem, and the interventions or tasks to reach them. In the classic managed-package model, a care plan was a Case record with problems, goals and tasks. The newer Integrated Care Management model uses the standard CarePlan object, aligned with FHIR, with related problem, goal and activity records. Admins build a library of ProblemDefinition and GoalDefinition records, combine them in a CarePlanTemplate, and action plan templates generate the intervention tasks. Then a care coordinator applies a template to a patient and adjusts it, often based on assessment answers. For example, a clinic's coordinator applies a heart failure template to a new patient. The assessment shows he lives alone, so she adds a home visit task to the plan.",
+    "points": [
+      "Problems, goals, interventions",
+      "Classic: Case-based; newer: standard CarePlan object",
+      "Templates built from problem and goal definitions"
+    ],
+    "tags": [
+      "care plan",
+      "integrated care management",
+      "templates",
+      "care coordination"
+    ]
+  },
+  {
+    "id": "hc-005",
+    "topic": "Health Cloud",
+    "level": "fresher",
+    "type": "concept",
+    "q": "What is a care team in Health Cloud?",
+    "alt": [
+      "Who is part of a patient's care team?",
+      "How do you add doctors and caregivers to a patient's team?",
+      "Explain the care team component in Health Cloud"
+    ],
+    "a": "A care team is the group of people involved in a patient's care, like the primary care physician, specialists, nurses, care coordinators and family caregivers. In Health Cloud the team can include internal users and external members, like providers or relatives stored as contacts or person accounts, each with a role. The care team shows on the patient record, so anyone looking at the patient knows who to contact and who's responsible. Members can collaborate on the care plan and get tasks assigned. For example, a clinic patient recovering from knee surgery might have her GP, the orthopaedic surgeon, a physiotherapist, a care coordinator and her daughter on the team. If the daughter has portal access, she can see the relevant information through an Experience Cloud site.",
+    "points": [
+      "Internal users plus external providers and caregivers",
+      "Each member has a role",
+      "Shown on the patient record, supports collaboration"
+    ],
+    "tags": [
+      "care team",
+      "care coordination",
+      "patient",
+      "health cloud"
+    ]
+  },
+  {
+    "id": "hc-006",
+    "topic": "Health Cloud",
+    "level": "mid",
+    "type": "concept",
+    "q": "What are care programs in Health Cloud?",
+    "alt": [
+      "How do you manage patient support programs in Health Cloud?",
+      "Explain CareProgram and CareProgramEnrollee",
+      "How are patients enrolled in a wellness or disease management program?"
+    ],
+    "a": "Care programs model structured programs that patients or members enroll in, like a diabetes management program, a patient support program from a pharma company, or a wellness program from a payer. The CareProgram object holds the program, and CareProgramEnrollee links a patient to it with an enrollment status. Related objects track the products, providers and team members involved. Enrollment is often a guided flow or OmniScript that captures consent and eligibility. For example, a clinic runs a twelve-week weight loss program. Each patient who signs up and gives consent becomes a CareProgramEnrollee with status Active. Then program activities, tasks and outcomes can be tracked and reported across everyone in the program, not just one patient, so the clinic can see how the whole group is doing.",
+    "points": [
+      "CareProgram for the program",
+      "CareProgramEnrollee links patients with status",
+      "Enrollment with consent, reporting across the population"
+    ],
+    "tags": [
+      "care program",
+      "enrollment",
+      "patient support",
+      "health cloud"
+    ]
+  },
+  {
+    "id": "hc-007",
+    "topic": "Health Cloud",
+    "level": "fresher",
+    "type": "concept",
+    "q": "What is the patient 360 view and the timeline in Health Cloud?",
+    "alt": [
+      "How does Health Cloud give a single view of the patient?",
+      "What is Enhanced Timeline in Health Cloud?",
+      "How can a care coordinator see a patient's history chronologically?",
+      "patient timeline component health cloud"
+    ],
+    "a": "The patient or member 360 is the patient record page that brings together demographics, conditions, medications, care team, care plans, cases, appointments and claims in one place, so the user doesn't jump between systems. The timeline is a key part of it. It shows events like encounters, conditions, medications, lab results and cases in chronological order. For example, a clinic's care coordinator gets a call from a patient and, in a few seconds on the timeline, sees the visit last month, the new diabetes diagnosis, the metformin prescription and the lab result from last week. In Health Cloud, the Enhanced Timeline is configured with timeline object definitions that say which object, date field and fields to display, and admins can add custom objects to it too.",
+    "points": [
+      "One page combining clinical and non-clinical data",
+      "Timeline shows events chronologically",
+      "Enhanced Timeline configured through timeline object definitions"
+    ],
+    "tags": [
+      "patient 360",
+      "timeline",
+      "enhanced timeline",
+      "health cloud"
+    ]
+  },
+  {
+    "id": "hc-008",
+    "topic": "Health Cloud",
+    "level": "senior",
+    "type": "concept",
+    "q": "What is Utilization Management in Health Cloud?",
+    "alt": [
+      "How does Health Cloud handle prior authorizations?",
+      "Explain the care request data model",
+      "What is utilization management for payers?",
+      "prior auth process in salesforce health cloud"
+    ],
+    "a": "Utilization Management is a payer capability for reviewing whether requested care is medically necessary and covered before it's approved: mainly prior authorizations, admission notifications and concurrent reviews. In Health Cloud, a Care Request holds the main request, with Care Request Items for the requested services or drugs, Care Diagnosis records for the diagnosis codes, and Care Request Reviewer records for clinical reviewers and their decisions. A Case is created alongside it, so you get SLA tracking with entitlements and milestones and Omni-Channel routing to reviewers. Member Plan and coverage benefit objects give the coverage context. For example, a clinic asks an insurer to approve an MRI for a member. That's a Care Request with the MRI as an item and the knee injury code as the diagnosis, and a nurse reviewer records the decision. Providers can submit requests through a portal, often with OmniStudio guided processes.",
+    "points": [
+      "Prior authorizations, admission notifications, concurrent reviews",
+      "CareRequest, CareRequestItem, CareDiagnosis, CareRequestReviewer",
+      "Case for SLAs and routing, member plan for coverage"
+    ],
+    "tags": [
+      "utilization management",
+      "prior authorization",
+      "care request",
+      "payer"
+    ]
+  },
+  {
+    "id": "hc-009",
+    "topic": "Health Cloud",
+    "level": "senior",
+    "type": "concept",
+    "q": "How does Health Cloud support provider management and provider networks?",
+    "alt": [
+      "How do you store doctors and facilities in Health Cloud?",
+      "What is provider network management?",
+      "Explain HealthcareProvider and practitioner facility objects",
+      "provider credentialing in health cloud"
+    ],
+    "a": "Health Cloud has a provider data model to store practitioners, facilities and their relationships. Practitioners are usually person accounts and facilities are business accounts, with objects like HealthcareProvider, HealthcareProviderNpi for NPI numbers, HealthcareProviderSpecialty, BoardCertification, and HealthcarePractitionerFacility, which links a practitioner to the facilities where they work. For example, a cardiologist who works at a main hospital on Mondays and a satellite clinic on Thursdays has two HealthcarePractitionerFacility records. On top of that, provider relationship and network management covers provider recruitment, onboarding, credentialing and roster management, often with guided OmniStudio processes. Payers use this to keep accurate provider directories, and providers use it to manage referral networks and physician relationships.",
+    "points": [
+      "Practitioners as person accounts, facilities as business accounts",
+      "HealthcareProvider, NPI, specialty, board certification objects",
+      "Recruiting, credentialing, roster and directory management"
+    ],
+    "tags": [
+      "provider management",
+      "provider network",
+      "credentialing",
+      "health cloud"
+    ]
+  },
+  {
+    "id": "hc-010",
+    "topic": "Health Cloud",
+    "level": "mid",
+    "type": "concept",
+    "q": "What is Intelligent Appointment Management in Health Cloud?",
+    "alt": [
+      "How does appointment scheduling work in Health Cloud?",
+      "Can patients book appointments themselves through Health Cloud?",
+      "Explain IAM with Salesforce Scheduler and the EHR",
+      "patient self scheduling health cloud"
+    ],
+    "a": "Intelligent Appointment Management gives schedulers one console to find and book patient appointments, instead of checking several systems. It can use Salesforce Scheduler as the scheduling engine, or connect to the EHR so available slots are read from the EHR, booked in Salesforce and written back. Schedulers pick a visit type, see prerequisites, and get guided recommendations for the right practitioner and slot, with badges for the patient's assigned or past providers. For example, a clinic scheduler books a follow-up for a patient; the console shows the doctor she saw last time with a badge, and the slot is written back to the EHR. Patients can also self-schedule online, including as guests through a site. It also supports appointment tracking and, with CRM Analytics, predictions to reduce no-shows.",
+    "points": [
+      "One console for scheduling across engines",
+      "Salesforce Scheduler or EHR as the backend",
+      "Guided booking, patient self-scheduling, no-show predictions"
+    ],
+    "tags": [
+      "intelligent appointment management",
+      "scheduling",
+      "salesforce scheduler",
+      "ehr"
+    ]
+  },
+  {
+    "id": "hc-011",
+    "topic": "Health Cloud",
+    "level": "senior",
+    "type": "concept",
+    "q": "What HIPAA and compliance considerations do you keep in mind on a Health Cloud project?",
+    "alt": [
+      "How do you protect PHI in Salesforce?",
+      "Is Salesforce HIPAA compliant?",
+      "What is a BAA and why does it matter?",
+      "security and compliance for health cloud implementation"
+    ],
+    "a": "Salesforce supports HIPAA compliance, but it's shared responsibility. Salesforce signs a Business Associate Agreement that covers specific services, and the customer has to configure and use the org correctly. So first I confirm which services the BAA covers before storing protected health information in them. Then least-privilege access: a Private sharing model, permission sets, and field-level security on clinical fields. Salesforce Shield adds Platform Encryption for data at rest, Event Monitoring to track who accessed what, and Field Audit Trail for longer history retention. I also keep PHI out of places like email templates, debug logs, report subscriptions and sandboxes, using data masking for non-production orgs. For example, a clinic's weekly report subscription shouldn't email out a list of patient names with diagnoses. And I capture patient consent where required.",
+    "points": [
+      "Shared responsibility, BAA covers specific services",
+      "Least privilege, Private sharing, FLS on clinical data",
+      "Shield: encryption, Event Monitoring, Field Audit Trail",
+      "Mask PHI in sandboxes, manage consent"
+    ],
+    "tags": [
+      "hipaa",
+      "phi",
+      "shield",
+      "baa",
+      "compliance"
+    ]
+  },
+  {
+    "id": "hc-012",
+    "topic": "Health Cloud",
+    "level": "senior",
+    "type": "scenario",
+    "q": "A hospital wants to integrate Health Cloud with its EHR system, like Epic or Cerner. How would you design the integration?",
+    "alt": [
+      "How do you bring EHR data into Salesforce?",
+      "HL7 vs FHIR integration with Health Cloud",
+      "What is the integration architecture between an EMR and Health Cloud?",
+      "ehr integration health cloud mulesoft"
+    ],
+    "a": "First I agree the scope: which data moves, in which direction and how fresh it needs to be, because the EHR stays the clinical system of record. Modern EHRs expose FHIR APIs, so I map FHIR resources like Patient, Condition, Observation and Encounter to the matching Health Cloud clinical objects, which are FHIR R4 aligned. Older feeds often use HL7 v2 messages like ADT for admissions, so I use an integration layer, commonly MuleSoft with the Accelerator for Healthcare, to translate and route them. For example, when a patient is admitted, the EHR sends an ADT message, MuleSoft turns it into an upsert on the patient and a ClinicalEncounter, and the care coordinator sees the admission. I use external IDs for upserts, a patient matching strategy to avoid duplicates, and bulk or event-driven loading depending on volume. Error handling, retries and audit logging are essential because this is protected health data.",
+    "points": [
+      "EHR stays system of record, define scope and direction",
+      "FHIR resources map to clinical data model",
+      "HL7 v2 via an integration layer such as MuleSoft",
+      "External IDs, patient matching, error handling"
+    ],
+    "tags": [
+      "ehr integration",
+      "fhir",
+      "hl7",
+      "mulesoft",
+      "design"
+    ]
+  },
+  {
+    "id": "hc-013",
+    "topic": "Health Cloud",
+    "level": "mid",
+    "type": "concept",
+    "q": "How do you model households and relationships between patients in Health Cloud?",
+    "alt": [
+      "How do you show a patient's family and caregivers?",
+      "What is the relationship map in Health Cloud?",
+      "Explain households and Actionable Relationship Center",
+      "contact to contact relationship health cloud"
+    ],
+    "a": "Health Cloud lets you link people and organizations so the care team understands the patient's support network. A household is modeled as an account that groups related people, using the account contact relationship. Person-to-person relationships, like a mother and child, or a patient and caregiver, use contact-to-contact relationships with reciprocal roles, and there are account-to-account relationships for organizations. For example, an elderly patient lives with her son, who is her caregiver. The son is related to her as Caregiver, and she shows as Patient on his side, and both sit in the same household account. These are visualized with the relationship map or the Actionable Relationship Center, where users can see the network and act from it. It helps with things like knowing who can make decisions for a patient, or who the clinic should call.",
+    "points": [
+      "Household as a grouping account",
+      "Contact-to-contact relationships with reciprocal roles",
+      "Visualized with relationship map or Actionable Relationship Center"
+    ],
+    "tags": [
+      "household",
+      "relationships",
+      "caregiver",
+      "actionable relationship center"
+    ]
+  },
+  {
+    "id": "hc-014",
+    "topic": "Health Cloud",
+    "level": "mid",
+    "type": "comparison",
+    "q": "How is Health Cloud used differently by payers and providers?",
+    "alt": [
+      "Health Cloud for insurance companies vs hospitals",
+      "What features does a payer use in Health Cloud?",
+      "Payer vs provider use cases in Health Cloud",
+      "member vs patient in health cloud"
+    ],
+    "a": "Providers, like hospitals and clinics, focus on patients and care delivery. They use the clinical data model integrated with the EHR, care plans and care teams, referrals, appointment management, home health, and patient engagement through portals. Payers, like health insurers, focus on members and coverage. They use member plans, purchaser plans, coverage benefits, utilization management for prior authorizations, provider network management, claims visibility and member service in the contact center. For example, a clinic's care coordinator is busy with a patient's care plan and next appointment, while an insurer's agent is checking that same person's plan benefits and a pending prior authorization. Both use the 360 view, care management programs and engagement tools, but the core objects and integrations differ, so I confirm early whether the org is payer, provider or both.",
+    "points": [
+      "Providers: patients, clinical data, care delivery, scheduling",
+      "Payers: members, plans, benefits, utilization management, networks",
+      "Shared: 360 view, care management, engagement"
+    ],
+    "tags": [
+      "payer",
+      "provider",
+      "member plan",
+      "health cloud"
+    ]
+  },
+  {
+    "id": "hc-015",
+    "topic": "Health Cloud",
+    "level": "fresher",
+    "type": "scenario",
+    "q": "A care coordinator wants to see a patient's chronic conditions and latest vitals on one screen. How would you set this up?",
+    "alt": [
+      "How do you show conditions and vitals on the patient page?",
+      "Care manager needs a quick clinical summary of the patient",
+      "Display active diagnoses and recent observations in Health Cloud",
+      "patient summary page health cloud"
+    ],
+    "a": "I'd build it on the patient's person account record page in Lightning App Builder. First I make sure the clinical data is landing in the standard objects: HealthCondition for diagnoses and CareObservation for vitals. Then I add related lists or dynamic related lists filtered to active conditions and recent observations, and add the Enhanced Timeline component set to show conditions and observations. If she wants something more compact, like the latest blood pressure and weight as tiles, I'd build a small LWC or use an OmniStudio FlexCard. So when the coordinator opens a patient, she sees active diabetes and hypertension at the top, and tiles for this week's blood pressure and weight, without scrolling. I'd also check field-level security, so only clinical roles see this data.",
+    "points": [
+      "Data in HealthCondition and CareObservation",
+      "Filtered related lists plus Enhanced Timeline",
+      "LWC or FlexCard for a compact summary, FLS for clinical roles"
+    ],
+    "tags": [
+      "patient summary",
+      "vitals",
+      "conditions",
+      "scenario",
+      "record page"
+    ]
+  },
+  {
+    "id": "hc-016",
+    "topic": "Health Cloud",
+    "level": "senior",
+    "type": "scenario",
+    "q": "A hospital wants patients to see their own care plan tasks and upcoming appointments online. How would you build it?",
+    "alt": [
+      "How do you build a patient portal on Health Cloud?",
+      "Patients should log in and see their care plan",
+      "Experience Cloud site for Health Cloud patients",
+      "patient portal design salesforce"
+    ],
+    "a": "I'd build an Experience Cloud site for patients using Customer Community licenses, since there are many patients and they're individuals, typically person accounts. Access comes from sharing sets that map the user's account or contact to the patient lookup on records like care plans and appointments, with external defaults Private. I'd show only patient-friendly fields, not internal clinical notes, by controlling field-level security on the external profile. The portal can show care plan goals and tasks, upcoming appointments, educational content from CMS and secure messaging. For example, a patient logs in and sees her goal of walking 30 minutes a day, a task to log her blood sugar, and next Tuesday's appointment, but not the nurse's internal notes. Registration would verify identity, and I'd record consent and terms of use. And I'd review guest and external access carefully, since this is protected health information.",
+    "points": [
+      "Customer Community licenses with person accounts",
+      "Sharing sets on patient lookups, external OWD Private",
+      "FLS hides internal clinical notes",
+      "Identity verification and consent"
+    ],
+    "tags": [
+      "patient portal",
+      "experience cloud",
+      "care plan",
+      "scenario"
+    ]
+  },
+  {
+    "id": "hc-017",
+    "topic": "Health Cloud",
+    "level": "senior",
+    "type": "scenario",
+    "q": "Only the care team of a patient should see that patient's clinical records, not every user in the org. How would you design the access?",
+    "alt": [
+      "How do you restrict PHI to the patient's care team?",
+      "Internal users can see all patients' diagnoses, how do you lock it down?",
+      "Care team based sharing in Health Cloud",
+      "patient data privacy among internal users"
+    ],
+    "a": "I'd set the org-wide default for patient accounts and the clinical objects to Private, or controlled by parent where the object supports it, so clinical records inherit the patient's access. Then I grant access based on the care team: when someone is added to a patient's care team, a flow or Apex creates a share record for them, and removes it when they leave. For example, when a cardiology nurse joins a patient's care team she can see his records, and the day she's removed, that access goes. For broader groups, like a department, I'd use sharing rules based on fields like facility or program. Field-level security and permission sets separate clinical from non-clinical users, so a call center agent might see demographics but not diagnoses. I'd add Event Monitoring to audit access, and test with users in different roles.",
+    "points": [
+      "Private defaults, controlled by parent for clinical data",
+      "Share based on care team membership, revoke on removal",
+      "FLS and permission sets separate clinical access",
+      "Audit with Event Monitoring"
+    ],
+    "tags": [
+      "sharing",
+      "phi",
+      "care team",
+      "security",
+      "scenario"
+    ]
+  },
+  {
+    "id": "hc-018",
+    "topic": "Health Cloud",
+    "level": "senior",
+    "type": "scenario",
+    "q": "Millions of lab results and vitals are coming from the EHR every month. How would you handle this volume in Health Cloud?",
+    "alt": [
+      "Large data volume design for clinical observations",
+      "Should all EHR data be stored in Salesforce?",
+      "How to handle high volume clinical data in Health Cloud",
+      "LDV considerations health cloud observations"
+    ],
+    "a": "I'd first challenge whether all of it needs to live in Salesforce. Care coordinators usually need recent and relevant results, not every reading. For example, a coordinator checking a diabetic patient needs the last few HbA1c results and this month's blood pressure, not five years of hourly ward vitals. So I might load a summarized or recent window and leave full history in the EHR or a data platform. A platform like Data 360 can hold the large clinical history and surface it in the patient profile without storing everything as core records. For what we do load, I'd use the Bulk API with external IDs for upserts, avoid heavy triggers on CareObservation, and keep automation lean. I'd also design selective queries on indexed fields like patient and date, plan an archiving policy, and avoid data skew, like too many child records under one parent.",
+    "points": [
+      "Store only what users need, keep full history elsewhere",
+      "Consider Data 360 for large clinical history",
+      "Bulk API, external IDs, lean automation",
+      "Selective queries, archiving, avoid skew"
+    ],
+    "tags": [
+      "large data volume",
+      "careobservation",
+      "data 360",
+      "bulk api",
+      "scenario"
+    ]
+  },
+  {
+    "id": "hc-019",
+    "topic": "Health Cloud",
+    "level": "mid",
+    "type": "code",
+    "q": "Write a query to get a patient's latest vitals from CareObservation in Health Cloud.",
+    "alt": [
+      "SOQL for recent observations of a patient",
+      "How do you query lab results in Health Cloud?",
+      "Show me Apex to fetch a patient's latest vitals",
+      "query care observation for a patient"
+    ],
+    "a": "CareObservation links to the patient through ObservedSubjectId, which points to the patient's account. I filter on the patient and a recent date range using EffectiveDateTime, and pull the code name, the numeric or text value and the unit. I filter on final observations, so preliminary results don't show as confirmed. For example, if the lab sent a preliminary potassium result this morning and the final one comes later, the coordinator only sees the final one as a confirmed vital. I keep the query selective with a limit, since observations can be high volume. And I run it in user mode, so the user's sharing and field-level security on clinical data are enforced.",
+    "points": [
+      "ObservedSubjectId is the patient account",
+      "EffectiveDateTime for recency, ObservationStatus Final",
+      "Selective, limited, user mode"
+    ],
+    "code": "public with sharing class PatientVitalsService {\n    @AuraEnabled(cacheable=true)\n    public static List<CareObservation> getRecentVitals(Id patientId) {\n        return [\n            SELECT Id, Code.Name, NumericValue, ObservedValueText,\n                   UnitOfMeasure.Name, EffectiveDateTime\n            FROM CareObservation\n            WHERE ObservedSubjectId = :patientId\n              AND ObservationStatus = 'Final'   // confirm the picklist API value in your org\n              AND EffectiveDateTime = LAST_N_DAYS:90\n            WITH USER_MODE\n            ORDER BY EffectiveDateTime DESC\n            LIMIT 50\n        ];\n    }\n}",
+    "tags": [
+      "soql",
+      "careobservation",
+      "apex",
+      "vitals"
+    ]
+  },
+  {
+    "id": "hc-020",
+    "topic": "Health Cloud",
+    "level": "mid",
+    "type": "scenario",
+    "q": "A provider wants to enroll diabetic patients into a disease management program and track their progress. How would you implement it?",
+    "alt": [
+      "How do you run a chronic care program in Health Cloud?",
+      "Diabetes care program setup in Salesforce",
+      "Enroll patients in a program and track outcomes",
+      "care program enrollment process"
+    ],
+    "a": "I'd create a CareProgram for diabetes management, and use a report or query on HealthCondition to find eligible patients, for example those with an active diabetes diagnosis code. Enrollment would be a guided flow or OmniScript that confirms eligibility, captures consent and creates a CareProgramEnrollee record. Each enrolled patient gets a care plan from a diabetes template, with goals like HbA1c targets and interventions like education sessions and check-in calls. So a clinic might find 300 patients with an active diabetes code, and the coordinator calls them one by one through the guided enrollment. CareObservation data for lab results shows progress, and tasks are assigned to the care coordinator. Finally, dashboards show enrollment numbers, task completion and outcome trends for the whole program.",
+    "points": [
+      "CareProgram, eligibility from HealthCondition",
+      "Guided enrollment with consent, CareProgramEnrollee",
+      "Care plan template with goals and interventions",
+      "Dashboards on outcomes"
+    ],
+    "tags": [
+      "care program",
+      "chronic care",
+      "enrollment",
+      "scenario"
+    ]
+  },
+  {
+    "id": "hc-021",
+    "topic": "Health Cloud",
+    "level": "senior",
+    "type": "scenario",
+    "q": "A health insurer wants providers to submit prior authorization requests online and have reviewers process them within SLA. How would you design it?",
+    "alt": [
+      "Design prior authorization intake and review in Health Cloud",
+      "Provider portal for authorization requests",
+      "How would you meet turnaround time for prior auth reviews?",
+      "utilization management end to end design"
+    ],
+    "a": "I'd build a provider portal on Experience Cloud where authenticated provider users submit requests through a guided OmniStudio process, capturing member, services, diagnosis codes and attachments. That creates a Care Request with Care Request Items and Care Diagnosis records, plus a Case. Entitlements and milestones on the Case track regulatory turnaround times, with escalations before a breach. Omni-Channel routes the case to the right reviewer queue by service type or urgency, and reviewers record decisions on Care Request Reviewer records. Coverage benefit data from the member plan helps check eligibility, and simple requests could be auto-approved by rules. For example, a clinic submits an urgent request for a knee MRI. It goes to the urgent imaging queue, and the milestone warns the team before the turnaround time runs out. Decisions go back to the provider through the portal and email, and dashboards track volumes and SLA compliance.",
+    "points": [
+      "Provider portal with guided OmniStudio intake",
+      "CareRequest plus Case for SLA via entitlements and milestones",
+      "Omni-Channel routing to reviewers",
+      "Auto-approval rules, notifications, SLA dashboards"
+    ],
+    "tags": [
+      "utilization management",
+      "prior authorization",
+      "provider portal",
+      "sla",
+      "scenario"
+    ]
+  },
+  {
+    "id": "hc-022",
+    "topic": "Health Cloud",
+    "level": "mid",
+    "type": "scenario",
+    "q": "Users say the patient timeline is not showing lab results that exist in the system. What would you check?",
+    "alt": [
+      "Health Cloud timeline missing records",
+      "Observations not appearing on the Enhanced Timeline",
+      "Why is my custom object not showing on the timeline?",
+      "timeline component not displaying data"
+    ],
+    "a": "First I check the timeline configuration. Is there an active timeline object definition for CareObservation, pointing to the right date field and the right relationship to the patient? Then I check the timeline component on the page is set to use that category. Next, record access: the user needs Read on the object and fields, and sharing access to the records, otherwise they're silently hidden. I also check the records themselves, like whether the date field is populated and within the timeline's displayed range, and whether the observations are actually linked to this patient's account and not a duplicate patient record. Duplicate patients from integration are a common root cause. For example, a clinic's coordinator can't see a lab result, and it turns out the EHR feed created a second Sunita with a slightly different date of birth, and the result is sitting on that one.",
+    "points": [
+      "Active timeline object definition with correct date and relationship",
+      "Object, field and record access",
+      "Date populated and in range, correct patient, no duplicates"
+    ],
+    "tags": [
+      "timeline",
+      "troubleshooting",
+      "careobservation",
+      "health cloud"
+    ]
+  },
+  {
+    "id": "hc-023",
+    "topic": "Health Cloud",
+    "level": "fresher",
+    "type": "comparison",
+    "q": "What are HL7 and FHIR, and how do they differ?",
+    "alt": [
+      "Explain FHIR in simple terms",
+      "HL7 v2 vs FHIR",
+      "What healthcare data standards should a Health Cloud developer know?",
+      "f h i r kya hota hai"
+    ],
+    "a": "HL7 is a family of healthcare data exchange standards. HL7 version 2 is the older, very widely used one. It sends pipe-delimited messages, like ADT messages for patient admissions and discharges, usually through interface engines. FHIR, which stands for Fast Healthcare Interoperability Resources, is the modern HL7 standard. It uses REST APIs with JSON or XML, and defines resources like Patient, Condition, Observation and Encounter. FHIR is much easier for web and cloud systems like Salesforce to consume, and the Health Cloud clinical data model is aligned with FHIR R4, so mapping is straightforward. For example, a hospital might still send admissions as HL7 v2 ADT messages through its interface engine, while a newer lab system offers a FHIR API for Observation. In real projects you often see both, HL7 v2 for legacy feeds and FHIR for newer APIs.",
+    "points": [
+      "HL7 v2: older pipe-delimited messages like ADT",
+      "FHIR: REST, JSON, resources",
+      "Health Cloud data model aligned with FHIR R4"
+    ],
+    "tags": [
+      "hl7",
+      "fhir",
+      "interoperability",
+      "standards"
+    ]
+  },
+  {
+    "id": "hc-024",
+    "topic": "Health Cloud",
+    "level": "mid",
+    "type": "scenario",
+    "q": "A clinic wants to track patient referrals to specialists, from request to completed visit. How would you handle it in Health Cloud?",
+    "alt": [
+      "How does referral management work in Health Cloud?",
+      "Track referrals between providers in Salesforce",
+      "Referral intake and follow up process design",
+      "patient referral tracking health cloud"
+    ],
+    "a": "Health Cloud's referral management uses the ClinicalServiceRequest object for the referral, linked to the patient, the referring provider and the requested service or specialty. I'd create referrals through a guided intake, either by the referring clinician inside Salesforce or through a provider portal. Then routing rules or Omni-Channel send the referral to the right intake team, who check eligibility, find a suitable specialist using provider data, and book the appointment. A status or stage field tracks each step, like received, scheduled, completed or declined, and tasks or alerts flag referrals that are stuck. For example, a GP refers a patient to dermatology. If it's still at received after a week, the intake team gets an alert. Reporting shows referral leakage, meaning patients sent outside the network, which providers usually care about a lot.",
+    "points": [
+      "ClinicalServiceRequest represents the referral",
+      "Guided intake, routing to intake team",
+      "Statuses, alerts for stuck referrals, leakage reporting"
+    ],
+    "tags": [
+      "referral management",
+      "clinicalservicerequest",
+      "provider",
+      "scenario"
+    ]
+  },
+  {
+    "id": "hc-025",
+    "topic": "Health Cloud",
+    "level": "senior",
+    "type": "design",
+    "q": "What are the key design decisions you make at the start of a Health Cloud implementation?",
+    "alt": [
+      "What are common pitfalls in Health Cloud projects?",
+      "Health Cloud implementation best practices",
+      "What would you decide first as a Health Cloud architect?",
+      "health cloud project planning"
+    ],
+    "a": "The first decisions are about the data model. I confirm person accounts for patients, since that can't be undone, and I choose the standard clinical data model and the newer standard care plan objects instead of older managed-package structures, unless the org already depends on them. I decide the system of record for each data type, usually the EHR for clinical data, and how much clinical history really needs to be in Salesforce. Then the security model: Private sharing, who can see PHI, Shield encryption scope and what the BAA covers. I also plan the integration approach, FHIR or HL7 through middleware, patient matching and duplicates, and which features use OmniStudio. For example, if a clinic group finds out halfway through that it needs person accounts, or that a feature it built on isn't covered by the BAA, that's a lot of rework. Getting these right early avoids it.",
+    "points": [
+      "Person accounts, standard clinical and care plan objects",
+      "System of record and data volume",
+      "Security: Private sharing, Shield, BAA scope",
+      "Integration and patient matching strategy"
+    ],
+    "tags": [
+      "design",
+      "architecture",
+      "best practices",
+      "health cloud"
+    ]
+  },
+  {
+    "id": "fsl-001",
+    "topic": "Field Service",
+    "level": "fresher",
+    "type": "concept",
+    "q": "What is Salesforce Field Service and what problem does it solve?",
+    "alt": [
+      "What is Field Service Lightning?",
+      "Explain FSL in simple words",
+      "What does Field Service and Operations do in Salesforce?",
+      "f s l kya hai salesforce mein"
+    ],
+    "a": "Salesforce Field Service, formerly Field Service Lightning, manages work that happens at a customer's location, like installations, repairs and inspections. It covers the whole flow: creating work orders, scheduling the right technician based on skills, location and availability, dispatching through the dispatcher console, and letting technicians do the job on the Field Service mobile app, even offline. It also handles inventory and parts, assets and preventive maintenance, and service reports. For example, a laptop seller that does on-site repairs for business customers gets a case saying the docking stations in a customer's office are dead. That turns into a work order, the system books a certified technician nearby for tomorrow morning, and he closes the job on his phone with a service report. It's built on Service Cloud, so a case can turn into field work, and the scheduling and optimization engine comes from the Field Service managed package.",
+    "points": [
+      "Formerly Field Service Lightning",
+      "Work orders, scheduling, dispatch, mobile execution",
+      "Inventory, assets, preventive maintenance",
+      "Built on Service Cloud plus a managed package for scheduling"
+    ],
+    "tags": [
+      "field service",
+      "fsl",
+      "overview",
+      "service cloud"
+    ]
+  },
+  {
+    "id": "fsl-002",
+    "topic": "Field Service",
+    "level": "fresher",
+    "type": "concept",
+    "q": "Can you explain the core Field Service data model?",
+    "alt": [
+      "What are the main objects in FSL?",
+      "Walk me through Work Order, Service Appointment and Service Resource",
+      "FSL data model explained",
+      "field service objects relationship"
+    ],
+    "a": "The Work Order is the job to be done, often created from a case, and it can have Work Order Line Items for individual tasks or assets. The Service Appointment is the scheduled visit, with time window, scheduled start and end and status, and it links to the work order as its parent record. Service Resources are the technicians or crews, linked to a user. Service Territories define regions, and Service Territory Members connect resources to territories. Operating Hours define when territories, resources or customers are available. Work Types are templates for common jobs with duration and skill requirements. Around these are Skills, Assets, Maintenance Plans, Resource Absences, and inventory objects like Product Required, Product Consumed and Product Item. So a repair visit at an office is a Work Order, the Tuesday 10 to 12 slot is the Service Appointment, and the technician is a Service Resource in the City Centre territory.",
+    "points": [
+      "Work Order and Work Order Line Item: the job",
+      "Service Appointment: the scheduled visit",
+      "Service Resource, Service Territory, Territory Member, Operating Hours",
+      "Work Type, Skills, Assets, inventory objects"
+    ],
+    "tags": [
+      "data model",
+      "work order",
+      "service appointment",
+      "service resource"
+    ]
+  },
+  {
+    "id": "fsl-003",
+    "topic": "Field Service",
+    "level": "fresher",
+    "type": "comparison",
+    "q": "What is the difference between a Work Order and a Work Order Line Item?",
+    "alt": [
+      "When do you use work order line items?",
+      "Work Order vs WOLI",
+      "Why split a work order into line items?"
+    ],
+    "a": "A Work Order is the overall job for a customer, like servicing all the equipment at a site, with the account, location and overall status. Work Order Line Items break that job into individual tasks or assets: for example, inspect the boiler, replace the filter on the air handler, and test the alarm. Each line item can have its own work type, asset, status, products and skill requirements, and even its own service appointment if the tasks need different technicians or days. So if the alarm test needs a certified electrician on a different day, that line item gets its own appointment, while the boiler and filter are done on the first visit. The work order is the container, and the line items are the detailed pieces of work.",
+    "points": [
+      "Work Order: overall job and container",
+      "Line Item: task or asset level detail",
+      "Line items can have their own work type and appointment"
+    ],
+    "tags": [
+      "work order",
+      "work order line item",
+      "data model"
+    ]
+  },
+  {
+    "id": "fsl-004",
+    "topic": "Field Service",
+    "level": "fresher",
+    "type": "comparison",
+    "q": "What is the difference between a Work Order and a Service Appointment?",
+    "alt": [
+      "Why do we need service appointments if we have work orders?",
+      "Work order vs service appointment in FSL",
+      "What gets scheduled in Field Service, the work order or the appointment?"
+    ],
+    "a": "The Work Order describes what needs to be done. The Service Appointment describes when and by whom it's done. Scheduling happens on the Service Appointment: it holds the earliest start and due date window, the arrival window, scheduled start and end, the assigned resource through an assigned resource record, and the appointment status. One work order can have several appointments. For example, an AC repair company gets a job to fix a unit that's leaking. The work order says replace the compressor. The first appointment on Monday is the technician diagnosing it, and a second appointment on Thursday is the visit to fit the new part, both under the same work order. If the work order uses a work type with Auto-Create Service Appointment checked, the appointment is created automatically when the work order is created.",
+    "points": [
+      "Work Order: what; Service Appointment: when and who",
+      "Scheduling fields and status live on the appointment",
+      "One work order can have many appointments"
+    ],
+    "tags": [
+      "work order",
+      "service appointment",
+      "scheduling"
+    ]
+  },
+  {
+    "id": "fsl-005",
+    "topic": "Field Service",
+    "level": "fresher",
+    "type": "concept",
+    "q": "What are Service Territories and Service Territory Members?",
+    "alt": [
+      "How are technicians assigned to regions in FSL?",
+      "Primary vs secondary vs relocation territory member",
+      "What is a service territory in field service?"
+    ],
+    "a": "A Service Territory is a region where work is done, like a city or a district. It has operating hours and can have child territories. A Service Territory Member links a service resource to a territory for a period of time, and the member type matters. Primary is the resource's main territory. Secondary is an extra territory they can also work in. Relocation is a temporary move to another territory for a set period, and it replaces the primary during that time. Say a technician normally covers Pune as Primary and helps out in Mumbai as Secondary. If he's sent to Nagpur for two weeks of installs, that's a Relocation, and for those two weeks Nagpur takes the place of Pune. The scheduling engine uses territories to decide which resources are candidates, and the member's address can be the home base for travel calculations.",
+    "points": [
+      "Territory: region with operating hours, hierarchy possible",
+      "Member types: Primary, Secondary, Relocation",
+      "Drives candidate resources and travel start point"
+    ],
+    "tags": [
+      "service territory",
+      "territory member",
+      "scheduling"
+    ]
+  },
+  {
+    "id": "fsl-006",
+    "topic": "Field Service",
+    "level": "fresher",
+    "type": "concept",
+    "q": "How are Operating Hours used in Field Service?",
+    "alt": [
+      "What are operating hours and time slots in FSL?",
+      "How do you define technician working hours?",
+      "How do you set customer visiting hours in Field Service?"
+    ],
+    "a": "Operating Hours define working or availability windows, with time slots per day of the week and a time zone. In Field Service they're used in several places: on a service territory for its working hours, on a service territory member to give a specific technician different hours, and on an account or the appointment for customer visiting hours, enforced by a visiting hours work rule. They also define the arrival window slots offered to customers when they book. For example, a clinic only lets equipment technicians in between 2 and 5 pm, so its account gets those visiting hours and the engine won't book a morning visit there. The gotcha is the time zone. If a territory's hours are saved in the wrong time zone, appointments end up at strange times, like a 9 am visit showing up at 3:30 am.",
+    "points": [
+      "Time slots per weekday plus time zone",
+      "Used on territories, members, accounts, booking windows",
+      "Wrong time zone causes odd scheduling"
+    ],
+    "tags": [
+      "operating hours",
+      "time slots",
+      "scheduling"
+    ]
+  },
+  {
+    "id": "fsl-007",
+    "topic": "Field Service",
+    "level": "fresher",
+    "type": "concept",
+    "q": "How do skills and skill requirements work in Field Service?",
+    "alt": [
+      "How do you make sure only certified technicians get a job?",
+      "Explain ServiceResourceSkill and SkillRequirement",
+      "What are skill levels in FSL?"
+    ],
+    "a": "Skills are defined in Setup, and each technician gets Service Resource Skill records with a skill level and optional start and end dates, for example for a certification that expires. Jobs declare what they need through Skill Requirement records on the Work Type, Work Order or Work Order Line Item, optionally with a minimum level. When a work order is created from a work type, the skill requirements are copied over. Then the Match Skills work rule in the scheduling policy makes sure only resources with all the required skills, at the right level and still valid on the appointment date, are considered. For example, if a job needs Gas Safety level 3 and Priya's certificate ends on the 30th, she can be booked for the 28th but not for the 2nd of next month.",
+    "points": [
+      "ServiceResourceSkill with level and dates",
+      "SkillRequirement on work type, work order or line item",
+      "Match Skills work rule enforces it"
+    ],
+    "tags": [
+      "skills",
+      "skill requirement",
+      "work rules",
+      "scheduling"
+    ]
+  },
+  {
+    "id": "fsl-008",
+    "topic": "Field Service",
+    "level": "fresher",
+    "type": "concept",
+    "q": "What is a Work Type in Field Service?",
+    "alt": [
+      "Why do we use work types?",
+      "How do you standardize common jobs in FSL?",
+      "work type ka use kya hai"
+    ],
+    "a": "A Work Type is a template for a common kind of job, like an annual boiler inspection or a meter installation. It stores the estimated duration, the required skills, the products required and, optionally, a linked service report template. When you create a work order or line item with that work type, those values are copied over, so every similar job is set up the same way. For example, an Annual Boiler Inspection work type might say 90 minutes, needs the Gas Certified skill, and bring one filter kit. Every inspection work order then starts with exactly that. It also has the Auto-Create Service Appointment option, which creates the appointment automatically. And maintenance plans use work types to generate preventive maintenance work orders.",
+    "points": [
+      "Template with duration, skills, products",
+      "Copied to work orders and line items",
+      "Can auto-create service appointments"
+    ],
+    "tags": [
+      "work type",
+      "template",
+      "work order"
+    ]
+  },
+  {
+    "id": "fsl-009",
+    "topic": "Field Service",
+    "level": "mid",
+    "type": "comparison",
+    "q": "What is the difference between Product Required and Product Consumed, and how is inventory tracked?",
+    "alt": [
+      "How do you track parts used on a job in FSL?",
+      "Explain Product Item, Product Required and Product Consumed",
+      "Field service inventory management basics"
+    ],
+    "a": "Product Required lists the parts a job is expected to need, so planners and technicians know what to bring, and it's usually copied from the work type. Product Consumed records what was actually used on the work order or line item. Inventory is held in Product Item records, which represent the quantity of a product at a location, like a warehouse or a technician's van. Say a job lists two filters as Product Required. The technician only uses one, so he logs one Product Consumed linked to the product item on his van, and his van stock drops from ten filters to nine. Product Requests and Product Transfers handle restocking and moving parts between locations, and Return Orders handle returns.",
+    "points": [
+      "Product Required: planned parts",
+      "Product Consumed: actual usage, reduces product item quantity",
+      "Product Item: stock at a location such as a van"
+    ],
+    "tags": [
+      "inventory",
+      "product consumed",
+      "product required",
+      "product item"
+    ]
+  },
+  {
+    "id": "fsl-010",
+    "topic": "Field Service",
+    "level": "mid",
+    "type": "concept",
+    "q": "How does preventive maintenance work with maintenance plans in Field Service?",
+    "alt": [
+      "How do you auto-generate recurring work orders?",
+      "Explain maintenance plans and maintenance assets",
+      "How do you schedule quarterly service visits in FSL?",
+      "preventive maintenance setup field service"
+    ],
+    "a": "A Maintenance Plan defines recurring service for one or more assets, like quarterly inspections. You add Maintenance Assets to the plan, set the frequency and the work type, and you can use maintenance work rules for more detailed recurrence patterns per asset. The plan has a generation timeframe that controls how far ahead work orders are created, and options for one work order per asset or a single work order covering all of them. For example, a clinic has three air conditioning units on a quarterly plan. With a single work order for all assets, the technician gets one job per quarter covering all three units. Work orders can be generated manually with the Generate Work Orders action or automatically on a schedule. With service appointments coming from work types, the preventive visits flow straight into scheduling.",
+    "points": [
+      "Maintenance Plan plus Maintenance Assets",
+      "Frequency, work type, maintenance work rules",
+      "Generation timeframe, manual or automatic generation"
+    ],
+    "tags": [
+      "preventive maintenance",
+      "maintenance plan",
+      "assets",
+      "work order"
+    ]
+  },
+  {
+    "id": "fsl-011",
+    "topic": "Field Service",
+    "level": "fresher",
+    "type": "concept",
+    "q": "What is a Resource Absence in Field Service?",
+    "alt": [
+      "How do you block a technician's time for leave or training?",
+      "Technician is on vacation, how does scheduling know?",
+      "What are absences in FSL?"
+    ],
+    "a": "A Resource Absence blocks time on a service resource's schedule when they're not available for work, like vacation, sick leave, training or a planned break. It has a start and end time and a type. The scheduling engine respects absences through the service resource availability work rule, so it won't assign appointments during that time. For example, if Arjun has safety training on Wednesday from 9 to 1, an absence for that slot means the engine only books him Wednesday afternoon. Absences also show on the dispatcher console Gantt, so dispatchers can see why a technician isn't available. They can be created by dispatchers or, if allowed, by technicians from the mobile app, and some teams sync them from an HR system.",
+    "points": [
+      "Blocks resource time: leave, training, breaks",
+      "Respected by availability work rule",
+      "Visible on the Gantt"
+    ],
+    "tags": [
+      "resource absence",
+      "availability",
+      "scheduling"
+    ]
+  },
+  {
+    "id": "fsl-012",
+    "topic": "Field Service",
+    "level": "fresher",
+    "type": "concept",
+    "q": "What is the Dispatcher Console in Field Service?",
+    "alt": [
+      "What is the Gantt chart in FSL?",
+      "How do dispatchers schedule appointments manually?",
+      "Explain the dispatcher console features"
+    ],
+    "a": "The Dispatcher Console is the main screen for dispatchers. It has an appointment list on the left, a Gantt chart showing each service resource's schedule over time, and a map with appointments and resource locations. Dispatchers can drag appointments onto the Gantt, click Schedule to let the engine pick the best slot, see rule violations, and run optimization for a territory. It shows absences, travel time and status colours, and supports filters and custom actions. There's also Get Candidates, to see which technicians can do a job, and an emergency wizard for urgent work. For example, a technician calls in sick this morning. The dispatcher finds the appointment in the list, uses Get Candidates to see who else is qualified and free, and drags it onto that person's Gantt.",
+    "points": [
+      "Appointment list, Gantt, map",
+      "Drag and drop, auto schedule, optimization",
+      "Rule violations, Get Candidates, emergency wizard"
+    ],
+    "tags": [
+      "dispatcher console",
+      "gantt",
+      "dispatch",
+      "scheduling"
+    ]
+  },
+  {
+    "id": "fsl-013",
+    "topic": "Field Service",
+    "level": "mid",
+    "type": "concept",
+    "q": "What are scheduling policies, work rules and service objectives in Field Service?",
+    "alt": [
+      "How does the FSL scheduling engine decide who gets the job?",
+      "Work rules vs service objectives",
+      "Explain Customer First, High Intensity and Emergency policies",
+      "scheduling policy in field service lightning"
+    ],
+    "a": "A scheduling policy is a set of work rules and service objectives that tells the engine how to schedule. Work rules are hard filters: a resource that breaks one isn't a candidate. Examples are Match Skills, Match Territory, Service Resource Availability, Maximum Travel from Home, Excluded Resources and Visiting Hours. Service objectives are weighted goals for ranking the valid options, like ASAP, Minimize Travel, Minimize Overtime, Preferred Service Resource and Skill Level. Say five technicians are available. Match Skills filters out the two without the right skill. Then objectives rank the other three, so if Minimize Travel has the highest weight, the closest one wins. Out of the box there are policies like Customer First, High Intensity, Soft Boundaries and Emergency, and you can clone and tune them. Different teams or situations can use different policies, like an emergency policy for urgent jobs.",
+    "points": [
+      "Policy = work rules plus weighted service objectives",
+      "Work rules filter, objectives rank",
+      "Standard policies: Customer First, High Intensity, Soft Boundaries, Emergency"
+    ],
+    "tags": [
+      "scheduling policy",
+      "work rules",
+      "service objectives",
+      "optimization"
+    ]
+  },
+  {
+    "id": "fsl-014",
+    "topic": "Field Service",
+    "level": "senior",
+    "type": "comparison",
+    "q": "What is the difference between global optimization, in-day optimization and resource schedule optimization?",
+    "alt": [
+      "Explain the types of optimization in Field Service",
+      "When would you run in-day optimization vs global?",
+      "What is resource schedule optimization in FSL?",
+      "global vs in day vs RSO optimization"
+    ],
+    "a": "Global optimization looks at one or more territories over a longer horizon, usually days ahead, and rebuilds the schedule to best meet the policy's objectives. It typically runs as a scheduled overnight job. In-day optimization focuses on today or a short window, re-optimizing after the day has started to handle cancellations, emergencies and jobs that run long, while respecting appointments already in progress. Resource schedule optimization works on a single technician's day, for example after one job runs over, so it fixes that resource without disturbing everyone else. There's also reshuffle, which moves lower-priority work to fit in an important appointment. For example, global runs at 2 am for the next five days. At 11 am two customers cancel, so in-day fills the gaps. And when Ravi's first job runs two hours over, resource schedule optimization redoes just his afternoon.",
+    "points": [
+      "Global: territories over days, often overnight",
+      "In-day: short window, handles same-day changes",
+      "Resource schedule: one resource's day",
+      "Reshuffle: make room for a priority job"
+    ],
+    "tags": [
+      "optimization",
+      "global optimization",
+      "in-day optimization",
+      "resource schedule optimization"
+    ]
+  },
+  {
+    "id": "fsl-015",
+    "topic": "Field Service",
+    "level": "senior",
+    "type": "concept",
+    "q": "What is Enhanced Scheduling and Optimization in Field Service?",
+    "alt": [
+      "What is ESO in Field Service?",
+      "What changed with the new Field Service scheduling engine?",
+      "Enhanced optimization vs legacy optimization",
+      "e s o field service lightning"
+    ],
+    "a": "Enhanced Scheduling and Optimization, often called ESO, is the newer Field Service scheduling engine. It replaces the older optimization and the related manual and semi-automatic scheduling services. It runs as a service on Hyperforce and is designed for better scalability, performance and schedule quality. It adds things like travel time calculated from routing setup, travel modes, flexible breaks and improved availability work rules. Newer orgs may already have it on. Otherwise you enable it in settings and turn it on per service territory, so you can move territories over gradually. For example, I'd switch one smaller city territory first, compare a week of its schedules against the old engine, and only then move the bigger ones. Some legacy work rules and features behave differently or aren't supported, so I always review the considerations and limitations list before switching a territory.",
+    "points": [
+      "Newer engine, replaces legacy optimization and scheduling services",
+      "Runs on Hyperforce, better scale and quality",
+      "Enabled per territory, review limitations first"
+    ],
+    "tags": [
+      "enhanced scheduling and optimization",
+      "eso",
+      "optimization",
+      "scheduling"
+    ]
+  },
+  {
+    "id": "fsl-016",
+    "topic": "Field Service",
+    "level": "fresher",
+    "type": "concept",
+    "q": "What is the lifecycle of a service appointment and its statuses?",
+    "alt": [
+      "What are the default service appointment statuses?",
+      "How do status transitions work in Field Service?",
+      "Explain status categories for service appointments",
+      "service appointment status flow"
+    ],
+    "a": "The default statuses are None, Scheduled, Dispatched, In Progress, Cannot Complete, Completed and Canceled. A new appointment starts as None, becomes Scheduled when a time and resource are assigned, Dispatched when it's sent to the technician, In Progress when they start work, and then Completed or Cannot Complete. Canceled is for when the visit isn't needed any more. Each status maps to a status category, which the managed package relies on, so you can add custom statuses like Travelling as long as they map to a category. Admins also define allowed status transitions and which profiles can make them. So a technician can't jump from Scheduled straight to Completed if the business doesn't allow it. For example, the business can require Dispatched, then Travelling, then In Progress, in that order.",
+    "points": [
+      "None, Scheduled, Dispatched, In Progress, Cannot Complete, Completed, Canceled",
+      "Custom statuses must map to a status category",
+      "Status transitions control allowed moves per profile"
+    ],
+    "tags": [
+      "service appointment",
+      "status",
+      "lifecycle",
+      "status transitions"
+    ]
+  },
+  {
+    "id": "fsl-017",
+    "topic": "Field Service",
+    "level": "mid",
+    "type": "concept",
+    "q": "How does the Field Service mobile app work offline?",
+    "alt": [
+      "Can technicians work without internet in FSL?",
+      "How is data primed for offline in the Field Service app?",
+      "What is a briefcase in Field Service mobile?",
+      "offline mode field service mobile"
+    ],
+    "a": "The Field Service mobile app is offline-first. When a technician syncs, the app primes data to the device: their service appointments for the scheduling window and the related work orders, accounts, assets and other related records, and a Briefcase can define extra records to download. While offline, the technician can view records, update statuses, log products consumed, capture photos and signatures, and run supported flows and offline-capable LWCs. Changes are queued and uploaded when the device is back online, and conflicts are surfaced if the same record changed on the server. For example, a technician in a hospital basement with no signal can still finish the job, log the part he used and get the customer's signature, and it all uploads when he's back in the car park. I always test offline with the real data volume, because priming too many records slows sync.",
+    "points": [
+      "Primes appointments and related records, Briefcase adds more",
+      "Work offline: status, products, photos, signatures, flows",
+      "Changes sync when online, test priming volume"
+    ],
+    "tags": [
+      "mobile",
+      "offline",
+      "briefcase",
+      "priming"
+    ]
+  },
+  {
+    "id": "fsl-018",
+    "topic": "Field Service",
+    "level": "mid",
+    "type": "concept",
+    "q": "How do you use flows in the Field Service mobile app?",
+    "alt": [
+      "Can technicians run screen flows on mobile?",
+      "What are app extensions in Field Service mobile?",
+      "How do you add a guided checklist for technicians?",
+      "flows in fsl mobile app"
+    ],
+    "a": "Screen flows can be launched from the Field Service mobile app to guide technicians, like an inspection checklist or a job completion wizard. You make the flow available as a quick action on the object, like Work Order or Service Appointment, and add it to the layout, or reference it through an app extension in Field Service Mobile Settings. The flow receives the record Id so it works in context. For example, at the end of an AC service, the technician taps Complete Job, and the flow asks five checklist questions, notes the filter change, and updates that work order. Not every flow element is supported offline, so I keep mobile flows simple, avoid elements that need a server round trip if technicians often lose signal, and test them in airplane mode before go-live.",
+    "points": [
+      "Screen flows as quick actions or app extensions",
+      "Receives record Id for context",
+      "Check offline support, test in airplane mode"
+    ],
+    "tags": [
+      "mobile",
+      "flow",
+      "app extension",
+      "quick action"
+    ]
+  },
+  {
+    "id": "fsl-019",
+    "topic": "Field Service",
+    "level": "mid",
+    "type": "code",
+    "q": "What is deep linking in the Field Service mobile app and how do you use it?",
+    "alt": [
+      "How do you open a work order in the FSL app from another app?",
+      "Field Service mobile deep link format",
+      "Launch a flow on mobile from an external app",
+      "deep link to field service mobile"
+    ],
+    "a": "Deep linking lets another app, an email or a text message open a specific screen in the Field Service mobile app. The URI uses the com.salesforce.fieldservice scheme with a version, then the object record Id and an optional action, like opening details, launching a flow or launching a quick action, with URL-encoded parameters to pass values. For example, a partner app for meter readings captures a value and deep links back into a flow on the work order with that reading as an input, so the technician doesn't retype it. Or a dispatcher can text a technician a link that opens a work order straight away. The gotcha: a flow launched this way must be referenced by an app extension in Field Service Mobile Settings, otherwise the link won't launch it.",
+    "points": [
+      "Scheme com.salesforce.fieldservice://v1/",
+      "Open records, flows, quick actions, global actions",
+      "Flows must be registered as app extensions"
+    ],
+    "code": "// Open a work order on the Details tab\ncom.salesforce.fieldservice://v1/sObject/<workOrderId>/details\n\n// Launch a flow on the record and pass an input variable\ncom.salesforce.fieldservice://v1/sObject/<workOrderId>/flow/Meter_Reading_Flow?Reading=1250\n\n// Launch a quick action on the record\ncom.salesforce.fieldservice://v1/sObject/<workOrderId>/quickaction/Close_Job",
+    "tags": [
+      "deep link",
+      "mobile",
+      "flow",
+      "integration"
+    ]
+  },
+  {
+    "id": "fsl-020",
+    "topic": "Field Service",
+    "level": "mid",
+    "type": "concept",
+    "q": "What is shift management in Field Service?",
+    "alt": [
+      "How do you schedule technicians who work rotating shifts?",
+      "Explain shifts and shift templates in FSL",
+      "Operating hours vs shifts for availability"
+    ],
+    "a": "Shift management lets you plan when resources work using Shift records, instead of only fixed operating hours. You create shifts for a territory with start and end times, and can use shift templates and shift patterns to generate recurring schedules, like rotating day and night weeks. Shifts can be open and later assigned to a service resource. When scheduling is configured to use shifts for availability, the engine only books appointments inside a resource's shifts. For example, a 24-hour repair service might create open night shifts for next month, assign them to technicians once they've confirmed, and the engine then books night call-outs only to whoever has that shift. It suits businesses where technicians work varying hours each week, and it gives managers a dedicated view to plan staffing before appointments are scheduled.",
+    "points": [
+      "Shift records with start and end, templates and patterns",
+      "Shifts can be open then assigned",
+      "Engine respects shifts when configured for availability"
+    ],
+    "tags": [
+      "shift management",
+      "shifts",
+      "availability",
+      "workforce planning"
+    ]
+  },
+  {
+    "id": "fsl-021",
+    "topic": "Field Service",
+    "level": "mid",
+    "type": "concept",
+    "q": "How do crews work in Field Service?",
+    "alt": [
+      "How do you schedule a team of technicians together?",
+      "What is a service crew in FSL?",
+      "Crew vs individual service resource"
+    ],
+    "a": "A crew is a group of resources who work together on jobs that need more than one person, like a large installation. You create a Service Crew record with Service Crew Members for each person and their dates, and a Service Resource of type Crew that represents the crew in scheduling. The crew resource is what gets assigned to the appointment and appears on the Gantt. Crew size and the members' skills are considered, so an appointment can require a minimum crew size, and the crew's combined skills can satisfy skill requirements. For example, installing a rooftop AC unit needs three people, one of them a certified electrician. A three-person crew with one electrician qualifies, even though the other two don't have that skill. Crew members see the crew's appointments on their mobile app.",
+    "points": [
+      "Service Crew plus Service Crew Members",
+      "Service Resource of type Crew is scheduled",
+      "Crew size and combined skills considered"
+    ],
+    "tags": [
+      "crews",
+      "service crew",
+      "service resource",
+      "scheduling"
+    ]
+  },
+  {
+    "id": "fsl-022",
+    "topic": "Field Service",
+    "level": "mid",
+    "type": "scenario",
+    "q": "A service appointment is not getting scheduled and the engine says no candidates were found. How do you troubleshoot it?",
+    "alt": [
+      "Why is my service appointment not scheduling?",
+      "Auto schedule fails with no available slots in FSL",
+      "Get Candidates returns no technicians, what to check?",
+      "appointment not getting scheduled field service"
+    ],
+    "a": "I start with the appointment itself. It needs a service territory, a valid address with geolocation, a duration, and an earliest start and due date window that's in the future and wide enough. Then the resources: are there active service resources who are territory members for that date, with the right capacity, and operating hours or shifts that overlap the window? Next, the scheduling policy's work rules. Missing skills, expired skill dates, excluded resources, maximum travel from home or visiting hours often filter everyone out, and resource absences can block the time too. Using Get Candidates with a looser policy, or removing one rule at a time, quickly shows which rule is knocking everyone out. For example, if a job's window is only one hour but its duration is two hours, no slot can ever fit, so no candidates come back.",
+    "points": [
+      "Appointment: territory, geolocation, duration, valid window",
+      "Resources: active, territory member, hours or shifts",
+      "Work rules: skills, travel, visiting hours, absences",
+      "Isolate the rule with Get Candidates"
+    ],
+    "tags": [
+      "troubleshooting",
+      "scheduling",
+      "work rules",
+      "get candidates"
+    ]
+  },
+  {
+    "id": "fsl-023",
+    "topic": "Field Service",
+    "level": "fresher",
+    "type": "scenario",
+    "q": "Technicians need to attach photos from the mobile app to the work order. How would you set that up?",
+    "alt": [
+      "How can technicians upload pictures to a work order on mobile?",
+      "Attach files from Field Service mobile to the job",
+      "Photos taken offline, how do they get to Salesforce?",
+      "file upload from fsl mobile app to work order"
+    ],
+    "a": "The Field Service mobile app supports Salesforce Files, so I'd make sure the Files related list is on the Work Order and Service Appointment page layouts the app uses, and that the technicians' profile can create content. Technicians then use the attachment option to take a photo or pick one from the gallery, and it's stored as a file linked to the record. If they're offline, the file is queued and uploaded when the device reconnects. For example, a technician snaps a before and after photo of a repaired AC unit, and they show up on the record once his phone is back on signal. If the photo is taken on the service appointment but the business wants it on the work order, I'd either upload it on the work order directly, or use a flow or trigger on ContentDocumentLink to also link the file to the parent work order.",
+    "points": [
+      "Files related list on mobile layouts",
+      "Camera or gallery, stored as Salesforce Files",
+      "Queued offline, uploaded on reconnect",
+      "Link to parent work order if added on the appointment"
+    ],
+    "tags": [
+      "mobile",
+      "files",
+      "photos",
+      "work order",
+      "scenario"
+    ]
+  },
+  {
+    "id": "fsl-024",
+    "topic": "Field Service",
+    "level": "mid",
+    "type": "code",
+    "q": "How would you automatically create a work order when a case of a certain type is created? Show the code.",
+    "alt": [
+      "Auto create work orders from cases",
+      "Write a trigger to create a work order from a case",
+      "Case to work order automation in Field Service",
+      "flow or trigger to generate work order on case insert"
+    ],
+    "a": "My first choice is a record-triggered flow on Case that creates the work order when the case meets the criteria, because admins can maintain it easily. If the logic is more complex, I'd use a bulkified trigger handler. In the code, I collect the qualifying cases, look up the work type by its name or a custom setting instead of a hard-coded Id, and create one work order per case with the account, contact, asset and case lookups. For example, when a laptop seller's support desk logs a case of type On-site Repair, a work order using the On-site Laptop Repair work type gets created for that customer and asset. If the work type has Auto-Create Service Appointment enabled, the appointment is created automatically, and the work type's duration and skills are copied to the work order.",
+    "points": [
+      "Prefer a record-triggered flow for simple cases",
+      "Bulkified trigger for complex logic",
+      "No hard-coded Ids, work type drives duration and skills"
+    ],
+    "code": "trigger CaseTrigger on Case (after insert) {\n    List<Case> fieldCases = new List<Case>();\n    for (Case c : Trigger.new) {\n        if (c.Type == 'Field Repair') fieldCases.add(c);\n    }\n    if (fieldCases.isEmpty()) return;\n\n    List<WorkType> types = [SELECT Id FROM WorkType WHERE Name = 'Field Repair' LIMIT 1];\n    if (types.isEmpty()) return; // or log a configuration error\n\n    List<WorkOrder> orders = new List<WorkOrder>();\n    for (Case c : fieldCases) {\n        orders.add(new WorkOrder(\n            CaseId = c.Id,\n            AccountId = c.AccountId,\n            ContactId = c.ContactId,\n            AssetId = c.AssetId,\n            WorkTypeId = types[0].Id,\n            Subject = c.Subject\n        ));\n    }\n    insert orders;\n}",
+    "tags": [
+      "work order",
+      "case",
+      "trigger",
+      "automation",
+      "apex"
+    ]
+  },
+  {
+    "id": "fsl-025",
+    "topic": "Field Service",
+    "level": "fresher",
+    "type": "scenario",
+    "q": "Only technicians with a specific certification should be assigned to high-voltage jobs. How would you configure this?",
+    "alt": [
+      "Make sure only skilled technicians get certain work orders",
+      "How do you restrict appointments to certified resources?",
+      "Technicians with required skills only, how in FSL?",
+      "skill based scheduling setup"
+    ],
+    "a": "I'd create a skill called High Voltage Certified, then add a Service Resource Skill for each certified technician, with an end date matching their certificate expiry, so it stops applying automatically. Say Meena's certificate expires on 31 March. From 1 April, the engine won't offer her for these jobs any more, without anyone remembering to update her. On the Work Type for high-voltage jobs, I add a Skill Requirement for that skill, optionally with a minimum level, so every work order using that type inherits it. Then I confirm the scheduling policies for these jobs include the Match Skills work rule. Now automatic scheduling and Get Candidates only offer certified technicians, and if a dispatcher manually drags the job to someone without the skill, the Gantt shows a rule violation.",
+    "points": [
+      "Skill plus Service Resource Skills with expiry dates",
+      "Skill Requirement on the Work Type",
+      "Match Skills rule in the policy, Gantt shows violations"
+    ],
+    "tags": [
+      "skills",
+      "work rules",
+      "scheduling",
+      "scenario"
+    ]
+  },
+  {
+    "id": "fsl-026",
+    "topic": "Field Service",
+    "level": "senior",
+    "type": "code",
+    "q": "How do you schedule service appointments programmatically in Field Service?",
+    "alt": [
+      "Can you call the FSL scheduling engine from Apex?",
+      "Write Apex to auto-schedule service appointments",
+      "FSL.ScheduleService example",
+      "schedule appointments in bulk using apex"
+    ],
+    "a": "The Field Service managed package exposes FSL.ScheduleService.schedule, which takes a scheduling policy Id and a service appointment Id and returns an FSL.ScheduleResult. It handles one appointment per call and can make callouts, so I don't call it from a trigger, and I avoid doing DML before it in the same transaction. For many appointments, the documented approach is a batch class run with a batch size of one. So if 200 maintenance appointments are generated overnight, the batch processes them one at a time. I look up the policy by name rather than hard-coding its Id, and the running user needs one of the Field Service permission sets, like Dispatcher or Admin. For bulk planning though, running optimization is usually better than scheduling appointments one by one.",
+    "points": [
+      "FSL.ScheduleService.schedule(policyId, appointmentId)",
+      "One appointment per call, may make callouts",
+      "Batch with scope size 1, needs Field Service permission sets"
+    ],
+    "code": "public class ScheduleAppointmentsBatch implements Database.Batchable<SObject>, Database.AllowsCallouts {\n    private Id policyId;\n    public ScheduleAppointmentsBatch() {\n        policyId = [SELECT Id FROM FSL__Scheduling_Policy__c WHERE Name = 'Customer First' LIMIT 1].Id;\n    }\n    public Database.QueryLocator start(Database.BatchableContext bc) {\n        return Database.getQueryLocator([\n            SELECT Id FROM ServiceAppointment\n            WHERE Status = 'None' AND ServiceTerritoryId != null\n        ]);\n    }\n    public void execute(Database.BatchableContext bc, List<ServiceAppointment> scope) {\n        FSL.ScheduleResult result = FSL.ScheduleService.schedule(policyId, scope[0].Id);\n    }\n    public void finish(Database.BatchableContext bc) {}\n}\n// Database.executeBatch(new ScheduleAppointmentsBatch(), 1);",
+    "tags": [
+      "apex",
+      "fsl.scheduleservice",
+      "batch",
+      "scheduling"
+    ]
+  },
+  {
+    "id": "fsl-027",
+    "topic": "Field Service",
+    "level": "senior",
+    "type": "scenario",
+    "q": "Customers want to choose a convenient arrival window when they book a service visit. How would you implement this?",
+    "alt": [
+      "How do you offer appointment slots to customers in FSL?",
+      "Self-service booking for field service appointments",
+      "What is appointment booking in Field Service?",
+      "customer picks time slot for technician visit"
+    ],
+    "a": "I'd use the Field Service appointment booking capability. The arrival window slots are defined with operating hours, for example two-hour windows. The Book Appointment action, or the FSL.AppointmentBookingService methods from Apex, returns available slots for the appointment based on the scheduling policy, and each slot can be graded so the best ones show first. The customer or agent picks a slot, and the appointment is scheduled into it with the arrival window set. For example, a customer booking an AC service sees Tuesday 10 to 12 at the top because it's the best grade, picks Wednesday 2 to 4 instead, and that becomes the arrival window. For self-service, I'd expose this on an Experience Cloud site or use Appointment Assistant features to send reminders and live technician location. I keep the booking policy lighter than the optimization policy so slot lookups stay fast.",
+    "points": [
+      "Arrival windows from operating hours",
+      "Book Appointment action or AppointmentBookingService",
+      "Graded slots, self-service via a site, reminders"
+    ],
+    "tags": [
+      "appointment booking",
+      "arrival window",
+      "self service",
+      "scenario"
+    ]
+  },
+  {
+    "id": "fsl-028",
+    "topic": "Field Service",
+    "level": "senior",
+    "type": "scenario",
+    "q": "A gas leak is reported and a technician must be sent within the hour. How would you handle emergency jobs in Field Service?",
+    "alt": [
+      "How do you dispatch an urgent job in FSL?",
+      "Emergency appointment handling in Field Service",
+      "What is the emergency wizard?",
+      "high priority job needs nearest technician now"
+    ],
+    "a": "I'd mark the appointment as an emergency and use the Emergency scheduling policy, which favours the closest available qualified technician and ASAP over other objectives. Dispatchers can use the emergency wizard in the dispatcher console, which uses the technicians' last known locations from the mobile app to suggest who can arrive fastest, and dispatches immediately. So for the gas leak, the wizard might show that Kiran is ten minutes away finishing a routine check, and the dispatcher sends him. If no one is free, reshuffle or in-day optimization can move lower-priority work to make room, and the affected appointments get rescheduled. I'd make sure location tracking is enabled on the mobile app so the last known location is accurate, and set priority fields so the engine knows which work can be bumped.",
+    "points": [
+      "Emergency policy, ASAP and closest resource",
+      "Emergency wizard uses last known location",
+      "Reshuffle or in-day optimization to make room"
+    ],
+    "tags": [
+      "emergency",
+      "dispatch",
+      "scheduling policy",
+      "scenario"
+    ]
+  },
+  {
+    "id": "fsl-029",
+    "topic": "Field Service",
+    "level": "senior",
+    "type": "scenario",
+    "q": "A company operates Field Service in many regions with separate dispatch teams. How would you design the setup?",
+    "alt": [
+      "Multi-region Field Service architecture",
+      "How do dispatchers see only their own territory?",
+      "Territory based sharing in FSL",
+      "large scale field service implementation design"
+    ],
+    "a": "I'd model a territory hierarchy that matches the operational regions, keeping each optimized territory a reasonable size so optimization runs stay fast. For visibility, I'd use Field Service territory-based sharing, so dispatchers and technicians see appointments, work orders and resources for the territories they belong to, on top of a Private sharing model. Each region can get its own scheduling policy and optimization jobs at local off-peak times, and operating hours must use the correct time zones. For example, the India team's overnight optimization runs at 2 am India time, and the UK team's at 2 am UK time, and neither dispatcher sees the other's technicians. I'd standardize work types, skills and statuses globally to keep reporting consistent. For mobile, briefcase and priming rules should be sized for the busiest technicians. I'd also check Enhanced Scheduling and Optimization limits for the expected volumes.",
+    "points": [
+      "Territory hierarchy sized for optimization",
+      "Territory-based sharing on a Private model",
+      "Regional policies, time zones, off-peak jobs",
+      "Global standards for work types, skills, statuses"
+    ],
+    "tags": [
+      "design",
+      "territories",
+      "sharing",
+      "architecture",
+      "field service"
+    ]
+  },
+  {
+    "id": "fsl-030",
+    "topic": "Field Service",
+    "level": "mid",
+    "type": "troubleshooting",
+    "q": "A dispatcher cannot see some service appointments or technicians on the Dispatcher Console Gantt. What would you check?",
+    "alt": [
+      "Service appointments missing from the Gantt",
+      "Technician not showing in dispatcher console",
+      "Why don't I see resources on the FSL Gantt?",
+      "appointment list empty in dispatcher console"
+    ],
+    "a": "First I check the territory filter in the console, because the Gantt only shows resources who are members of the selected territories for the visible dates, and appointments in those territories. Then I check the resource is active and the territory member record covers the date range. For example, a new technician starts on the 1st, but his territory member record starts on the 15th, so he doesn't show up for the first two weeks. For appointments, the list filter and date horizon matter, and unscheduled appointments only show in the list, not on the Gantt. Next is access: the dispatcher needs the Field Service Dispatcher permission set and record access to the appointments and resources, especially with territory-based sharing. Finally, a missing geolocation can affect the map view, so I check addresses were geocoded.",
+    "points": [
+      "Territory filter and member dates",
+      "Active resource, list filters, date horizon",
+      "Dispatcher permission set and record sharing",
+      "Geolocation for map issues"
+    ],
+    "tags": [
+      "dispatcher console",
+      "gantt",
+      "troubleshooting",
+      "permissions"
+    ]
+  }
+]
